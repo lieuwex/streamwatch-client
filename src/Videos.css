@@ -47,7 +47,6 @@
 .video-entry-preview > video {
 	position: absolute;
 	height: 100%;
-	opacity: 0; /* start invisible by default */
 	z-index: 10;
 }
 

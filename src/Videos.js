@@ -2,18 +2,12 @@ import { Link } from 'react-router-dom';
 import React, { useRef, useEffect } from 'react';
 import filesize from 'filesize';
 import formatDuration from 'format-duration';
-import Observer from '@researchgate/react-intersection-observer';
 import { isMobile } from 'react-device-detect';
 
 import './Videos.css';
 
 function VideoPreview(props) {
 	const vidRef = useRef(null);
-	props.setPlaying.videoElement = vidRef;
-
-	const thumbRef = useRef(null);
-	props.setPlaying.thumbnailElement = thumbRef;
-
 	useEffect(() => {
 		if (!vidRef.current) {
 			return;
@@ -21,13 +15,13 @@ function VideoPreview(props) {
 
 		vidRef.current.defaultMuted = true;
 		vidRef.current.muted = true;
-	}, []);
+	}, [vidRef]);
 
 	let videoContent = <></>;
-	if (props.visible && props.video.has_preview && !isMobile) {
+	if (props.playPreview && props.video.has_preview && !isMobile) {
 		const url = `/preview/${props.video.id}/preview.webm`;
 		videoContent = (
-			<video ref={vidRef} muted={true} loop={true} playsInline={true} preload="auto">
+			<video ref={vidRef} muted={true} loop={true} playsInline={true} preload="auto" autoPlay={true}>
 				<source src={url} type="video/webm" />
 			</video>
 		);
@@ -36,7 +30,7 @@ function VideoPreview(props) {
 	let imageContent = <></>;
 	if (props.video.thumbnail_count > 0) {
 		imageContent
-			= <img ref={thumbRef} src={`/thumbnail/${props.video.id}/0.webp`} loading="lazy" />;
+			= <img src={`/thumbnail/${props.video.id}/0.webp`} loading="lazy" />;
 	}
 
 	return (
@@ -80,8 +74,6 @@ function VideoInformation(props) {
 }
 
 function VideoThumbnails(props) {
-	return <></>;
-
 	const thumbs = [];
 	for (let i = 0; i < props.video.thumbnail_count; i++) {
 		thumbs.push(<div className="video-entry-thumbnail" style={{backgroundImage: `url(/thumbnail/${props.video.id}/${i}.webp)`}} />);
@@ -103,66 +95,33 @@ class Video extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.state = { isVisible: false };
-
-		this.setPlaying = function (playing) {
-			const videoEl = this.setPlaying.videoElement.current;
-			if (videoEl == null) {
-				return;
-			}
-			const thumbnailEl = this.setPlaying.thumbnailElement.current;
-			if (thumbnailEl == null) {
-				return;
-			}
-
-			if (playing) {
-				videoEl.style.opacity = '1';
-				thumbnailEl.style.opacity = '0';
-
-				videoEl.play();
-			} else {
-				videoEl.style.opacity = '0';
-				thumbnailEl.style.opacity = '1';
-
-				videoEl.pause();
-				videoEl.currentTime = 0;
-			}
-		};
+		this.state = { hovering: false };
 
 		this.onEnter = this.onEnter.bind(this);
 		this.onLeave = this.onLeave.bind(this);
-		this.onChange = this.onChange.bind(this);
 	}
 
 	onEnter() {
-		this.setPlaying(true);
+		this.setState({ hovering: true });
 	}
 	onLeave() {
-		this.setPlaying(false);
-	}
-
-	onChange(event) {
-		this.setState({ isVisible: event.isIntersecting });
+		this.setState({ hovering: false });
 	}
 
 	render() {
 		const content = [];
-		content.push(<VideoPreview video={this.props.video} setPlaying={this.setPlaying} visible={this.state.isVisible} />);
+		content.push(<VideoPreview video={this.props.video} playPreview={this.state.hovering} />);
 		content.push(<VideoInformation video={this.props.video} />);
-		if (this.state.isVisible) {
-			//content.push(<div className="video-entry-blur"></div>);
-			content.push(<VideoThumbnails video={this.props.video} />);
-			content.push(<VideoProgress video={this.props.video} />);
-		}
+		//content.push(<div className="video-entry-blur"></div>);
+		//content.push(<VideoThumbnails video={this.props.video} />);
+		content.push(<VideoProgress video={this.props.video} />);
 
 		return (
-			<Observer onChange={this.onChange}>
-				<Link to={`/video/${this.props.video.id}`} className="video-entry">
-					<div className="video-entry" onMouseEnter={this.onEnter} onMouseLeave={this.onLeave}>
-						{content}
-					</div>
-				</Link>
-			</Observer>
+			<Link to={`/video/${this.props.video.id}`} className="video-entry">
+				<div className="video-entry" onMouseEnter={this.onEnter} onMouseLeave={this.onLeave}>
+					{content}
+				</div>
+			</Link>
 		);
 	}
 }
