@@ -1,0 +1,156 @@
+.video-list {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+	padding-top: 15px;
+
+	padding-left: 10px; /* new */
+	padding-right: 10px; /* new */
+}
+
+.video-list > a {
+	width: 100%;
+	/* max-width: 600px; */
+    color: #fff;
+    text-decoration: none;
+    /* max-width: calc(100% - 50px); */
+    max-width: 725px;
+	box-shadow: 0px 14px 19px -7px rgba(0,0,0,0.5);
+	transition: all .2s ease-out;
+}
+.video-list > a:hover {
+	transform: scale(1.050);
+	box-shadow: 0px 20px 19px -7px rgba(0,0,0,0.5);
+}
+
+.video-entry {
+	margin-bottom: 15px;
+
+	background-color: #222222;
+	height: 150px;
+
+	border-radius: 15px;
+	overflow: hidden;
+
+	display: flex;
+	position: relative;
+}
+
+.video-entry-preview {
+	position: relative;
+	height: 100%;
+	min-width: 265px;
+	max-width: 265px;
+	z-index: 2;
+}
+
+.video-entry-preview > video {
+	position: absolute;
+	height: 100%;
+	opacity: 0; /* start invisible by default */
+	z-index: 10;
+}
+
+.video-entry-preview > img {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	z-index: 0;
+
+	opacity: 1; /* start visible by default */
+}
+
+.video-entry-information {
+	display: block;
+	height: 100%;
+	flex-grow: 1;
+	padding: 10px;
+	z-index: 2;
+
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.video-information-row {
+	display: flex;
+}
+
+.video-information-column {
+	display: flex;
+	flex-wrap: wrap;
+	flex-grow: 1;
+	align-content: space-around;
+}
+
+.video-information-column > * {
+	width: 100%;
+}
+
+.video-entry-title {
+	font-size: 2em;
+	width: 100%;
+}
+
+.video-entry-thumbnails {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	display: flex;
+	flex-wrap: nowrap;
+}
+
+.video-entry-blur {
+	z-index: 1;
+	backdrop-filter: blur(3px);
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(25, 25, 25, .90);
+}
+
+.video-entry-thumbnail {
+	height: 100%;
+	width: 100%;
+	background-size: cover;
+	background-position: center;
+}
+
+.video-entry-progress {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	height: 3px;
+	background-color: darkgreen;
+	z-index: 20;
+}
+
+@media only screen and (max-width: 600px) {
+	.video-entry {
+		height: auto;
+		flex-flow: column;
+	}
+
+	.video-list > a:hover {
+		transform: none;
+		box-shadow: 0px 20px 19px -7px rgba(0,0,0,0.5);
+	}
+
+	.video-entry-preview {
+		min-width: initial;
+		max-width: initial;
+
+		min-height: 220px;
+	}
+
+	.video-entry-preview > video {
+		display: none !important;
+	}
+
+	.video-entry-preview > img {
+		height: auto;
+	}
+}

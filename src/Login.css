@@ -1,0 +1,29 @@
+.login {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+}
+
+.login .user {
+	width: 300px;
+	padding: 30px;
+	background-color: rgb(27 27 27);
+	border-radius: 10px;
+	margin-bottom: 10px;
+	text-align: center;
+	cursor: pointer;
+
+	transition: all .1s ease-out;
+	box-shadow: 0px 10px 19px -7px rgb(0 0 0 / 50%);
+}
+
+.login .user:hover {
+	box-shadow: 0px 14px 19px -7px rgb(0 0 0 / 50%);
+}
