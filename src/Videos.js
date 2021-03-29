@@ -3,7 +3,9 @@ import React, { useRef, useEffect } from 'react';
 import filesize from 'filesize';
 import formatDuration from 'format-duration';
 import { isMobile } from 'react-device-detect';
+import swr from 'swr';
 
+import { fetcher } from './util.js';
 import './Videos.css';
 
 function VideoPreview(props) {
@@ -87,7 +89,19 @@ function VideoThumbnails(props) {
 }
 
 function VideoProgress(props) {
-	const progress = localStorage.getItem(`progress_${props.video.id}`) || 0;
+	const username = localStorage.getItem('username');
+	const { data, error } = swr(username != null ? `/user/${username}/progress` : null, fetcher);
+
+	if (error || !data) {
+		return <></>;
+	}
+
+	let progress = data[props.video.id];
+	if (progress == null) {
+		return <></>;
+	}
+	progress /= props.video.duration;
+
 	return <div className="video-entry-progress" style={{ width: `${progress * 100}%` }} />;
 }
 

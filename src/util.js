@@ -23,3 +23,16 @@ export function formatDuration(hours, minutes, seconds, removeLeadingZeroes = tr
 
 	return arr.join(":");
 }
+
+export const fetcher = (...args) => fetch(...args).then(res => res.json());
+
+export async function updateStreamsProgress(dict) {
+	const username = localStorage.getItem('username');
+	await fetch(`/user/${username}/progress`, {
+		method: 'PUT',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(dict),
+	});
+}

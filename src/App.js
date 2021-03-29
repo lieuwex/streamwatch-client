@@ -12,6 +12,7 @@ import Videos from './Videos.js';
 import Player from './Player.js';
 import Login from './Login.js';
 import Loading from './Loading.js';
+import { fetcher } from './util.js';
 
 import { EmoteFetcher, EmoteParser } from '@mkody/twitch-emoticons';
 
@@ -27,8 +28,6 @@ setTimeout(() => {
 }, 0);
 
 //import videos from './videos.json';
-
-const fetcher = (...args) => fetch(...args).then(res => res.json())
 
 function App() {
 	const { data, error } = swr('/streams', fetcher);

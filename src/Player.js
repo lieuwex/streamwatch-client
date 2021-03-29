@@ -1,6 +1,6 @@
 import { withRouter } from 'react-router-dom';
 import ReactPlayer from 'react-player';
-import React from 'react';
+import React, { useState } from 'react';
 import { isChrome, isChromium, isEdgeChromium } from 'react-device-detect';
 import chroma from 'chroma-js';
 import formatDuration from 'format-duration';
@@ -8,7 +8,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import './Player.css';
 import ChatManager from './ChatManager.js';
-import { formatTime } from './util.js';
+import { formatTime, updateStreamsProgress, fetcher } from './util.js';
 
 import tlds from 'tlds';
 import makeLinkify from 'linkify-it';
@@ -187,6 +187,36 @@ function PauseShade(props) {
 	);
 }
 
+function Player(props) {
+	let { id } = props.match.params;
+	const video = props.videos.find(v => v.id == id);
+
+	const [volume, setVolume] = useState(localStorage.getItem('volume') || 1);
+	const [progress, setProgress] = useState(TODO);
+	const [playing, setPlaying] = useState(true);
+	const [sidebarOpen, setSidebarOpen] = useState(video.has_chat);
+
+	useEffect(() => {
+		const intervalId = setInterval(() => {
+			(async () => {
+				if (!this.state.playing) {
+					return;
+				}
+
+				const username = localStorage.getItem('username');
+				const dict = await fetcher(`/user/${username}/progress`);
+
+				dict[this.state.video.id] = this.state.progress * video.duration;
+				await updateStreamsProgress(dict);
+			})().catch(e => console.error(e));
+		}, 5000);
+
+		return () => {
+			clearInterval(intervalId);
+		};
+	}, []);
+}
+
 class Player extends React.Component {
 	constructor(props) {
 		super(props);
@@ -202,6 +232,20 @@ class Player extends React.Component {
 			sidebarOpen: video.has_chat,
 		};
 
+		this.intervalId = setInterval(() => {
+			(async () => {
+				if (!this.state.playing) {
+					return;
+				}
+
+				const username = localStorage.getItem('username');
+				const dict = await fetcher(`/user/${username}/progress`);
+
+				dict[this.state.video.id] = this.state.progress * video.duration;
+				await updateStreamsProgress(dict);
+			})().catch(e => console.error(e));
+		}, 5000);
+
 		this.ref = this.ref.bind(this);
 		this.onStart = this.onStart.bind(this);
 		this.onProgress = this.onProgress.bind(this);
@@ -213,6 +257,10 @@ class Player extends React.Component {
 		document.title = `${this.state.video.file_name} - Streamwatch`;
 	}
 
+	componentWillUnmount() {
+		clearInterval(this.intervalId);
+	}
+
 	ref(player) {
 		this.player = player;
 	}
@@ -222,10 +270,9 @@ class Player extends React.Component {
 	}
 
 	onProgress({ played }) {
-		localStorage.setItem(`progress_${this.state.video.id}`, played);
 		this.setState({
 			progress: played,
-		})
+		});
 	}
 
 	onPause() {
