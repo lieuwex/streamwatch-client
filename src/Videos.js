@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import React, { useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import filesize from 'filesize';
 import formatDuration from 'format-duration';
 import { isMobile } from 'react-device-detect';
@@ -9,21 +9,11 @@ import { fetcher } from './util.js';
 import './Videos.css';
 
 function VideoPreview(props) {
-	const vidRef = useRef(null);
-	useEffect(() => {
-		if (!vidRef.current) {
-			return;
-		}
-
-		vidRef.current.defaultMuted = true;
-		vidRef.current.muted = true;
-	}, [vidRef]);
-
 	let videoContent = <></>;
 	if (props.playPreview && props.video.has_preview && !isMobile) {
 		const url = `/preview/${props.video.id}/preview.webm`;
 		videoContent = (
-			<video ref={vidRef} muted={true} loop={true} playsInline={true} preload="auto" autoPlay={true}>
+			<video muted={true} loop={true} playsInline={true} preload="auto" autoPlay={true}>
 				<source src={url} type="video/webm" />
 			</video>
 		);
@@ -105,45 +95,31 @@ function VideoProgress(props) {
 	return <div className="video-entry-progress" style={{ width: `${progress * 100}%` }} />;
 }
 
-class Video extends React.Component {
-	constructor(props) {
-		super(props);
+function Video(props) {
+	const video = props.video;
 
-		this.state = { hovering: false };
+	const [hovering, setHovering] = useState(false);
 
-		this.onEnter = this.onEnter.bind(this);
-		this.onLeave = this.onLeave.bind(this);
-	}
+	const onEnter = () => setHovering(true);
+	const onLeave = () => setHovering(false);
 
-	onEnter() {
-		this.setState({ hovering: true });
-	}
-	onLeave() {
-		this.setState({ hovering: false });
-	}
-
-	render() {
-		const content = [];
-		content.push(<VideoPreview video={this.props.video} playPreview={this.state.hovering} />);
-		content.push(<VideoInformation video={this.props.video} />);
-		//content.push(<div className="video-entry-blur"></div>);
-		//content.push(<VideoThumbnails video={this.props.video} />);
-		content.push(<VideoProgress video={this.props.video} />);
-
-		return (
-			<Link to={`/video/${this.props.video.id}`} className="video-entry">
-				<div className="video-entry" onMouseEnter={this.onEnter} onMouseLeave={this.onLeave}>
-					{content}
-				</div>
-			</Link>
-		);
-	}
+	return (
+		<Link to={`/video/${video.id}`} className="video-entry">
+			<div className="video-entry" onMouseEnter={onEnter} onMouseLeave={onLeave}>
+				<VideoPreview video={video} playPreview={hovering} />
+				<VideoInformation video={video} />
+				{/* <div className="video-entry-blur"></div> */}
+				{/* <VideoThumbnails video={video} /> */}
+				<VideoProgress video={video} />
+			</div>
+		</Link>
+	);
 }
 
 function Videos(props) {
 	useEffect(() => {
 		document.title = 'Streamwatch';
-	});
+	}, []);
 
 	const items = props.videos.map(v => {
 		return (

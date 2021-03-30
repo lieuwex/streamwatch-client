@@ -1,6 +1,6 @@
-import { withRouter } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import ReactPlayer from 'react-player';
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { isChrome, isChromium, isEdgeChromium } from 'react-device-detect';
 import chroma from 'chroma-js';
 import formatDuration from 'format-duration';
@@ -12,6 +12,7 @@ import { formatTime, updateStreamsProgress, fetcher } from './util.js';
 
 import tlds from 'tlds';
 import makeLinkify from 'linkify-it';
+import Loading from './Loading';
 
 const linkify = makeLinkify();
 linkify.tlds(tlds);
@@ -36,12 +37,8 @@ function convertUrls(str) {
 	return res.join('');
 }
 
-const Video = React.memo(props => {
+const Video = React.memo(React.forwardRef((props, ref) => {
 	const url = `/stream/${props.video.file_name}`;
-
-	const ref = player => {
-		props.setRef(player);
-	};
 
 	return <ReactPlayer
 		url={url}
@@ -57,7 +54,7 @@ const Video = React.memo(props => {
 		onPlay={props.onPlay}
 		progressInterval={250}
 	/>;
-});
+}));
 
 const ChatMessage = React.memo(props => {
 	let body = convertUrls(props.message.message);
@@ -188,129 +185,90 @@ function PauseShade(props) {
 }
 
 function Player(props) {
-	let { id } = props.match.params;
-	const video = props.videos.find(v => v.id == id);
+	const video = props.video;
 
 	const [volume, setVolume] = useState(localStorage.getItem('volume') || 1);
-	const [progress, setProgress] = useState(TODO);
+	const [progress, setProgress] = useState(props.initialProgress);
 	const [playing, setPlaying] = useState(true);
 	const [sidebarOpen, setSidebarOpen] = useState(video.has_chat);
 
+	const [previousUpdateAt, setPreviousUpdateAt] = useState(props.initialProgress);
+
 	useEffect(() => {
-		const intervalId = setInterval(() => {
-			(async () => {
-				if (!this.state.playing) {
-					return;
-				}
+		document.title = `${video.file_name} - Streamwatch`;
+	}, [video.file_name]);
 
-				const username = localStorage.getItem('username');
-				const dict = await fetcher(`/user/${username}/progress`);
-
-				dict[this.state.video.id] = this.state.progress * video.duration;
-				await updateStreamsProgress(dict);
-			})().catch(e => console.error(e));
-		}, 5000);
-
-		return () => {
-			clearInterval(intervalId);
-		};
-	}, []);
-}
-
-class Player extends React.Component {
-	constructor(props) {
-		super(props);
-
-		let { id } = props.match.params;
-		const video = props.videos.find(v => v.id == id);
-
-		this.state = {
-			volume: localStorage.getItem('volume') || 1,
-			progress: localStorage.getItem(`progress_${id}`) || 0,
-			playing: true,
-			video: video,
-			sidebarOpen: video.has_chat,
-		};
-
-		this.intervalId = setInterval(() => {
-			(async () => {
-				if (!this.state.playing) {
-					return;
-				}
-
-				const username = localStorage.getItem('username');
-				const dict = await fetcher(`/user/${username}/progress`);
-
-				dict[this.state.video.id] = this.state.progress * video.duration;
-				await updateStreamsProgress(dict);
-			})().catch(e => console.error(e));
-		}, 5000);
-
-		this.ref = this.ref.bind(this);
-		this.onStart = this.onStart.bind(this);
-		this.onProgress = this.onProgress.bind(this);
-		this.onPause = this.onPause.bind(this);
-		this.onPlay = this.onPlay.bind(this);
-	}
-
-	componentDidMount() {
-		document.title = `${this.state.video.file_name} - Streamwatch`;
-	}
-
-	componentWillUnmount() {
-		clearInterval(this.intervalId);
-	}
-
-	ref(player) {
-		this.player = player;
-	}
-
-	onStart() {
-		this.player.seekTo(this.state.progress, 'fraction');
-	}
-
-	onProgress({ played }) {
-		this.setState({
-			progress: played,
-		});
-	}
-
-	onPause() {
-		this.setState({
-			playing: false,
-		});
-	}
-
-	onPlay() {
-		this.setState({
-			playing: true,
-		});
-	}
-
-	render() {
-		if (this.state.video == null) {
-			return (
-				<div>video not found</div>
-			);
+	useEffect(() => {
+		if (Math.abs(progress - previousUpdateAt) < 5) {
+			return;
 		}
 
-		return (
-			<div class="player">
-				<div class="player-wrapper">
-					<PauseShade video={this.state.video} visible={!this.state.playing} />
-					<Video
-						video={this.state.video}
-						volume={this.state.volume}
-						setRef={this.ref}
-						onStart={this.onStart}
-						onProgress={this.onProgress}
-						onPause={this.onPause}
-						onPlay={this.onPlay} />
-				</div>
-				{ this.state.sidebarOpen ? <Sidebar video={this.state.video} progress={this.state.progress} playing={this.state.playing} /> : <></> }
+		setPreviousUpdateAt(progress);
+
+		requestIdleCallback(() => {
+			(async () => {
+				if (!playing) {
+					return;
+				}
+
+				const username = localStorage.getItem('username');
+				const dict = await fetcher(`/user/${username}/progress`);
+
+				dict[video.id] = progress;
+				await updateStreamsProgress(dict);
+			})().catch(e => console.error(e));
+		});
+	}, [progress]);
+
+	const playerRef = useRef(null);
+	const onStart = () => {
+		console.log('playerRef', playerRef.current);
+
+		if (playerRef.current == null) {
+			return;
+		}
+
+		playerRef.current.seekTo(props.initialProgress, 'seconds');
+	};
+
+	return (
+		<div class="player">
+			<div class="player-wrapper">
+				<PauseShade video={video} visible={!playing} />
+				<Video
+					video={video}
+					volume={volume}
+					ref={playerRef}
+					onStart={onStart}
+					onProgress={({ playedSeconds }) => setProgress(playedSeconds)}
+					onPause={() => setPlaying(false)}
+					onPlay={() => setPlaying(true)} />
 			</div>
-		);
-	}
+			{ sidebarOpen ? <Sidebar video={video} progress={progress} playing={playing} /> : <></> }
+		</div>
+	);
 }
 
-export default withRouter(Player);
+export default function PlayerWrapper(props) {
+	const { id } = useParams();
+	const video = props.videos.find(v => v.id == id);
+
+	const [initialProgress, setInitialProgress] = useState(null);
+
+	useEffect(() => {
+		const username = localStorage.getItem('username');
+		if (username == null || video == null) {
+			setInitialProgress(0);
+		} else {
+			fetcher(`/user/${username}/progress`).then(r => setInitialProgress(r[video.id]));
+		}
+	}, [video]);
+
+	if (video == null) {
+		return <div>video not found</div>;
+	} else if (initialProgress == null) {
+		return <Loading />;
+	}
+
+	return <Player video={video} initialProgress={initialProgress} />;
+}
