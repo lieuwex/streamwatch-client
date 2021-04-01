@@ -80,7 +80,7 @@ function VideoThumbnails(props) {
 
 function VideoProgress(props) {
 	const username = localStorage.getItem('username');
-	const { data, error } = swr(username != null ? `/user/${username}/progress` : null, fetcher);
+	const { data, error } = swr(username != null ? `http://local.lieuwe.xyz:6070/user/${username}/progress` : null, fetcher);
 
 	if (error || !data) {
 		return <></>;

@@ -11,7 +11,6 @@ export default class ChatManager {
 		this.messages = [];
 
 		this.ws = new WebSocket(`ws://local.lieuwe.xyz:6070/stream/${video.id}/chat`);
-
 		this.ws.onmessage = (e) => {
 			const messages = JSON.parse(e.data).res.map(s => ({ ...JSON.parse(s.content), ts: s.ts }));
 			if (messages.length == 0) {
@@ -37,7 +36,7 @@ export default class ChatManager {
 			this.messages = newMessages.slice(Math.max(0, newMessages.length - MAX_CACHE), newMessages.length);
 
 			this.onDataReady && this.onDataReady();
-		}
+		};
 
 		this.ensureData = this.ensureData.bind(this);
 		this.getBetween = this.getBetween.bind(this);

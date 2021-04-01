@@ -13,6 +13,9 @@
 	height: 100%;
 	position: relative;
 }
+.player-wrapper.hide-cursor {
+	cursor: none;
+}
 
 .player-wrapper video {
 	outline: none !important;
@@ -40,8 +43,50 @@
 	opacity: 0;
 }
 .pause-shade.visible {
-	transition: 5s opacity ease-in-out 15s;
+	transition: 5s opacity ease-in-out 10s;
 	opacity: 1;
+}
+
+.video-controls {
+	position: absolute;
+	padding-top: 25px;
+	padding-bottom: 10px;
+	z-index: 20;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,.0) 100%);
+
+	transition: .5s opacity ease-in-out;
+	opacity: 0;
+}
+.video-controls.visible {
+	transition: none;
+	opacity: 1;
+}
+
+.video-controls .controls-row {
+	display: flex;
+	align-items: center;
+}
+
+.video-controls .duration {
+	margin-left: 50px;
+	white-space: nowrap;
+}
+
+.video-controls .volume-controls {
+	display: flex;
+	width: 150px;
+	margin-left: 20px;
+	margin-right: 20px;
+	align-items: center;
+}
+
+#popover-participants > .MuiPaper-root {
+    padding: 5px;
+    padding-top: 10px;
+    width: 300px;
 }
 
 .sidebar {

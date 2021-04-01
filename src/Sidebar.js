@@ -1,0 +1,151 @@
+import React from 'react';
+import { isChrome, isChromium, isEdgeChromium } from 'react-device-detect';
+import chroma from 'chroma-js';
+import formatDuration from 'format-duration';
+import { Tooltip } from '@material-ui/core';
+import tlds from 'tlds';
+import makeLinkify from 'linkify-it';
+
+import { formatTime } from './util.js';
+import ChatManager from './ChatManager.js';
+
+const linkify = makeLinkify();
+linkify.tlds(tlds);
+
+function convertUrls(str) {
+	const matches = linkify.match(str);
+	const res = [];
+	let last = 0;
+
+	for (const match of (matches || [])) {
+		if (last < match.index) {
+			res.push(str.slice(last, match.index));
+		}
+		res.push(`<a target='_blank' href='${match.url}'>${match.text}</a>`);
+		last = match.lastIndex;
+	}
+
+	if (last < str.length) {
+		res.push(str.slice(last));
+	}
+
+	return res.join('');
+}
+
+const ChatMessage = React.memo(props => {
+	let body = convertUrls(props.message.message);
+	body = window.twitchParser.parse(body);
+
+	let color;
+	let fontColor;
+	if (props.message.tags.color) {
+		color = chroma(props.message.tags.color).darken(2).saturate(2).hex();
+		fontColor = chroma(color).luminance() > .45 ? 'black' : 'white';
+	} else {
+		color = '#383838';
+		fontColor = 'white';
+	}
+
+	const action = ({
+		'resub': 'resubscribed',
+		'subscription': 'subscribed',
+		'subgift': `gifted ${+props.message.tags['msg-param-sender-count'] || 1} sub(s)`,
+	})[props.message.type];
+
+	const isVip = [
+		"lieuwex",
+		"genotsknots",
+		"lekkerspelen",
+	].includes(props.message.tags['display-name'].toLowerCase());
+
+	return (
+		<div className={`chat-message ${props.message.type} ${isVip ? 'vip' : ''}`}>
+			<Tooltip title={formatTime(new Date(props.message.ts))}>
+				<div className="message-timestamp">{formatDuration(props.message.ts - props.videoTimestamp)}</div>
+			</Tooltip>
+			<div className="message-author" style={{ backgroundColor: color, color: fontColor }}>{props.message.tags['display-name']}</div>
+			{action != null ? <div className="message-action">{action}</div> : <></>}
+			<div className="message-content" dangerouslySetInnerHTML={{__html: body}} />
+		</div>
+	);
+});
+
+class Chat extends React.Component {
+	constructor(props) {
+		super(props);
+
+		const manager = new ChatManager(props.video);
+		this.state = { messages: [], manager };
+
+		this.chatRef = React.createRef();
+	}
+
+	shouldComponentUpdate(nextProps) {
+		if (nextProps.sticky !== this.props.sticky) {
+			return true;
+		}
+
+		const dist = Math.abs(nextProps.offset - this.props.offset);
+		return dist > 150;
+	}
+
+	componentDidUpdate() {
+		const dist = Math.abs(this.props.offset - this.state.previousOffset);
+		if (dist >= 3000) {
+			// if more than 3 seconds, clear all messages from the manager
+			this.state.manager.clear();
+		}
+
+		const currTimestamp = this.props.offset + this.props.video.timestamp;
+		//console.log('currTimestamp', currTimestamp);
+
+		// ensure that we have enough data for now and the future, does not
+		// block.
+		this.state.manager.ensureData(currTimestamp);
+
+		// get all messages from the start till now.
+		let messages = this.state.manager.getBetween(0, currTimestamp);
+		// limit the amount of messages rendered to 300.
+		messages = messages.slice(Math.max(0, messages.length - 300), messages.length);
+
+		this.setState({
+			messages,
+			previousOffset: this.props.offset,
+		});
+
+		if (isChrome || isChromium || isEdgeChromium) {
+			return;
+		} else if (this.chatRef.current == null) {
+			return;
+		}
+
+		const el = this.chatRef.current;
+		el.scrollTo(0, el.scrollHeight);
+	}
+
+	componentWillUnmount() {
+		this.state.manager.close();
+	}
+
+	render() {
+		const items = this.state.messages.map(m => {
+			return <ChatMessage key={m.tags.id} message={m} videoTimestamp={this.props.video.timestamp} />;
+		});
+
+		return (
+			<div className={`sidebar-chat ${this.props.sticky ? 'sticky' : ''}`} ref={this.chatRef}>
+				{items}
+			</div>
+		);
+	}
+}
+
+export default function Sidebar(props) {
+	const offset = Math.floor(props.progress * 1000);
+
+	return (
+		<div className="sidebar">
+			{ props.video.has_chat ? <Chat video={props.video} offset={offset} sticky={props.playing} /> : <></> }
+		</div>
+	);
+}

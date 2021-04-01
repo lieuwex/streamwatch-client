@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Snackbar from '@material-ui/core/Snackbar';
 
 import './Login.css';
@@ -16,6 +16,10 @@ function User(props) {
 }
 
 function Login() {
+	useEffect(() => {
+		document.title = 'Streamwatch - login';
+	}, []);
+
 	const [isOpen, setIsOpen] = useState(false);
 
 	const onSelect = username => {
@@ -27,6 +31,7 @@ function Login() {
 		<div className="login">
 			<User onSelect={onSelect} name="Lieuwe" username="lieuwe" />
 			<User onSelect={onSelect} name="Bart" username="bart" />
+			<User onSelect={onSelect} name="Tom Smeding" username="toms" />
 		</div>
 
 		<Snackbar

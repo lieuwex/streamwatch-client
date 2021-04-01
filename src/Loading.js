@@ -4,7 +4,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 function Loading() {
 	return (
 		<Backdrop open={true} invisible={true}>
-			<CircularProgress />
+			<CircularProgress disableShrink />
 		</Backdrop>
 	);
 }

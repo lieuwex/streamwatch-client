@@ -28,11 +28,19 @@ export const fetcher = (...args) => fetch(...args).then(res => res.json());
 
 export async function updateStreamsProgress(dict) {
 	const username = localStorage.getItem('username');
-	await fetch(`/user/${username}/progress`, {
+	if (username == null) {
+		return;
+	}
+
+	await fetch(`http://local.lieuwe.xyz:6070/user/${username}/progress`, {
 		method: 'PUT',
 		headers: {
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify(dict),
 	});
+}
+
+export function clamp(num, min, max) {
+	return Math.min(Math.max(num, min), max);
 }

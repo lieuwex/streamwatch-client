@@ -27,10 +27,8 @@ setTimeout(() => {
 	window.twitchFetcher.fetchTwitchEmotes(52385053);
 }, 0);
 
-//import videos from './videos.json';
-
 function App() {
-	const { data, error } = swr('/streams', fetcher);
+	const { data, error } = swr('http://local.lieuwe.xyz:6070/streams', fetcher);
 
 	if (error) {
 		return <div>Error while loading streams</div>;
