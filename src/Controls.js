@@ -1,0 +1,84 @@
+import { Slider, IconButton } from '@material-ui/core';
+import { Pause, PlayArrow, VolumeUp, VolumeOff, FullscreenExit, Fullscreen, People, SportsEsports, ChevronLeft, ChevronRight } from '@material-ui/icons';
+import formatDuration from 'format-duration';
+import useMousetrap from 'react-hook-mousetrap';
+
+import { clamp } from './util.js';
+
+function Button(props) {
+	return (
+		<IconButton style={{'color': 'white'}} onClick={props.onClick}>
+			{props.children}
+		</IconButton>
+	)
+}
+
+export default function Controls(props) {
+	useMousetrap('space', () => props.onPlayChange(!props.playing));
+	useMousetrap('m', () => props.onMutedChange(!props.muted));
+	useMousetrap('f', () => props.onFullscreenChange(!props.fullscreen));
+	useMousetrap('s', () => props.onSidebarChange(!props.sidebarOpen));
+	const seekDelta = delta => {
+		const deltaFract = delta / props.video.duration;
+		const newValue = props.progress + deltaFract;
+		props.onSeek(clamp(newValue, 0, 1));
+	};
+	useMousetrap('left', () => seekDelta(-10));
+	useMousetrap('right', () => seekDelta(10));
+	const volumeDelta = delta => {
+		const newValue = props.volume + delta;
+		props.onVolumeChange(clamp(newValue, 0, 1));
+	};
+	useMousetrap('up', () => volumeDelta(0.1));
+	useMousetrap('down', () => volumeDelta(-0.1));
+
+	return (
+		<div className={`video-controls ${props.visible ? 'visible' : ''}`}>
+			<div className="controls-row">
+				<div className="duration">
+					{formatDuration(1000 * props.progress * props.video.duration)} / {formatDuration(1000 * props.video.duration)}
+				</div>
+			</div>
+			<div className="controls-row">
+				<Button onClick={() => props.onPlayChange(!props.playing)}>
+					{ props.playing ? <Pause /> : <PlayArrow /> }
+				</Button>
+				<Slider value={props.progress} max={1} step={0.001} onChange={(_, newValue) => props.onSeek(newValue)} />
+
+				<div className="volume-controls">
+					<Button onClick={() => props.onMutedChange(!props.muted)}>
+						{ props.muted ? <VolumeOff /> : <VolumeUp /> }
+					</Button>
+					<Slider
+						value={(props.muted ? 0 : props.volume) * 100}
+						valueLabelDisplay="auto"
+						min={0}
+						max={100}
+						step={1}
+						disabled={props.muted}
+						onChange={(_, x) => props.onVolumeChange(x / 100)} />
+				</div>
+
+				<Button onClick={el => props.onTooltipClick('participants', el.currentTarget)}>
+					<People />
+				</Button>
+
+				<Button onClick={el => props.onTooltipClick('games', el.currentTarget)}>
+					<SportsEsports />
+				</Button>
+
+				<Button onClick={() => props.onFullscreenChange(!props.fullscreen)}>
+					{ props.fullscreen ? <FullscreenExit /> : <Fullscreen /> }
+				</Button>
+
+				{
+					!props.video.has_chat
+						? <></>
+						: <Button onClick={() => props.onSidebarChange(!props.sidebarOpen)}>
+							{ props.sidebarOpen ? <ChevronRight /> : <ChevronLeft /> }
+						</Button>
+				}
+			</div>
+		</div>
+	);
+};

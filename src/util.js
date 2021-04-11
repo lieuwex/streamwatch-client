@@ -44,3 +44,22 @@ export async function updateStreamsProgress(dict) {
 export function clamp(num, min, max) {
 	return Math.min(Math.max(num, min), max);
 }
+
+export function parseDuration(duration) {
+	const splitted = duration.split(':');
+	return splitted
+		.map((x, i) => 60**(splitted.length - i - 1) * +x)
+		.reduce((a, b) => a+b);
+}
+
+export function formatGame(game) {
+	let str = game.name;
+	if (game.platform != null) {
+		str += ` (${game.platform})`;
+	}
+	return str;
+}
+
+export function filterGames(games) {
+	return games.filter(g => g.id !== 7);
+}

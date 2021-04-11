@@ -1,0 +1,15 @@
+.add-game {
+	display: flex;
+}
+
+.add-game > :first-child {
+	width: 100%;
+}
+
+.add-game > :not(:first-child) {
+	margin-left: 15px;
+}
+
+.add-game > :last-child {
+	margin-left: 25px;
+}

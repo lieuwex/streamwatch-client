@@ -27,17 +27,17 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
-	z-index: 10;
-
 	padding-left: 75px;
 
+	z-index: 10;
 	pointer-events: none;
 	background-color: rgba(0,0,0,.8);
 	font-size: 5em;
 	font-weight: bold;
 
 	display: flex;
-	align-items: center;
+	flex-direction: column;
+	justify-content: center;
 
 	transition: none;
 	opacity: 0;
@@ -45,6 +45,17 @@
 .pause-shade.visible {
 	transition: 5s opacity ease-in-out 10s;
 	opacity: 1;
+}
+.pause-shade > .games {
+	font-size: .35em;
+	font-weight: 300;
+}
+.pause-shade > .games > span[data-current="true"] {
+	font-weight: normal;
+}
+.pause-shade > .games > span:not(:last-child):after {
+	content: ", ";
+	font-weight: 300;
 }
 
 .video-controls {
@@ -81,112 +92,6 @@
 	margin-left: 20px;
 	margin-right: 20px;
 	align-items: center;
-}
-
-#popover-participants > .MuiPaper-root {
-    padding: 5px;
-    padding-top: 10px;
-    width: 300px;
-}
-
-.sidebar {
-	width: 400px;
-	height: 100%;
-	overflow-x: hidden;
-	padding: 5px;
-	padding-right: 0;
-	padding-top: 0;
-}
-
-.sidebar-chat {
-	height: 100%;
-	overflow-y: scroll;
-	overscroll-behavior-y: contain;
-	scroll-snap-type: none;
-	overflow-x: hidden;
-}
-.sidebar-chat.sticky {
-	scroll-snap-type: y mandatory;
-}
-
-/*
-.chat-message {
-	font-size: .85em;
-	margin-bottom: .35em;
-	display: flex;
-}
-*/
-.chat-message {
-	font-size: .85em;
-	margin-bottom: .55em;
-}
-
-.chat-message.resub, .chat-message.subscription {
-	background-color: #242424;
-	/* border: 1px gold solid; */
-	/* border-left: none; */
-	/* border-right: none; */
-}
-
-.sidebar > div > div:last-child {
-	scroll-snap-align: end;
-}
-
-.message-author {
-	font-size: .8em;
-}
-
-.message-timestamp {
-	font-size: .8em;
-}
-
-/*
-.chat-message > .message-timestamp {
-	min-width: 40px;
-	overflow: hidden;
-	max-width: 40px;
-	text-overflow: clip;
-	white-space: nowrap;
-}
-*/
-.chat-message > .message-timestamp {
-	overflow: hidden;
-	text-overflow: clip;
-	white-space: nowrap;
-	display: inline-block;
-	color: gray;
-}
-
-.chat-message > div {
-	/* margin-right: 10px; */
-	margin-right: 7px;
-}
-
-/*
-.message-author {
-	min-width: 50px;
-	max-width: 50px;
-	overflow: hidden;
-}
-*/
-.message-author {
-	overflow: hidden;
-	display: inline-block;
-	background-color: #383838;
-	padding-left: 2px;
-	padding-right: 2px;
-}
-
-.chat-message > .message-action {
-	display: inline;
-	font-size: .75em;
-	color: #c5c5c5;
-}
-
-.chat-message > .message-content {
-	display: inline;
-	word-break: break-word;
-	hyphens: auto;
 }
 
 @media only screen and (max-width: 600px) {

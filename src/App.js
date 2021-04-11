@@ -6,8 +6,6 @@ import {
 import React from 'react';
 import swr from 'swr';
 
-import './App.css';
-
 import Videos from './Videos.js';
 import Player from './Player.js';
 import Login from './Login.js';
@@ -21,7 +19,6 @@ window.twitchParser = new EmoteParser(window.twitchFetcher, {
 	type: 'html',
 	match: /(\w+)/ig,
 });
-
 setTimeout(() => {
 	window.twitchFetcher.fetchTwitchEmotes();
 	window.twitchFetcher.fetchTwitchEmotes(52385053);
@@ -39,7 +36,6 @@ function App() {
 	const streams = data.sort((a, b) => b.timestamp - a.timestamp);
 	for (let stream of streams) {
 		// TODO
-		stream.timestamp -= 3600;
 		stream.timestamp *= 1000;
 	}
 

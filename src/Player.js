@@ -1,125 +1,58 @@
 import { useParams } from 'react-router-dom';
 import ReactPlayer from 'react-player';
-import React, { useState, useRef, useEffect } from 'react';
-import { Slider, IconButton, Popover, Autocomplete, TextField } from '@material-ui/core';
-import { Pause, PlayArrow, VolumeUp, VolumeOff, FullscreenExit, Fullscreen, People, SportsEsports } from '@material-ui/icons';
-import formatDuration from 'format-duration';
-import useMousetrap from 'react-hook-mousetrap';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import screenfull from 'screenfull';
 import useDoubleClick from 'use-double-click';
+import { isMobile } from 'react-device-detect';
+import { mutate } from 'swr';
 
 import './Player.css';
-import { updateStreamsProgress, fetcher, clamp } from './util.js';
+import { updateStreamsProgress, fetcher, filterGames } from './util.js';
 import Loading from './Loading.js';
 import Sidebar from './Sidebar.js';
-import {isMobile} from 'react-device-detect';
+import Controls from './Controls.js';
+import PlayerDialog from './Dialogs.js';
 
-const PlayerPopover = props => {
-	if (props.type === 'participants') {
-		return (
-			<Popover
-				id={"popover-participants"}
-				open={true}
-				anchorEl={props.anchorEl}
-				anchorOrigin={{
-					vertical: 'top',
-					horizontal: 'center',
-				}}
-				transformOrigin={{
-					vertical: 'bottom',
-					horizontal: 'center',
-				}}
-				onClose={props.handleClose}
-				freeSolo={true}
-			>
-				<Autocomplete
-					multiple
-					options={[ "Peter", "Timon" ]}
-					getOptionLabel={(option) => option}
-					defaultValue={[]}
-					filterSelectedOptions
-					renderInput={(params) => (
-						<TextField
-							{...params}
-							label="Personen"
-							placeholder="Personen in de video"
-						/>
-					)}
-				/>
-			</Popover>
-		);
-	} else if (props.type === 'games') {
-		return <div>TODO</div>;
+async function updateItems(type, streamId, items) {
+	if (type === 'participants') {
+		await fetch(`http://local.lieuwe.xyz:6070/stream/${streamId}/persons`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(items.map(p => p.id)),
+		});
+	} else if (type === 'games') {
+		await fetch(`http://local.lieuwe.xyz:6070/stream/${streamId}/games`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(items.map(g => ({ id: g.id, start_time: g.start_time }))),
+		});
 	}
 
-	return <></>;
-};
+	mutate('http://local.lieuwe.xyz:6070/streams');
+}
 
-const Controls = props => {
-	useMousetrap('space', () => props.onPlayChange(!props.playing));
-	useMousetrap('m', () => props.onMutedChange(!props.muted));
-	useMousetrap('f', () => props.onFullscreenChange(!props.fullscreen))
-	const seekDelta = delta => {
-		const deltaFract = delta / props.video.duration;
-		const newValue = props.progress + deltaFract;
-		props.onSeek(clamp(newValue, 0, 1));
-	};
-	useMousetrap('left', () => seekDelta(-10));
-	useMousetrap('right', () => seekDelta(10));
-	const volumeDelta = delta => {
-		const newValue = props.volume + delta;
-		props.onVolumeChange(clamp(newValue, 0, 1));
-	};
-	useMousetrap('up', () => volumeDelta(0.1));
-	useMousetrap('down', () => volumeDelta(-0.1));
-
-	return (
-		<div className={`video-controls ${props.visible ? 'visible' : ''}`}>
-			<div className="controls-row">
-				<div className="duration">
-					{formatDuration(1000 * props.progress * props.video.duration)} / {formatDuration(1000 * props.video.duration)}
-				</div>
-			</div>
-			<div className="controls-row">
-				<IconButton style={{'color': 'white'}} onClick={() => props.onPlayChange(!props.playing)}>
-					{ props.playing ? <Pause /> : <PlayArrow /> }
-				</IconButton>
-				<Slider value={props.progress} max={1} step={0.001} onChange={(_, newValue) => props.onSeek(newValue)} />
-
-				<div className="volume-controls">
-					<IconButton style={{'color': 'white'}} onClick={() => props.onMutedChange(!props.muted)}>
-						{ props.muted ? <VolumeOff /> : <VolumeUp /> }
-					</IconButton>
-					<Slider
-						value={(props.muted ? 0 : props.volume) * 100}
-						valueLabelDisplay="auto"
-						min={0}
-						max={100}
-						step={1}
-						disabled={props.muted}
-						onChange={(_, x) => props.onVolumeChange(x / 100)} />
-				</div>
-
-				<IconButton style={{'color': 'white'}} onClick={() => props.onFullscreenChange(!props.fullscreen)}>
-					{ props.fullscreen ? <FullscreenExit /> : <Fullscreen /> }
-				</IconButton>
-
-				<IconButton style={{'color': 'white'}} onClick={el => props.onTooltipClick('participants', el.currentTarget)}>
-					<People />
-				</IconButton>
-
-				<IconButton style={{'color': 'white'}} onClick={el => props.onTooltipClick('games', el.currentTarget)}>
-					<SportsEsports />
-				</IconButton>
-			</div>
-		</div>
-	);
-};
-
-const Video = React.memo(React.forwardRef((props, ref) => {
+const Video = React.forwardRef((props, ref) => {
 	const url = `http://local.lieuwe.xyz:6070/stream/${props.video.file_name}`;
 
-	return <div style={{ 'width': '100%', 'height': '100%' }} onClick={props.onClick}>
+	const wrapperRef = useRef(null);
+	useDoubleClick({
+		onSingleClick: props.onSingleClick,
+		onDoubleClick: props.onDoubleClick,
+		ref: wrapperRef,
+		latency: 250,
+	});
+
+	const onStart = () => {
+		if (ref.current != null) {
+			ref.current.seekTo(props.initialProgress, 'seconds');
+		}
+	};
+
+	return <div style={{ 'width': '100%', 'height': '100%' }} ref={wrapperRef}>
 		<ReactPlayer
 			url={url}
 			width="100%"
@@ -128,19 +61,42 @@ const Video = React.memo(React.forwardRef((props, ref) => {
 			controls={props.controls}
 			volume={props.volume}
 			ref={ref}
-			onStart={props.onStart}
+			onStart={onStart}
 			onProgress={props.onProgress}
 			onPause={props.onPause}
 			onPlay={props.onPlay}
 			progressInterval={250}
 		/>
 	</div>;
-}));
+});
 
 function PauseShade(props) {
+	const games = useMemo(() => {
+		const games = filterGames(props.video.games);
+		const nodes = new Array(games.length);
+		let hitCurrent = false;
+
+		for (let i = nodes.length - 1; i >= 0; i--) {
+			const g = games[i];
+			const isActive = g.start_time <= props.progress;
+			const current = !hitCurrent && isActive;
+			hitCurrent = hitCurrent || isActive;
+
+			nodes[i] = (
+				<span key={i} data-current={current}>
+					{g.name}
+					{g.platform == null ? <></> : <small> ({g.platform})</small>}
+				</span>
+			);
+		}
+
+		return nodes;
+	}, [props.video, props.progress]);
+
 	return (
 		<div className={`pause-shade ${props.visible ? 'visible' : ''}`}>
-			{props.video.file_name}
+			<div>{props.video.file_name}</div>
+			<div className="games">{games}</div>
 		</div>
 	);
 }
@@ -185,7 +141,7 @@ function Player(props) {
 	const [userActive, setUserActive] = useState(null);
 	const [fullscreen, setFullscreen] = useState(screenfull.isFullscreen);
 
-	const [openTooltip, setOpenTooltip] = useState(null);
+	const [openDialog, setOpenDialog] = useState(null);
 
 	// update document title
 	useEffect(() => {
@@ -203,11 +159,6 @@ function Player(props) {
 
 	// video listeners
 	const playerRef = useRef(null);
-	const onStart = () => {
-		if (playerRef.current != null) {
-			playerRef.current.seekTo(props.initialProgress, 'seconds');
-		}
-	};
 	const handleSeek = fract => {
 		setProgress(fract * video.duration);
 		if (playerRef.current != null) {
@@ -215,16 +166,6 @@ function Player(props) {
 		}
 	};
 	const onProgress = ({ playedSeconds }) => setProgress(playedSeconds);
-
-	// click events
-	/*
-	useDoubleClick({
-		onSingleClick: () => setPlaying(!playing),
-		onDoubleClick: () => setFullscreen(!fullscreen),
-		ref: playerRef,
-		latency: 250,
-	});
-	*/
 
 	// handle user activity
 	useEffect(() => {
@@ -239,9 +180,8 @@ function Player(props) {
 		return () => clearTimeout(id);
 	}, [userActive]);
 
-	const wrapperRef = useRef(null);
-
 	// handle fullscreen change requests (made by user)
+	const wrapperRef = useRef(null);
 	useEffect(() => {
 		if (wrapperRef.current == null) {
 			return;
@@ -266,26 +206,49 @@ function Player(props) {
 	return (
 		<div className="player">
 			<div className={`player-wrapper ${userActive != null ? '' : 'hide-cursor'}`} onPointerMove={() => setUserActive(Date.now())} ref={wrapperRef}>
-				<PauseShade video={video} visible={!playing && userActive == null} />
+				<PauseShade
+					video={video}
+					visible={!playing && userActive == null}
+					progress={progress} />
 
 				<Video
 					video={video}
 					volume={muted ? 0 : volume}
 					playing={playing}
+					initialProgress={props.initialProgress}
 					controls={useNativeControls}
 					ref={playerRef}
-					onStart={onStart}
 					onProgress={onProgress}
 					onPause={() => setPlaying(false)}
-					onPlay={() => setPlaying(true)} />
+					onPlay={() => setPlaying(true)}
+					onSingleClick={() => setPlaying(!playing)}
+					onDoubleClick={() => setFullscreen(!fullscreen)} />
 
 				{
-					openTooltip == null
+					openDialog == null
 						? <></>
-						: <PlayerPopover
-							type={openTooltip[0]}
-							anchorEl={openTooltip[1]}
-							handleClose={() => setOpenTooltip(null) }/>
+						: <PlayerDialog
+							type={openDialog[0]}
+							anchorEl={openDialog[1]}
+							video={video}
+							currentTime={progress}
+							handleClose={(items, newProgress) => {
+								if (items != null) {
+									requestIdleCallback(() => {
+										updateItems(openDialog[0], video.id, items)
+											.catch(e => console.error(e));
+									});
+								}
+
+								if (newProgress == null) {
+									setPlaying(openDialog[2]);
+								} else {
+									handleSeek(newProgress / video.duration);
+									setPlaying(true);
+								}
+
+								setOpenDialog(null);
+							} }/>
 				}
 
 				{
@@ -300,6 +263,7 @@ function Player(props) {
 							muted={muted}
 							playing={playing}
 							fullscreen={fullscreen}
+							sidebarOpen={sidebarOpen}
 							onPlayChange={x => {
 								setPlaying(x);
 								setUserActive(Date.now());
@@ -316,11 +280,19 @@ function Player(props) {
 								setFullscreen(x);
 								setUserActive(Date.now());
 							}}
-							onTooltipClick={(tooltip, el) => setOpenTooltip([ tooltip, el ])}
+							onTooltipClick={(tooltip, el) => {
+								setOpenDialog([ tooltip, el, playing ]);
+								setPlaying(false);
+								setUserActive(Date.now());
+							}}
+							onSidebarChange={x => {
+								setSidebarOpen(x);
+								setUserActive(Date.now());
+							}}
 						/>
 				}
 			</div>
-			{ sidebarOpen ? <Sidebar video={video} progress={progress} playing={playing} /> : <></> }
+			{ video.has_chat ? <Sidebar video={video} progress={progress} playing={playing} visible={sidebarOpen} /> : <></> }
 		</div>
 	);
 }

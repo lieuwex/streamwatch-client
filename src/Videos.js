@@ -5,7 +5,7 @@ import formatDuration from 'format-duration';
 import { isMobile } from 'react-device-detect';
 import swr from 'swr';
 
-import { fetcher } from './util.js';
+import { fetcher, formatGame, filterGames } from './util.js';
 import './Videos.css';
 
 function VideoPreview(props) {
@@ -53,7 +53,7 @@ function VideoInformation(props) {
 
 				<div className="video-information-column">
 					<div className="video-entry-information-entry">
-						{props.video.games.map(g => g.name).join(', ')}
+						{filterGames(props.video.games).map(formatGame).join(', ')}
 					</div>
 
 					<div className="video-entry-information-entry">
