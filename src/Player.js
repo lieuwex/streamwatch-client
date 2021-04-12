@@ -91,7 +91,7 @@ function PauseShade(props) {
 		}
 
 		return nodes;
-	}, [props.video, props.progress]);
+	}, [props.video.games, props.progress]);
 
 	return (
 		<div className={`pause-shade ${props.visible ? 'visible' : ''}`}>
@@ -138,7 +138,7 @@ function Player(props) {
 	const [progress, setProgress] = useState(props.initialProgress);
 	const [playing, setPlaying] = useState(true);
 	const [sidebarOpen, setSidebarOpen] = useState(video.has_chat);
-	const [userActive, setUserActive] = useState(null);
+	const [userActive, setUserActive] = useState(false);
 	const [fullscreen, setFullscreen] = useState(screenfull.isFullscreen);
 
 	const [openDialog, setOpenDialog] = useState(null);
@@ -168,17 +168,18 @@ function Player(props) {
 	const onProgress = ({ playedSeconds }) => setProgress(playedSeconds);
 
 	// handle user activity
+	const activeTimeout = useRef(null);
 	useEffect(() => {
-		if (userActive == null) {
-			return;
-		}
+		return () => clearTimeout(activeTimeout.current);
+	}, []);
+	const markActive = () => {
+		setUserActive(true);
 
-		const id = setTimeout(() => {
-			setUserActive(null);
+		clearTimeout(activeTimeout.current);
+		activeTimeout.current = setTimeout(() => {
+			setUserActive(false);
 		}, 4000);
-
-		return () => clearTimeout(id);
-	}, [userActive]);
+	};
 
 	// handle fullscreen change requests (made by user)
 	const wrapperRef = useRef(null);
@@ -205,10 +206,10 @@ function Player(props) {
 
 	return (
 		<div className="player">
-			<div className={`player-wrapper ${userActive != null ? '' : 'hide-cursor'}`} onPointerMove={() => setUserActive(Date.now())} ref={wrapperRef}>
+			<div className={`player-wrapper ${!userActive && playing ? 'hide-cursor' : ''}`} onPointerMove={() => markActive()} ref={wrapperRef}>
 				<PauseShade
 					video={video}
-					visible={!playing && userActive == null}
+					visible={!playing && !userActive}
 					progress={progress} />
 
 				<Video
@@ -256,7 +257,7 @@ function Player(props) {
 						? <></>
 						: <Controls
 							video={video}
-							visible={!playing || userActive != null}
+							visible={!playing || userActive}
 							onSeek={handleSeek}
 							progress={progress / video.duration}
 							volume={volume}
@@ -266,28 +267,28 @@ function Player(props) {
 							sidebarOpen={sidebarOpen}
 							onPlayChange={x => {
 								setPlaying(x);
-								setUserActive(Date.now());
+								markActive();
 							}}
 							onVolumeChange={x => {
 								setVolume(x);
-								setUserActive(Date.now());
+								markActive();
 							}}
 							onMutedChange={x => {
 								setMuted(x);
-								setUserActive(Date.now());
+								markActive();
 							}}
 							onFullscreenChange={x => {
 								setFullscreen(x);
-								setUserActive(Date.now());
+								markActive();
 							}}
 							onTooltipClick={(tooltip, el) => {
 								setOpenDialog([ tooltip, el, playing ]);
 								setPlaying(false);
-								setUserActive(Date.now());
+								markActive();
 							}}
 							onSidebarChange={x => {
 								setSidebarOpen(x);
-								setUserActive(Date.now());
+								markActive();
 							}}
 						/>
 				}
@@ -310,7 +311,7 @@ export default function PlayerWrapper(props) {
 		} else {
 			fetcher(`http://local.lieuwe.xyz:6070/user/${username}/progress`).then(r => setInitialProgress(r[video.id] || 0));
 		}
-	}, [video]);
+	}, []);
 
 	if (video == null) {
 		return <div>video not found</div>;

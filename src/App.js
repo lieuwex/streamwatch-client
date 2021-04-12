@@ -5,6 +5,7 @@ import {
 } from 'react-router-dom';
 import React from 'react';
 import swr from 'swr';
+import 'typeface-inter';
 
 import Videos from './Videos.js';
 import Player from './Player.js';

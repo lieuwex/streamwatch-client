@@ -104,7 +104,7 @@ function Video(props) {
 	const onLeave = () => setHovering(false);
 
 	return (
-		<Link to={`/video/${video.id}`} className="video-entry">
+		<Link to={`/video/${video.id}`}>
 			<div className="video-entry" onMouseEnter={onEnter} onMouseLeave={onLeave}>
 				<VideoPreview video={video} playPreview={hovering} />
 				<VideoInformation video={video} />

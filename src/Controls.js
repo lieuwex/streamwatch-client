@@ -35,7 +35,7 @@ export default function Controls(props) {
 	return (
 		<div className={`video-controls ${props.visible ? 'visible' : ''}`}>
 			<div className="controls-row">
-				<div className="duration">
+				<div className="duration fixed-width-num">
 					{formatDuration(1000 * props.progress * props.video.duration)} / {formatDuration(1000 * props.video.duration)}
 				</div>
 			</div>

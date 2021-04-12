@@ -14,6 +14,7 @@
 
 .sidebar-chat {
 	height: 100%;
+	padding-top: 5px;
 	overflow-y: scroll;
 	overscroll-behavior-y: contain;
 	scroll-snap-type: none;
@@ -32,6 +33,8 @@
 */
 .chat-message {
 	font-size: .85em;
+}
+.chat-message:not(:last-child) {
 	margin-bottom: .55em;
 }
 
@@ -107,4 +110,8 @@
 	display: inline;
 	word-break: break-word;
 	hyphens: auto;
+}
+
+.chat-message > .message-content > a {
+	color: white;
 }

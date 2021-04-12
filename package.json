@@ -25,6 +25,7 @@
     "screenfull": "^5.1.0",
     "swr": "^0.4.2",
     "tlds": "^1.218.0",
+    "typeface-inter": "^3.15.1",
     "use-double-click": "^1.0.5",
     "web-vitals": "^1.1.0"
   },

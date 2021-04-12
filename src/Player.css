@@ -12,6 +12,7 @@
 	width: 100%;
 	height: 100%;
 	position: relative;
+	overflow: hidden;
 }
 .player-wrapper.hide-cursor {
 	cursor: none;
@@ -27,46 +28,53 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
+	z-index: 10;
+
 	padding-left: 75px;
 
-	z-index: 10;
 	pointer-events: none;
-	background-color: rgba(0,0,0,.8);
-	font-size: 5em;
-	font-weight: bold;
 
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 
-	transition: none;
+	background-color: rgba(0,0,0,.8);
+	font-size: 5em;
+	font-weight: 700;
+
+	transition: all .1s ease-out;
+	transition-delay: 0s;
 	opacity: 0;
+	transform: scale(1.2);
+	filter: blur(3px);
+	will-change: opacity, filter, transform;
 }
 .pause-shade.visible {
-	transition: 5s opacity ease-in-out 10s;
+	transition-delay: 2s;
 	opacity: 1;
+	transform: none;
+	filter: none;
 }
 .pause-shade > .games {
 	font-size: .35em;
-	font-weight: 300;
+	font-weight: 250;
 }
 .pause-shade > .games > span[data-current="true"] {
-	font-weight: normal;
+	font-weight: 500;
 }
 .pause-shade > .games > span:not(:last-child):after {
 	content: ", ";
-	font-weight: 300;
+	font-weight: 250;
 }
 
 .video-controls {
 	position: absolute;
-	padding-top: 25px;
-	padding-bottom: 10px;
+	padding-top: 90px;
 	z-index: 20;
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,.0) 100%);
+	background: linear-gradient(0deg, rgba(0, 0, 0, .9) 0%, rgba(0,0,0,.0) 100%);
 
 	transition: .5s opacity ease-in-out;
 	opacity: 0;
@@ -88,7 +96,7 @@
 
 .video-controls .volume-controls {
 	display: flex;
-	width: 150px;
+	width: 200px;
 	margin-left: 20px;
 	margin-right: 20px;
 	align-items: center;
@@ -100,14 +108,14 @@
 	}
 
 	.sidebar {
-		width: auto;
+		width: auto !important;
 	}
 
-	.player > div:first-child {
+	.player-wrapper {
 		height: auto !important;
 	}
 
-	video {
+	.player-wrapper video {
 		height: auto !important;
 	}
 }

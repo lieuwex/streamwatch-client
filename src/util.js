@@ -1,3 +1,5 @@
+import { mutate } from 'swr';
+
 export function formatTime(date) {
 	return [
 		date.getHours().toString().padStart(2, '0'),
@@ -39,6 +41,7 @@ export async function updateStreamsProgress(dict) {
 		},
 		body: JSON.stringify(dict),
 	});
+	mutate(`http://local.lieuwe.xyz:6070/user/${username}/progress`);
 }
 
 export function clamp(num, min, max) {
