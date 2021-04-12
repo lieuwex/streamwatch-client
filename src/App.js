@@ -25,26 +25,61 @@ setTimeout(() => {
 	window.twitchFetcher.fetchTwitchEmotes(52385053);
 }, 0);
 
-function App() {
-	const { data, error } = swr('http://local.lieuwe.xyz:6070/streams', fetcher);
-
-	if (error) {
-		return <div>Error while loading streams</div>;
-	} else if (!data) {
-		return <Loading />;
-	}
-
-	const streams = data.sort((a, b) => b.timestamp - a.timestamp);
+async function streamsFetcher(...args) {
+	const res = await fetch(...args);
+	const streams = await res.json();
 	for (let stream of streams) {
 		// TODO
 		stream.timestamp *= 1000;
 	}
+	return streams;
+}
+
+function videoInProgress(video) {
+	return video.progress != null
+		&& video.progress > 60
+		&& video.duration - video.progress >= 30;
+}
+
+function App() {
+	const { data: streamsData, error: streamsError } = swr('http://local.lieuwe.xyz:6070/streams', streamsFetcher);
+	const username = localStorage.getItem('username');
+	let { data: progressData, error: progressError } = swr(username != null ? `http://local.lieuwe.xyz:6070/user/${username}/progress` : null, fetcher);
+
+	if (streamsError) {
+		return <div>Error while loading streams</div>;
+	} else if (!streamsData) {
+		return <Loading />;
+	}
+
+	if (progressError || username == null) {
+		progressData = {};
+	} else if (!progressData) {
+		return <Loading />;
+	}
+
+	for (let stream of streamsData) {
+		stream.progress = progressData[stream.id];
+	}
+
+	const streams = streamsData.sort((a, b) => {
+		const aInProgress = videoInProgress(a);
+		const bInProgress = videoInProgress(b);
+
+		if (aInProgress && !bInProgress) {
+			return -1;
+		} else if (!aInProgress && bInProgress) {
+			return 1;
+		}
+
+		return b.timestamp - a.timestamp;
+	});
 
 	return (
 		<Router>
 			<Switch>
 				<Route path="/video/:id">
-					<Player videos={streams}/>
+					<Player videos={streams} />
 				</Route>
 				<Route path="/login">
 					<Login />

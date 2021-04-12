@@ -302,22 +302,9 @@ export default function PlayerWrapper(props) {
 	const { id } = useParams();
 	const video = props.videos.find(v => v.id == id);
 
-	const [initialProgress, setInitialProgress] = useState(null);
-
-	useEffect(() => {
-		const username = localStorage.getItem('username');
-		if (username == null || video == null) {
-			setInitialProgress(0);
-		} else {
-			fetcher(`http://local.lieuwe.xyz:6070/user/${username}/progress`).then(r => setInitialProgress(r[video.id] || 0));
-		}
-	}, []);
-
 	if (video == null) {
 		return <div>video not found</div>;
-	} else if (initialProgress == null) {
-		return <Loading />;
 	}
 
-	return <Player video={video} initialProgress={initialProgress} />;
+	return <Player video={video} initialProgress={video.progress || 0} />;
 }
