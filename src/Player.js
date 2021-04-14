@@ -212,10 +212,14 @@ function Player(props) {
 	return (
 		<div className="player">
 			<div className={`player-wrapper ${!userActive && playing ? 'hide-cursor' : ''}`} onPointerMove={() => markActive()} ref={wrapperRef}>
-				<PauseShade
-					video={video}
-					visible={!playing && !userActive}
-					progress={progress} />
+				{
+					playing
+					? <></>
+					: <PauseShade
+						video={video}
+						visible={!playing && !userActive}
+						progress={progress} />
+				}
 
 				<Video
 					video={video}
