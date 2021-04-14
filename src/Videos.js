@@ -10,7 +10,7 @@ import './Videos.css';
 function VideoPreview(props) {
 	let videoContent = <></>;
 	if (props.playPreview && props.video.has_preview && !isMobile) {
-		const url = `/preview/${props.video.id}/preview.webm`;
+		const url = `http://local.lieuwe.xyz:6070/preview/${props.video.id}/preview.webm`;
 		videoContent = (
 			<video muted={true} loop={true} playsInline={true} preload="auto" autoPlay={true}>
 				<source src={url} type="video/webm" />
@@ -21,7 +21,7 @@ function VideoPreview(props) {
 	let imageContent = <></>;
 	if (props.video.thumbnail_count > 0) {
 		imageContent
-			= <img src={`/thumbnail/${props.video.id}/0.webp`} loading="lazy" />;
+			= <img src={`http://local.lieuwe.xyz:6070/thumbnail/${props.video.id}/0.webp`} loading="lazy" />;
 	}
 
 	return (
