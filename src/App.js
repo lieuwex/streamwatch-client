@@ -49,13 +49,13 @@ function App() {
 	if (streamsError) {
 		return <div>Error while loading streams</div>;
 	} else if (!streamsData) {
-		return <Loading />;
+		return <Loading heavyLoad={true} />;
 	}
 
 	if (progressError || username == null) {
 		progressData = {};
 	} else if (!progressData) {
-		return <Loading />;
+		return <Loading heavyLoad={true} />;
 	}
 
 	for (let stream of streamsData) {

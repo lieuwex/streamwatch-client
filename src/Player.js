@@ -65,6 +65,8 @@ const Video = React.forwardRef((props, ref) => {
 			onProgress={props.onProgress}
 			onPause={props.onPause}
 			onPlay={props.onPlay}
+			onBuffer={props.onBuffer}
+			onBufferEnd={props.onBufferEnd}
 			progressInterval={250}
 		/>
 	</div>;
@@ -137,6 +139,7 @@ function Player(props) {
 	});
 	const [progress, setProgress] = useState(props.initialProgress);
 	const [playing, setPlaying] = useState(true);
+	const [buffering, setBuffering] = useState(true);
 	const [sidebarOpen, setSidebarOpen] = useState(video.has_chat);
 	const [userActive, setUserActive] = useState(false);
 	const [fullscreen, setFullscreen] = useState(screenfull.isFullscreen);
@@ -212,6 +215,8 @@ function Player(props) {
 	return (
 		<div className="player">
 			<div className={`player-wrapper ${!userActive && playing ? 'hide-cursor' : ''}`} onPointerMove={() => markActive()} ref={wrapperRef}>
+				{ buffering ? <Loading /> : <></> }
+
 				{
 					playing
 					? <></>
@@ -231,6 +236,8 @@ function Player(props) {
 					onProgress={onProgress}
 					onPause={() => setPlaying(false)}
 					onPlay={() => setPlaying(true)}
+					onBuffer={() => setBuffering(true)}
+					onBufferEnd={() => setBuffering(false)}
 					onSingleClick={() => setPlaying(!playing)}
 					onDoubleClick={() => setFullscreen(!fullscreen)} />
 
