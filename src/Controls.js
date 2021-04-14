@@ -78,13 +78,9 @@ export default function Controls(props) {
 					{ props.fullscreen ? <FullscreenExit /> : <Fullscreen /> }
 				</Button>
 
-				{
-					!props.video.has_chat
-						? <></>
-						: <Button onClick={() => props.onSidebarChange(!props.sidebarOpen)}>
-							{ props.sidebarOpen ? <ChevronRight /> : <ChevronLeft /> }
-						</Button>
-				}
+				<Button onClick={() => props.onSidebarChange(!props.sidebarOpen)}>
+					{ props.sidebarOpen ? <ChevronRight /> : <ChevronLeft /> }
+				</Button>
 			</div>
 		</div>
 	);

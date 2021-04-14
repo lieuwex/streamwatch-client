@@ -211,7 +211,7 @@ export default function Sidebar(props) {
 
 	return (
 		<div className={`sidebar ${props.visible ? 'visible' : ''}`}>
-			{ props.video.has_chat ? <Chat video={props.video} offset={offset} sticky={props.playing} /> : <></> }
+			<Chat video={props.video} offset={offset} sticky={props.playing} />
 		</div>
 	);
 }

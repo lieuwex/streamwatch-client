@@ -293,7 +293,7 @@ function Player(props) {
 						/>
 				}
 			</div>
-			{ video.has_chat ? <Sidebar video={video} progress={progress} playing={playing} visible={sidebarOpen} /> : <></> }
+			<Sidebar video={video} progress={progress} playing={playing} visible={sidebarOpen} />
 		</div>
 	);
 }
