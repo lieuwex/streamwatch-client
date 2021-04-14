@@ -3,9 +3,8 @@ import React, { useState, useEffect } from 'react';
 import filesize from 'filesize';
 import formatDuration from 'format-duration';
 import { isMobile } from 'react-device-detect';
-import swr from 'swr';
 
-import { fetcher, formatGame, filterGames } from './util.js';
+import { formatGame, filterGames } from './util.js';
 import './Videos.css';
 
 function VideoPreview(props) {
@@ -113,15 +112,21 @@ function Videos(props) {
 		document.title = 'Streamwatch';
 	}, []);
 
-	const items = props.videos.map(v => {
-		return (
-			<Video key={v.id} video={v} />
-		);
-	});
+	const mapVideo = v => <Video key={v.id} video={v} />;
+	const inProgress = props.videos.filter(v => v.inProgress).map(mapVideo);
+	const items = props.videos.map(mapVideo);
 
 	return (
-		<div className="video-list">
-			{items}
+		<div className="video-list-wrapper">
+			<h1>Ga verder met kijken</h1>
+			<div className="video-list in-progress">
+				{inProgress}
+			</div>
+
+			<h1>Alle streams</h1>
+			<div className="video-list">
+				{items}
+			</div>
 		</div>
 	);
 }

@@ -60,18 +60,10 @@ function App() {
 
 	for (let stream of streamsData) {
 		stream.progress = progressData[stream.id];
+		stream.inProgress = videoInProgress(stream);
 	}
 
 	const streams = streamsData.sort((a, b) => {
-		const aInProgress = videoInProgress(a);
-		const bInProgress = videoInProgress(b);
-
-		if (aInProgress && !bInProgress) {
-			return -1;
-		} else if (!aInProgress && bInProgress) {
-			return 1;
-		}
-
 		return b.timestamp - a.timestamp;
 	});
 
