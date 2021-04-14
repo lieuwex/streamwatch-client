@@ -113,13 +113,10 @@ function useUpdateProgress(video, playing, progress) {
 		previousUpdateAt.current = progress;
 
 		requestIdleCallback(() => {
-			(async () => {
-				const dict = {};
-				dict[video.id] = progress;
-
-				await updateStreamsProgress(dict);
-			})().catch(e => console.error(e));
-		});
+			updateStreamsProgress({
+				[video.id]: progress,
+			}).catch(e => console.error(e));
+		}, { timeout: 4000 });
 	}, [progress]);
 }
 
@@ -212,6 +209,24 @@ function Player(props) {
 		return () =>  screenfull.off('change', callback);
 	}, []);
 
+	const onDialogClose = (items, newProgress) => {
+		if (items != null) {
+			requestIdleCallback(() => {
+				updateItems(openDialog[0], video.id, items)
+					.catch(e => console.error(e));
+			}, { timeout: 1000 });
+		}
+
+		if (newProgress == null) {
+			setPlaying(openDialog[2]);
+		} else {
+			handleSeek(newProgress / video.duration);
+			setPlaying(true);
+		}
+
+		setOpenDialog(null);
+	};
+
 	return (
 		<div className="player">
 			<div className={`player-wrapper ${!userActive && playing ? 'hide-cursor' : ''}`} onPointerMove={() => markActive()} ref={wrapperRef}>
@@ -249,23 +264,7 @@ function Player(props) {
 							anchorEl={openDialog[1]}
 							video={video}
 							currentTime={progress}
-							handleClose={(items, newProgress) => {
-								if (items != null) {
-									requestIdleCallback(() => {
-										updateItems(openDialog[0], video.id, items)
-											.catch(e => console.error(e));
-									});
-								}
-
-								if (newProgress == null) {
-									setPlaying(openDialog[2]);
-								} else {
-									handleSeek(newProgress / video.duration);
-									setPlaying(true);
-								}
-
-								setOpenDialog(null);
-							} }/>
+							handleClose={onDialogClose}/>
 				}
 
 				{
