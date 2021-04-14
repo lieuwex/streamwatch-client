@@ -170,6 +170,7 @@ function Player(props) {
 	// handle user activity
 	const activeTimeout = useRef(null);
 	useEffect(() => {
+		// make sure the timeout is cleared when leaving the page
 		return () => clearTimeout(activeTimeout.current);
 	}, []);
 	const markActive = () => {
@@ -180,6 +181,10 @@ function Player(props) {
 			setUserActive(false);
 		}, 4000);
 	};
+	useEffect(() => {
+		// mark active user on player open
+		markActive();
+	}, []);
 
 	// handle fullscreen change requests (made by user)
 	const wrapperRef = useRef(null);
