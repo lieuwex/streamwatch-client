@@ -14,23 +14,30 @@ function Button(props) {
 }
 
 export default function Controls(props) {
-	useMousetrap('space', () => props.onPlayChange(!props.playing));
-	useMousetrap('m', () => props.onMutedChange(!props.muted));
-	useMousetrap('f', () => props.onFullscreenChange(!props.fullscreen));
-	useMousetrap('s', () => props.onSidebarChange(!props.sidebarOpen));
+	const wrap = fn => {
+		return e => {
+			e.preventDefault();
+			fn();
+		};
+	};
+
+	useMousetrap('space', wrap(() => props.onPlayChange(!props.playing)));
+	useMousetrap('m', wrap(() => props.onMutedChange(!props.muted)));
+	useMousetrap('f', wrap(() => props.onFullscreenChange(!props.fullscreen)));
+	useMousetrap('s', wrap(() => props.onSidebarChange(!props.sidebarOpen)));
 	const seekDelta = delta => {
 		const deltaFract = delta / props.video.duration;
 		const newValue = props.progress + deltaFract;
 		props.onSeek(clamp(newValue, 0, 1));
 	};
-	useMousetrap('left', () => seekDelta(-10));
-	useMousetrap('right', () => seekDelta(10));
+	useMousetrap('left', wrap(() => seekDelta(-10)));
+	useMousetrap('right', wrap(() => seekDelta(10)));
 	const volumeDelta = delta => {
 		const newValue = props.volume + delta;
 		props.onVolumeChange(clamp(newValue, 0, 1));
 	};
-	useMousetrap('up', () => volumeDelta(0.1));
-	useMousetrap('down', () => volumeDelta(-0.1));
+	useMousetrap('up', wrap(() => volumeDelta(0.1)));
+	useMousetrap('down', wrap(() => volumeDelta(-0.1)));
 
 	return (
 		<div className={`video-controls ${props.visible ? 'visible' : ''}`}>
