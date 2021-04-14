@@ -10,6 +10,8 @@
 
 .video-list > a {
 	width: 100%;
+	margin-bottom: 15px;
+	border-radius: 15px;
 	/* max-width: 600px; */
     color: #fff;
     text-decoration: none;
@@ -24,8 +26,6 @@
 }
 
 .video-entry {
-	margin-bottom: 15px;
-
 	background-color: #222222;
 	height: 150px;
 

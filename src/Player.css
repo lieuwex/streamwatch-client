@@ -112,10 +112,34 @@
 	}
 
 	.player-wrapper {
+		overflow: visible !important;
+		height: auto !important;
+	}
+	.player-wrapper > div, .player-wrapper > div > div {
 		height: auto !important;
 	}
 
-	.player-wrapper video {
+	.pause-shade {
+		display: none;
+	}
+}
+
+/*
+@media only screen and (max-width: 600px) {
+	.player {
+		flex-direction: column;
+	}
+
+	.sidebar {
+		width: auto;
+	}
+
+	.player > div:first-child {
+		height: auto !important;
+	}
+
+	video {
 		height: auto !important;
 	}
 }
+*/
