@@ -7,7 +7,7 @@ import { isMobile } from 'react-device-detect';
 import { mutate } from 'swr';
 
 import './Player.css';
-import { updateStreamsProgress, fetcher, filterGames } from './util.js';
+import { updateStreamsProgress, filterGames, getTitle } from './util.js';
 import Loading from './Loading.js';
 import Sidebar from './Sidebar.js';
 import Controls from './Controls.js';
@@ -73,6 +73,8 @@ const Video = React.forwardRef((props, ref) => {
 });
 
 function PauseShade(props) {
+	const [title, _] = getTitle(props.video, false);
+
 	const games = useMemo(() => {
 		const games = filterGames(props.video.games);
 		const nodes = new Array(games.length);
@@ -97,7 +99,7 @@ function PauseShade(props) {
 
 	return (
 		<div className={`pause-shade ${props.visible ? 'visible' : ''}`}>
-			<div>{props.video.file_name}</div>
+			<div>{title}</div>
 			<div className="games">{games}</div>
 		</div>
 	);
@@ -140,13 +142,13 @@ function Player(props) {
 	const [sidebarOpen, setSidebarOpen] = useState(video.has_chat);
 	const [userActive, setUserActive] = useState(false);
 	const [fullscreen, setFullscreen] = useState(screenfull.isFullscreen);
-
 	const [openDialog, setOpenDialog] = useState(null);
 
 	// update document title
 	useEffect(() => {
-		document.title = `${video.file_name} - Streamwatch`;
-	}, [video.file_name]);
+		const [title, _] = getTitle(video, true);
+		document.title = `${title} - Streamwatch`;
+	}, []);
 
 	// keep localStorage up-to-date
 	useEffect(() => {
@@ -169,10 +171,6 @@ function Player(props) {
 
 	// handle user activity
 	const activeTimeout = useRef(null);
-	useEffect(() => {
-		// make sure the timeout is cleared when leaving the page
-		return () => clearTimeout(activeTimeout.current);
-	}, []);
 	const markActive = () => {
 		setUserActive(true);
 
@@ -184,7 +182,16 @@ function Player(props) {
 	useEffect(() => {
 		// mark active user on player open
 		markActive();
+
+		// make sure the timeout is cleared when leaving the page
+		return () => clearTimeout(activeTimeout.current);
 	}, []);
+	const warpMarkActive = fn => {
+		return (...args) => {
+			markActive();
+			return fn(...args);
+		};
+	};
 
 	// handle fullscreen change requests (made by user)
 	const wrapperRef = useRef(null);
@@ -230,7 +237,7 @@ function Player(props) {
 	return (
 		<div className="player">
 			<div className={`player-wrapper ${!userActive && playing ? 'hide-cursor' : ''}`} onPointerMove={() => markActive()} ref={wrapperRef}>
-				{ buffering ? <Loading /> : <></> }
+				{ buffering && !useNativeControls ? <Loading /> : <></> }
 
 				{
 					playing
@@ -249,12 +256,12 @@ function Player(props) {
 					controls={useNativeControls}
 					ref={playerRef}
 					onProgress={onProgress}
-					onPause={() => setPlaying(false)}
-					onPlay={() => setPlaying(true)}
+					onPause={warpMarkActive(() => setPlaying(false))}
+					onPlay={warpMarkActive(() => setPlaying(true))}
 					onBuffer={() => setBuffering(true)}
 					onBufferEnd={() => setBuffering(false)}
-					onSingleClick={() => setPlaying(!playing)}
-					onDoubleClick={() => setFullscreen(!fullscreen)} />
+					onSingleClick={warpMarkActive(() => setPlaying(!playing))}
+					onDoubleClick={warpMarkActive(() => setFullscreen(!fullscreen))} />
 
 				{
 					openDialog == null
@@ -280,29 +287,14 @@ function Player(props) {
 							playing={playing}
 							fullscreen={fullscreen}
 							sidebarOpen={sidebarOpen}
-							onPlayChange={x => {
-								setPlaying(x);
-								markActive();
-							}}
-							onVolumeChange={x => {
-								setVolume(x);
-								markActive();
-							}}
-							onMutedChange={x => {
-								setMuted(x);
-								markActive();
-							}}
-							onFullscreenChange={x => {
-								setFullscreen(x);
-								markActive();
-							}}
+							onPlayChange={warpMarkActive(x => setPlaying(x))}
+							onVolumeChange={warpMarkActive(x => setVolume(x))}
+							onMutedChange={warpMarkActive(x => setMuted(x))}
+							onFullscreenChange={warpMarkActive(x => setFullscreen(x))}
+							onSidebarChange={warpMarkActive(x => setSidebarOpen(x))}
 							onTooltipClick={(tooltip, el) => {
 								setOpenDialog([ tooltip, el, playing ]);
 								setPlaying(false);
-								markActive();
-							}}
-							onSidebarChange={x => {
-								setSidebarOpen(x);
 								markActive();
 							}}
 						/>
@@ -315,11 +307,19 @@ function Player(props) {
 
 export default function PlayerWrapper(props) {
 	const { id } = useParams();
-	const video = props.videos.find(v => v.id == id);
+	const video = props.videos.find(v => v.id === +id);
 
 	if (video == null) {
 		return <div>video not found</div>;
 	}
 
-	return <Player video={video} initialProgress={video.progress || 0} />;
+	let initialProgress = video.progress || 0;
+	if (initialProgress === 0) { // jump to end of LW
+		const game = video.games.find(g => g.id === 7);
+		if (game != null) {
+			initialProgress = game.start_time;
+		}
+	}
+
+	return <Player video={video} initialProgress={initialProgress} />;
 }

@@ -13,6 +13,21 @@ const PersonsDialog = props => {
 	const selected = useRef(props.video.persons);
 	const changed = useRef(false);
 
+	if (data != null) {
+		data.sort((a, b) => {
+			const a_is_top = [1, 2].includes(a.id);
+			const b_is_top = [1, 2].includes(b.id);
+
+			if (a_is_top === b_is_top) {
+				return b.name - a.name;
+			} else if (a_is_top) {
+				return -1;
+			} else {
+				return 1;
+			}
+		});
+	}
+
 	let content = <Loading />;
 	if (error) {
 		content = "Error while loading persons";

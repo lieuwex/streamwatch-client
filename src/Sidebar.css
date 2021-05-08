@@ -100,6 +100,15 @@
 	padding-right: 2px;
 }
 
+.chat-message > .message-icon {
+	display: inline;
+	margin-left: -4px;
+	margin-right: 4px;
+}
+.message-icon > svg {
+	font-size: 1.2em;
+}
+
 .chat-message > .message-action {
 	display: inline;
 	font-size: .75em;

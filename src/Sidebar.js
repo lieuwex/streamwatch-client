@@ -1,8 +1,9 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React from 'react';
 import { isChrome, isChromium, isEdgeChromium } from 'react-device-detect';
 import chroma from 'chroma-js';
 import formatDuration from 'format-duration';
 import { Tooltip } from '@material-ui/core';
+import { DataUsage } from '@material-ui/icons';
 import tlds from 'tlds';
 import makeLinkify from 'linkify-it';
 import { encode } from 'he';
@@ -61,11 +62,24 @@ const ChatMessage = React.memo(props => {
 		"lekkerspelen",
 	].includes(props.message.tags['display-name'].toLowerCase());
 
+	const prediction = props.message.tags.badges.predictions;
+	const predictionColor = prediction && chroma(prediction.slice(0, prediction.length-2)).saturate(10).brighten().hex();
+	const predictionText = props.message.tags['badge-info'].predictions || null;
+
 	return (
 		<div className={`chat-message ${props.message.type} ${isVip ? 'vip' : ''}`}>
 			<Tooltip title={formatTime(new Date(props.message.ts))} placement="left">
 				<div className="message-timestamp">{formatDuration(props.message.ts - props.videoTimestamp)}</div>
 			</Tooltip>
+				{
+					prediction == null
+					? <></>
+					: <div className="message-icon prediction" style={{ color: predictionColor }}>
+						<Tooltip title={predictionText} placement="bottom">
+							<DataUsage />
+						</Tooltip>
+					</div>
+				}
 			<div className="message-author" style={{ backgroundColor: color, color: fontColor }}>{props.message.tags['display-name']}</div>
 			{action != null ? <div className="message-action">{action}</div> : <></>}
 			<div className="message-content" dangerouslySetInnerHTML={{__html: body}} />
@@ -162,7 +176,7 @@ class Chat extends React.Component {
 			this.state.manager.clear();
 		}
 
-		const currTimestamp = this.props.offset + this.props.video.timestamp;
+		const currTimestamp = this.props.offset + this.props.video.timestamp*1e3;
 		//console.log('currTimestamp', currTimestamp);
 
 		// ensure that we have enough data for now and the future, does not
@@ -195,7 +209,7 @@ class Chat extends React.Component {
 
 	render() {
 		const items = this.state.messages.map(m => {
-			return <ChatMessage key={m.tags.id} message={m} videoTimestamp={this.props.video.timestamp} />;
+			return <ChatMessage key={m.tags.id} message={m} videoTimestamp={this.props.video.timestamp*1e3} />;
 		});
 
 		return (

@@ -89,9 +89,17 @@
 	align-items: center;
 }
 
-.video-controls .duration {
+.video-controls .controls-row.information {
+	justify-content: space-between;
+	align-items: flex-end;
+}
+.video-controls .controls-row.information .duration {
 	margin-left: 50px;
 	white-space: nowrap;
+}
+.video-controls .controls-row.information .view-count {
+	margin-right: 25px;
+	font-size: 1.35em;
 }
 
 .video-controls .volume-controls {

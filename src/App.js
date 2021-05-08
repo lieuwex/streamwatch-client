@@ -6,6 +6,7 @@ import {
 import React from 'react';
 import swr from 'swr';
 import 'typeface-inter';
+import { DateTime } from 'luxon';
 
 import Videos from './Videos.js';
 import Player from './Player.js';
@@ -29,8 +30,7 @@ async function streamsFetcher(...args) {
 	const res = await fetch(...args);
 	const streams = await res.json();
 	for (let stream of streams) {
-		// TODO
-		stream.timestamp *= 1000;
+		stream.date = DateTime.fromSeconds(stream.timestamp);
 	}
 	return streams;
 }

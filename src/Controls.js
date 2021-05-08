@@ -2,12 +2,13 @@ import { Slider, IconButton } from '@material-ui/core';
 import { Pause, PlayArrow, VolumeUp, VolumeOff, FullscreenExit, Fullscreen, People, SportsEsports, ChevronLeft, ChevronRight } from '@material-ui/icons';
 import formatDuration from 'format-duration';
 import useMousetrap from 'react-hook-mousetrap';
+import NumberEasing from 'react-number-easing';
 
-import { clamp } from './util.js';
+import { clamp, getCurrentDatapoint } from './util.js';
 
 function Button(props) {
 	return (
-		<IconButton style={{'color': 'white'}} onClick={props.onClick}>
+		<IconButton style={{'color': 'white'}} disableFocusRipple={true} onClick={props.onClick}>
 			{props.children}
 		</IconButton>
 	)
@@ -39,12 +40,26 @@ export default function Controls(props) {
 	useMousetrap('up', wrap(() => volumeDelta(0.1)));
 	useMousetrap('down', wrap(() => volumeDelta(-0.1)));
 
+	const datapoint = getCurrentDatapoint(props.video, props.progress);
+	const viewcount = datapoint == null ? null : datapoint.viewcount;
+
 	return (
 		<div className={`video-controls ${props.visible ? 'visible' : ''}`}>
-			<div className="controls-row">
+			<div className="controls-row information">
 				<div className="duration fixed-width-num">
 					{formatDuration(1000 * props.progress * props.video.duration)} / {formatDuration(1000 * props.video.duration)}
 				</div>
+				{
+					viewcount == null
+					? <></>
+					: <div className="view-count fixed-width-num">
+						{/*<Visibility sx={{ color: 'white' }} />*/}
+						<NumberEasing
+							value={viewcount}
+							speed={1000}
+							ease="expoOut" />
+					</div>
+				}
 			</div>
 			<div className="controls-row">
 				<Button onClick={() => props.onPlayChange(!props.playing)}>

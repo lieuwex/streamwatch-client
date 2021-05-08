@@ -58,11 +58,48 @@ export function parseDuration(duration) {
 export function formatGame(game) {
 	let str = game.name;
 	if (game.platform != null) {
-		str += ` (${game.platform})`;
+		//str += ` (${game.platform})`;
 	}
 	return str;
 }
 
 export function filterGames(games) {
 	return games.filter(g => g.id !== 7);
+}
+
+export function formatDate(date) {
+	return date.toFormat('yyyy-MM-dd HH:mm:ss');
+}
+
+export function getCurrentDatapoint(video, progressFrac) {
+	let res = null;
+
+	for (const datapoint of video.datapoints) {
+		const fract = (datapoint.timestamp - video.timestamp) / video.duration;
+		if (progressFrac > fract) {
+			res = datapoint;
+		}
+	}
+
+	return res;
+}
+
+export function getTitle(video, includeGames) {
+	const datapoint = video.datapoints.find(point => point.title.trim().length > 0);
+	if (datapoint != null) {
+		const title = datapoint.title.trim();
+		return [title, true];
+	}
+
+	if (includeGames) {
+		const filteredGames = filterGames(video.games);
+		if (filteredGames.length > 0) {
+			const title = filteredGames.map(g => g.name).join(', ');
+			return [title, true];
+		}
+	}
+
+	const title = video.file_name.split('.');
+	title.pop();
+	return [title.join('.'), false];
 }

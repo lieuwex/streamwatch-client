@@ -1,10 +1,13 @@
-import { Link } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import filesize from 'filesize';
 import formatDuration from 'format-duration';
 import { isMobile } from 'react-device-detect';
+import { Flipper, Flipped } from 'react-flip-toolkit';
+import { Backdrop } from '@material-ui/core';
+import { PlayArrow } from '@material-ui/icons';
+import useMousetrap from 'react-hook-mousetrap';
 
-import { formatGame, filterGames } from './util.js';
+import { formatGame, filterGames, formatDate, getTitle } from './util.js';
 import './Videos.css';
 
 function VideoPreview(props) {
@@ -21,7 +24,7 @@ function VideoPreview(props) {
 	let imageContent = <></>;
 	if (props.video.thumbnail_count > 0) {
 		imageContent
-			= <img src={`http://local.lieuwe.xyz:6070/thumbnail/${props.video.id}/0.webp`} loading="lazy" />;
+			= <img src={`http://local.lieuwe.xyz:6070/thumbnail/${props.video.id}/0.webp`} loading="lazy" alt="" />;
 	}
 
 	return (
@@ -33,32 +36,40 @@ function VideoPreview(props) {
 }
 
 function VideoInformation(props) {
+	const [title, hasNiceTitle] = getTitle(props.video, true);
+	const length = title.length;
+	const long = title.length > 33;
+	const pixels = Math.max(Math.min(750 / length, 40), 25);
+
 	return (
 		<div className="video-entry-information">
-			<div className="video-entry-title">
-				{props.video.file_name}
+			<div className={`video-entry-title ${long ? 'long' : ''}`} style={{ fontSize: `${pixels}px` }}>
+				{title}
+			</div>
+			{
+				!hasNiceTitle
+				? <></>
+				: <div className="video-entry-date">
+					{formatDate(props.video.date)}
+				</div>
+			}
+
+			{/*
+			<div className="video-entry-size">
+				{filesize(props.video.file_size, {output: "array"}).join('')}
+			</div>
+			*/}
+
+			<div className="video-entry-duration">
+				{formatDuration(1000 * props.video.duration)}
 			</div>
 
-			<div className="video-information-row">
-				<div className="video-information-column">
-					<div className="video-entry-information-entry">
-						{filesize(props.video.file_size, {output: "array"}).join('')}
-					</div>
+			<div className="video-entry-games">
+				{filterGames(props.video.games).map(formatGame).join(', ')}
+			</div>
 
-					<div className="video-entry-information-entry">
-						{formatDuration(1000 * props.video.duration)}
-					</div>
-				</div>
-
-				<div className="video-information-column">
-					<div className="video-entry-information-entry">
-						{filterGames(props.video.games).map(formatGame).join(', ')}
-					</div>
-
-					<div className="video-entry-information-entry">
-						{props.video.persons.map(g => g.name).join(', ')}
-					</div>
-				</div>
+			<div className="video-entry-persons">
+				{props.video.persons.map(g => g.name).join(', ')}
 			</div>
 		</div>
 	);
@@ -90,21 +101,55 @@ function Video(props) {
 	const video = props.video;
 
 	const [hovering, setHovering] = useState(false);
+	const [clicked, setClicked] = useState(false);
+	const [animating, setAnimating] = useState(false);
+	const [redirect, setRedirect] = useState(false);
+
+	useMousetrap('esc', () => setClicked(false));
 
 	const onEnter = () => setHovering(true);
 	const onLeave = () => setHovering(false);
+	const onClick = () => {
+		if (!clicked) {
+			setClicked(true);
+		} else {
+			setRedirect(true);
+		}
+	}
 
 	return (
-		<Link to={`/video/${video.id}`}>
-			<div className="video-entry" onMouseEnter={onEnter} onMouseLeave={onLeave}>
-				<VideoPreview video={video} playPreview={hovering} />
-				<VideoInformation video={video} />
-				{/* <div className="video-entry-blur"></div> */}
-				{/* <VideoThumbnails video={video} /> */}
-				<VideoProgress video={video} />
-			</div>
-		</Link>
+		<>
+			{ redirect ? <Redirect push to={`/video/${video.id}`} /> : <></> }
+			<Flipper flipKey={clicked} className="video-flipper">
+				<Flipped flipId={`video-${video.id}`} onStart={() => setAnimating(true)} onComplete={() => setAnimating(false)}>
+					<div className={`video-entry ${clicked ? 'clicked' : ''} ${animating ? 'animating' : ''}`} onMouseEnter={onEnter} onMouseLeave={onLeave} onClick={onClick}>
+						<VideoPreview video={video} playPreview={hovering || clicked} />
+						<VideoInformation video={video} />
+						<VideoProgress video={video} />
+							{
+								!clicked
+								? <></>
+								: <PlayArrow />
+							}
+					</div>
+				</Flipped>
+			</Flipper>
+			{
+				(hovering || clicked || animating)
+				? <Backdrop open={clicked} onClick={() => setClicked(false)} transitionDuration={300} sx={{ zIndex: '30' }} />
+				: <></>
+			}
+		</>
 	);
+}
+
+function VideosList(props) {
+	return <>
+		<h1>{props.header}</h1>
+		<div className={`video-list ${props.inProgress ? 'in-progress' : ''}`}>
+			{props.children}
+		</div>
+	</>;
 }
 
 function Videos(props) {
@@ -118,15 +163,17 @@ function Videos(props) {
 
 	return (
 		<div className="video-list-wrapper">
-			<h1>Ga verder met kijken</h1>
-			<div className="video-list in-progress">
-				{inProgress}
-			</div>
+			{
+				inProgress.length === 0
+				? <></>
+				: <VideosList header="Ga verder met kijken" inProgress={true}>
+					{inProgress}
+				</VideosList>
+			}
 
-			<h1>Alle streams</h1>
-			<div className="video-list">
+			<VideosList header="Alle streams" inProgress={false}>
 				{items}
-			</div>
+			</VideosList>
 		</div>
 	);
 }
