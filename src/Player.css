@@ -55,7 +55,11 @@
 	transform: none;
 	filter: none;
 }
-.pause-shade > .games {
+.pause-shade > .title {
+	margin-top: -10px;
+	margin-bottom: 5px;
+}
+.pause-shade > .games, .pause-shade > .date {
 	font-size: .35em;
 	font-weight: 250;
 }

@@ -7,7 +7,7 @@ import { isMobile } from 'react-device-detect';
 import { mutate } from 'swr';
 
 import './Player.css';
-import { updateStreamsProgress, filterGames, getTitle } from './util.js';
+import { updateStreamsProgress, filterGames, getTitle, formatDate } from './util.js';
 import Loading from './Loading.js';
 import Sidebar from './Sidebar.js';
 import Controls from './Controls.js';
@@ -73,7 +73,7 @@ const Video = React.forwardRef((props, ref) => {
 });
 
 function PauseShade(props) {
-	const [title, _] = getTitle(props.video, false);
+	const [title, hasNiceTitle] = getTitle(props.video, false);
 
 	const games = useMemo(() => {
 		const games = filterGames(props.video.games);
@@ -99,7 +99,14 @@ function PauseShade(props) {
 
 	return (
 		<div className={`pause-shade ${props.visible ? 'visible' : ''}`}>
-			<div>{title}</div>
+			{
+				!hasNiceTitle
+				? <></>
+				: <div className="date">
+					{formatDate(props.video.date)}
+				</div>
+			}
+			<div className="title">{title}</div>
 			<div className="games">{games}</div>
 		</div>
 	);
