@@ -72,7 +72,7 @@ export default function Controls(props) {
 						{ props.muted ? <VolumeOff /> : <VolumeUp /> }
 					</Button>
 					<Slider
-						value={(props.muted ? 0 : props.volume) * 100}
+						value={props.muted ? 0 : props.volume*100}
 						valueLabelDisplay="auto"
 						min={0}
 						max={100}
