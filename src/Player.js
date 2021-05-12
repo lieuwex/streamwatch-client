@@ -244,7 +244,7 @@ function Player(props) {
 	return (
 		<div className="player">
 			<div className={`player-wrapper ${!userActive && playing ? 'hide-cursor' : ''}`} onPointerMove={() => markActive()} ref={wrapperRef}>
-				{ buffering && !useNativeControls ? <Loading /> : <></> }
+				{ buffering && !useNativeControls ? <Loading position="absolute" /> : <></> }
 
 				{
 					playing
