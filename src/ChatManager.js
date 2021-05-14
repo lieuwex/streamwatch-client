@@ -32,7 +32,7 @@ export default class ChatManager {
 	}
 
 	async _requestData(start, end) {
-		console.log('fetching from', start, 'to', end);
+		console.info('fetching from', start, 'to', end);
 
 		let url = `http://local.lieuwe.xyz:6070/stream/${this.video_id}/chat?start=${start}&end=${end}`;
 		if (this.session_token != null) {
@@ -59,6 +59,8 @@ export default class ChatManager {
 			const id = message.tags.id;
 			if (!newMessages.has(id)) {
 				newMessages.set(id, message);
+			} else {
+				console.debug('already have message with id', id, 'in storage. Skipping new message');
 			}
 		}
 		newMessages = Array.from(newMessages.values());
