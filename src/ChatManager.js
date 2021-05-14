@@ -54,14 +54,14 @@ export default class ChatManager {
 			return;
 		}
 
-		const seen = new Set();
-		const newMessages = [];
+		let newMessages = new Map();
 		for (const message of this.messages.concat(messages)) {
-			if (!seen.has(message.tags.id)) {
-				seen.add(message.tags.id);
-				newMessages.push(message);
+			const id = message.tags.id;
+			if (!newMessages.has(id)) {
+				newMessages.set(id, message);
 			}
 		}
+		newMessages = Array.from(newMessages.values());
 
 		// TODO: we need to trim the amount of messages stored maybe not on
 		// the actual count, but on the time ago the messages were fetched.
