@@ -52,6 +52,7 @@ const ChatMessage = React.memo(props => {
 
 	const action = ({
 		'resub': 'resubscribed',
+		'sub': 'subscribed',
 		'subscription': 'subscribed',
 		'subgift': `gifted ${+props.message.tags['msg-param-sender-count'] || 1} sub(s)`,
 	})[props.message.type];
