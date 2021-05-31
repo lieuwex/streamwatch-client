@@ -177,7 +177,14 @@ class Chat extends React.Component {
 			this.state.manager.clear();
 		}
 
-		const currTimestamp = this.props.offset + this.props.video.timestamp*1e3;
+		let currTimestamp = this.props.offset + this.props.video.timestamp*1e3;
+		for (const jumpcut of this.props.video.jumpcuts) {
+			if (jumpcut.at > this.props.offset/1e3) {
+				break;
+			}
+
+			currTimestamp += jumpcut.duration*1e3;
+		}
 		//console.log('currTimestamp', currTimestamp);
 
 		// ensure that we have enough data for now and the future, does not
