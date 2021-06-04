@@ -7,7 +7,7 @@ import { isMobile } from 'react-device-detect';
 import { mutate } from 'swr';
 
 import './Player.css';
-import { updateStreamsProgress, filterGames, getTitle, formatDate } from './util.js';
+import { updateStreamsProgress, filterGames, getTitle, formatDate, getCurrentUrl } from './util.js';
 import Loading from './Loading.js';
 import Sidebar from './Sidebar.js';
 import Controls from './Controls.js';
@@ -120,6 +120,10 @@ function useUpdateProgress(video, playing, progress) {
 		}
 
 		previousUpdateAt.current = progress;
+
+		const url = getCurrentUrl();
+		url.searchParams.set('s', Math.floor(progress));
+		window.history.replaceState(null, "", url.toString());
 
 		requestIdleCallback(() => {
 			updateStreamsProgress({
@@ -320,7 +324,9 @@ export default function PlayerWrapper(props) {
 		return <div>video not found</div>;
 	}
 
-	let initialProgress = video.progress || 0;
+	const url = getCurrentUrl();
+	const s = url.searchParams.get('s');
+	let initialProgress = s || video.progress || 0;
 	if (initialProgress === 0) { // jump to end of LW
 		const game = video.games.find(g => g.id === 7);
 		if (game != null) {

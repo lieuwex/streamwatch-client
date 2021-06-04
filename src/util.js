@@ -103,3 +103,7 @@ export function getTitle(video, includeGames) {
 	title.pop();
 	return [title.join('.'), false];
 }
+
+export function getCurrentUrl() {
+	return new URL(window.location.href);
+}
