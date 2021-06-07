@@ -7,7 +7,7 @@ import { isMobile } from 'react-device-detect';
 import { mutate } from 'swr';
 
 import './Player.css';
-import { updateStreamsProgress, filterGames, getTitle, formatDate } from './util.js';
+import { updateStreamsProgress, filterGames, getTitle, formatDate, getCurrentUrl } from './util.js';
 import Loading from './Loading.js';
 import Sidebar from './Sidebar.js';
 import Controls from './Controls.js';
@@ -166,6 +166,14 @@ function Player(props) {
 	// sync watch progress
 	useUpdateProgress(video, playing, progress);
 
+	useEffect(() => {
+		if (!playing) {
+			const url = getCurrentUrl();
+			url.searchParams.set('s', Math.floor(progress));
+			window.history.replaceState(null, "", url.toString());
+		}
+	}, [playing]);
+
 	// video listeners
 	const playerRef = useRef(null);
 	const handleSeek = fract => {
@@ -312,6 +320,16 @@ function Player(props) {
 	);
 }
 
+function getUrlProgress() {
+	const url = getCurrentUrl();
+	const s = url.searchParams.get('s');
+	return (
+		s == null
+		? null
+		: Number.parseInt(s)
+	);
+};
+
 export default function PlayerWrapper(props) {
 	const { id } = useParams();
 	const video = props.videos.find(v => v.id === +id);
@@ -320,7 +338,7 @@ export default function PlayerWrapper(props) {
 		return <div>video not found</div>;
 	}
 
-	let initialProgress = video.progress?.time || 0;
+	let initialProgress = getUrlProgress() || video.progress?.time || 0;
 	if (initialProgress === 0) { // jump to end of LW
 		const game = video.games.find(g => g.id === 7);
 		if (game != null) {
