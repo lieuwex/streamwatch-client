@@ -93,7 +93,7 @@ function VideoProgress(props) {
 		return <></>;
 	}
 
-	const progress = props.video.progress / props.video.duration;
+	const progress = props.video.progress.time / props.video.duration;
 	return <div className="video-entry-progress" style={{ width: `${progress * 100}%` }} />;
 }
 
@@ -158,7 +158,12 @@ function Videos(props) {
 	}, []);
 
 	const mapVideo = v => <Video key={v.id} video={v} />;
-	const inProgress = props.videos.filter(v => v.inProgress).map(mapVideo);
+	const inProgress = [...props.videos]
+		.filter(v => v.inProgress)
+		.sort((a, b) => {
+			return b.progress.real_time - a.progress.real_time;
+		})
+		.map(mapVideo);
 	const items = props.videos.map(mapVideo);
 
 	return (

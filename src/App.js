@@ -37,8 +37,8 @@ async function streamsFetcher(...args) {
 
 function videoInProgress(video) {
 	return video.progress != null
-		&& video.progress > 60
-		&& video.duration - video.progress >= 30;
+		&& video.progress.time > 60
+		&& video.duration - video.progress.time >= 30;
 }
 
 function App() {

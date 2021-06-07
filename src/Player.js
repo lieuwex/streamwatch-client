@@ -82,7 +82,7 @@ function PauseShade(props) {
 
 		for (let i = nodes.length - 1; i >= 0; i--) {
 			const g = games[i];
-			const isActive = g.start_time <= props.progress;
+			const isActive = g.start_time <= props.progress.time;
 			const current = !hitCurrent && isActive;
 			hitCurrent = hitCurrent || isActive;
 
@@ -95,7 +95,7 @@ function PauseShade(props) {
 		}
 
 		return nodes;
-	}, [props.video.games, props.progress]);
+	}, [props.video.games, props.progress.time]);
 
 	return (
 		<div className={`pause-shade ${props.visible ? 'visible' : ''}`}>
@@ -320,7 +320,7 @@ export default function PlayerWrapper(props) {
 		return <div>video not found</div>;
 	}
 
-	let initialProgress = video.progress || 0;
+	let initialProgress = video.progress?.time || 0;
 	if (initialProgress === 0) { // jump to end of LW
 		const game = video.games.find(g => g.id === 7);
 		if (game != null) {
