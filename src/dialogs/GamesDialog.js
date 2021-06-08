@@ -171,7 +171,7 @@ export default function GamesDialog(props) {
 		changed.current = true;
 	};
 	const handleClose = () => props.handleClose(changed.current ? items : null, null);
-	const onSeek = progress => props.handleClose(null, progress);
+	const onSeek = progress => props.handleClose(changed.current ? items : null, progress);
 
 	const nodes = items.map((g, i) => <GamesDialogItem key={i} game={g} onDelete={onDelete} onSeek={onSeek} />);
 
