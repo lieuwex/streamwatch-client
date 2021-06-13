@@ -88,69 +88,6 @@ const ChatMessage = React.memo(props => {
 	);
 });
 
-/*
-const Chat = React.memo(props => {
-	const manager = useRef(null);
-	useEffect(() => {
-		manager.current = new ChatManager(props.video);
-
-		return () => manager.current.close();
-	}, []);
-
-	const previousOffset = useRef(null);
-	const [messages, setMessages] = useState([]);
-
-	useEffect(() => {
-		const dist = Math.abs(props.offset - previousOffset.current);
-		if (dist >= 3000) {
-			// if more than 3 seconds, clear all messages from the manager
-			manager.current.clear();
-		}
-
-		const currTimestamp = props.offset + props.video.timestamp;
-		//console.log('currTimestamp', currTimestamp);
-
-		// ensure that we have enough data for now and the future, does not
-		// block.
-		manager.current.ensureData(currTimestamp);
-
-		// get all messages from the start till now.
-		let newMessages = manager.current.getBetween(0, currTimestamp);
-		// limit the amount of messages rendered to 300.
-		newMessages = newMessages.slice(Math.max(0, newMessages.length - 300), newMessages.length);
-
-		setMessages(newMessages);
-	}, [props.offset]);
-
-	const chatRef = useRef(null);
-	useEffect(() => {
-		if (isChrome || isChromium || isEdgeChromium) {
-			return;
-		} else if (chatRef.current == null) {
-			return;
-		}
-
-		const el = chatRef.current;
-		el.scrollTo(0, el.scrollHeight);
-	}, [messages]);
-
-	return (
-		<div className={`sidebar-chat ${props.sticky ? 'sticky' : ''}`} ref={chatRef}>
-			{messages.map(m =>
-				<ChatMessage key={m.tags.id} message={m} videoTimestamp={props.video.timestamp} />
-			)}
-		</div>
-	);
-}, (prevProps, nextProps) => {
-	if (nextProps.sticky !== prevProps.sticky) {
-		return false;
-	}
-
-	const dist = Math.abs(nextProps.offset - prevProps.offset);
-	return dist <= 150;
-});
-*/
-
 class Chat extends React.Component {
 	constructor(props) {
 		super(props);
