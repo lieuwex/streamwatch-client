@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { isChrome, isChromium, isEdgeChromium } from 'react-device-detect';
 import chroma from 'chroma-js';
 import formatDuration from 'format-duration';
@@ -88,35 +88,26 @@ const ChatMessage = React.memo(props => {
 	);
 });
 
-class Chat extends React.Component {
-	constructor(props) {
-		super(props);
+const Chat = React.memo(props => {
+	const manager = useRef(null);
+	useEffect(() => {
+		manager.current = new ChatManager(props.video);
 
-		const manager = new ChatManager(props.video);
-		this.state = { messages: [], manager };
+		return () => manager.current.close();
+	}, []);
 
-		this.chatRef = React.createRef();
-	}
-
-	shouldComponentUpdate(nextProps) {
-		if (nextProps.sticky !== this.props.sticky) {
-			return true;
-		}
-
-		const dist = Math.abs(nextProps.offset - this.props.offset);
-		return dist > 150;
-	}
-
-	componentDidUpdate() {
-		const dist = Math.abs(this.props.offset - this.state.previousOffset);
+	const messages = useRef([]);
+	const previousOffset = useRef(null);
+	useEffect(() => {
+		const dist = Math.abs(props.offset - previousOffset.current);
 		if (dist >= 3000) {
 			// if more than 3 seconds, clear all messages from the manager
-			this.state.manager.clear();
+			manager.current.clear();
 		}
 
-		let currTimestamp = this.props.offset + this.props.video.timestamp*1e3;
-		for (const jumpcut of this.props.video.jumpcuts) {
-			if (jumpcut.at > this.props.offset/1e3) {
+		let currTimestamp = props.offset + props.video.timestamp*1e3;
+		for (const jumpcut of props.video.jumpcuts) {
+			if (jumpcut.at > props.offset/1e3) {
 				break;
 			}
 
@@ -126,44 +117,46 @@ class Chat extends React.Component {
 
 		// ensure that we have enough data for now and the future, does not
 		// block.
-		this.state.manager.ensureData(currTimestamp);
+		manager.current.ensureData(currTimestamp);
 
 		// get all messages from the start till now.
-		let messages = this.state.manager.getBetween(0, currTimestamp);
-		// limit the amount of messages rendered to 300.
-		messages = messages.slice(Math.max(0, messages.length - 300), messages.length);
+		let msgs = manager.current.getBetween(0, currTimestamp);
+		// limit the amount of msgs rendered to 300.
+		msgs = msgs.slice(Math.max(0, msgs.length - 300), msgs.length);
 
-		this.setState({
-			messages,
-			previousOffset: this.props.offset,
-		});
+		messages.current = msgs;
+		previousOffset.current = props.offset;
+	});
 
+	const chatRef = useRef(null);
+	useLayoutEffect(() => {
 		if (isChrome || isChromium || isEdgeChromium) {
 			return;
-		} else if (this.chatRef.current == null) {
+		} else if (chatRef.current == null) {
 			return;
 		}
 
-		const el = this.chatRef.current;
+		const el = chatRef.current;
 		el.scrollTo(0, el.scrollHeight);
+	});
+
+	const items = messages.current.map(m => {
+		return <ChatMessage key={m.tags.id} message={m} videoTimestamp={props.video.timestamp*1e3} />;
+	});
+
+	return (
+		<div className={`sidebar-chat ${props.sticky ? 'sticky' : ''}`} ref={chatRef}>
+			{items}
+		</div>
+	);
+}, (prevProps, nextProps) => {
+	if (nextProps.sticky !== prevProps.sticky) {
+		return false;
 	}
 
-	componentWillUnmount() {
-		this.state.manager.close();
-	}
-
-	render() {
-		const items = this.state.messages.map(m => {
-			return <ChatMessage key={m.tags.id} message={m} videoTimestamp={this.props.video.timestamp*1e3} />;
-		});
-
-		return (
-			<div className={`sidebar-chat ${this.props.sticky ? 'sticky' : ''}`} ref={this.chatRef}>
-				{items}
-			</div>
-		);
-	}
-}
+	const dist = Math.abs(nextProps.offset - prevProps.offset);
+	return dist <= 150;
+});
 
 export default function Sidebar(props) {
 	const offset = Math.floor(props.progress * 1000);
