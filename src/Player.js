@@ -82,7 +82,7 @@ function PauseShade(props) {
 
 		for (let i = nodes.length - 1; i >= 0; i--) {
 			const g = games[i];
-			const isActive = g.start_time <= props.progress.time;
+			const isActive = g.start_time <= props.progress;
 			const current = !hitCurrent && isActive;
 			hitCurrent = hitCurrent || isActive;
 
