@@ -64,7 +64,7 @@ function Login() {
 		<div className={classes.login}>
 			<User onSelect={onSelect} name="Lieuwe" username="lieuwe" />
 			<User onSelect={onSelect} name="Bart" username="bart" />
-			<User onSelect={onSelect} name="Tom Smeding" username="toms" />
+			<User onSelect={onSelect} name="Daan" username="daan" />
 		</div>
 
 		<Snackbar
