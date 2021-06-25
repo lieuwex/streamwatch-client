@@ -37,13 +37,12 @@ function VideoPreview(props) {
 
 function VideoInformation(props) {
 	const [title, hasNiceTitle] = getTitle(props.video, true);
-	const length = title.length;
-	const long = title.length > 33;
-	const pixels = Math.max(Math.min(750 / length, 40), 25);
+	const isLong = title.length > 33;
+	const pixels = Math.max(Math.min(750 / title.length, 40), 25);
 
 	return (
 		<div className="video-entry-information">
-			<div className={`video-entry-title ${long ? 'long' : ''}`} style={{ fontSize: `${pixels}px` }}>
+			<div className={`video-entry-title ${isLong ? 'long' : ''}`} style={{ fontSize: `${pixels}px` }}>
 				{title}
 			</div>
 			{
