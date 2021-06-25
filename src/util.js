@@ -85,16 +85,15 @@ export function getCurrentDatapoint(video, progressFrac) {
 }
 
 export function getTitle(video, includeGames) {
-	const datapoint = video.datapoints.find(point => point.title.trim().length > 0);
-	if (datapoint != null) {
-		const title = datapoint.title.trim();
-		return [title, true];
-	}
-
 	if (includeGames) {
-		const filteredGames = filterGames(video.games);
-		if (filteredGames.length > 0) {
-			const title = filteredGames.map(g => g.name).join(', ');
+		const title = video.title;
+		if (title != null) {
+			return [title, true];
+		}
+	} else {
+		const datapoint = video.datapoints.find(point => point.title.trim().length > 0);
+		if (datapoint != null) {
+			const title = datapoint.title.trim();
 			return [title, true];
 		}
 	}
