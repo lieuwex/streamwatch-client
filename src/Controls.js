@@ -74,6 +74,7 @@ export default function Controls(props) {
 					<Slider
 						value={props.muted ? 0 : props.volume*100}
 						valueLabelDisplay="auto"
+						valueLabelFormat={x => Math.floor(x).toString()}
 						min={0}
 						max={100}
 						step={1}
