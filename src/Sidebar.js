@@ -89,7 +89,8 @@ function convertUrls(str) {
 }
 
 const ChatMessage = React.memo(props => {
-	let body = encode(props.message.message);
+	//let body = encode(props.message.message);
+	let body = props.message.message;
 	body = convertUrls(body);
 	body = convertEmotes(body, parseEmotes(props.message.tags.emotes || ''));
 
