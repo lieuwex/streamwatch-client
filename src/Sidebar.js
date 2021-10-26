@@ -18,6 +18,55 @@ linkify.tlds(tlds);
 function getTwitchEmoticonUrl(id, theme='dark') {
 	return `https://static-cdn.jtvnw.net/emoticons/v2/${id}/default/${theme}/2.0`;
 }
+function parseEmotes(emoteString) {
+	const emotes = [];
+	for (const emote of emoteString.split('/')) {
+		if (emote.length === 0) {
+			continue;
+		}
+
+		let [id, ranges] = emote.split(':');
+
+		ranges = ranges.split(',');
+		ranges = ranges.map(x => {
+			const [start, end] = x.split('-');
+			return {
+				start: Number.parseInt(start),
+				end: Number.parseInt(end) + 1,
+			};
+		});
+
+		for (const range of ranges) {
+			emotes.push({ id, ...range });
+		}
+	}
+
+	emotes.sort((a, b) => a.start - b.start);
+
+	return emotes;
+}
+function convertEmotes(str, emotes) {
+	const res = [];
+	let last = 0;
+
+	for (const emote of emotes) {
+		if (last < emote.start) {
+			res.push(str.slice(last, emote.start));
+		}
+
+		const content = str.slice(emote.start, emote.end);
+		const url = getTwitchEmoticonUrl(emote.id);
+		res.push(`<img alt="${content}" src="${url}"/>`);
+
+		last = emote.end;
+	}
+
+	if (last < str.length) {
+		res.push(str.slice(last));
+	}
+
+	return res.join('');
+}
 
 function convertUrls(str) {
 	const matches = linkify.match(str);
@@ -42,7 +91,7 @@ function convertUrls(str) {
 const ChatMessage = React.memo(props => {
 	let body = encode(props.message.message);
 	body = convertUrls(body);
-	body = window.twitchParser.parse(body);
+	body = convertEmotes(body, parseEmotes(props.message.tags.emotes || ''));
 
 	let color;
 	let fontColor;
