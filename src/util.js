@@ -85,17 +85,8 @@ export function getCurrentDatapoint(video, progressFrac) {
 }
 
 export function getTitle(video, includeGames) {
-	if (includeGames) {
-		const title = video.title;
-		if (title != null) {
-			return [title, true];
-		}
-	} else {
-		const datapoint = video.datapoints.find(point => point.title.trim().length > 0);
-		if (datapoint != null) {
-			const title = datapoint.title.trim();
-			return [title, true];
-		}
+	if (video.title != null && (includeGames || video.title_type !== 'games')) {
+		return [video.title, true];
 	}
 
 	const title = video.file_name.split('.');

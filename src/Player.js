@@ -30,6 +30,14 @@ async function updateItems(type, streamId, items) {
 			},
 			body: JSON.stringify(items.map(g => ({ id: g.id, start_time: g.start_time }))),
 		});
+	} else if (type === 'metadata') {
+		await fetch(`http://local.lieuwe.xyz:6070/stream/${streamId}/title`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(items),
+		});
 	}
 
 	mutate('http://local.lieuwe.xyz:6070/streams');
@@ -148,14 +156,14 @@ function Player(props) {
 	const [buffering, setBuffering] = useState(true);
 	const [sidebarOpen, setSidebarOpen] = useState(video.has_chat);
 	const [userActive, setUserActive] = useState(false);
-	const [fullscreen, setFullscreen] = useState(screenfull.isFullscreen);
+	const [fullscreen, setFullscreen] = useState([ screenfull.isFullscreen, sidebarOpen ]);
 	const [openDialog, setOpenDialog] = useState(null);
 
 	// update document title
 	useEffect(() => {
 		const [title, _] = getTitle(video, true);
 		document.title = `${title} - Streamwatch`;
-	}, []);
+	});
 
 	// keep localStorage up-to-date
 	useEffect(() => {
@@ -208,6 +216,21 @@ function Player(props) {
 		};
 	};
 
+	const changeFullscreen = newValue => {
+		if (fullscreen[0] === newValue) {
+			return;
+		}
+
+		if (newValue) {
+			console.log('setFullscreen', true, sidebarOpen);
+			setFullscreen([ true, sidebarOpen ]);
+			setSidebarOpen(false);
+		} else {
+			setFullscreen([ false, false ]);
+			setSidebarOpen(fullscreen[1]);
+		}
+	};
+
 	// handle fullscreen change requests (made by user)
 	const wrapperRef = useRef(null);
 	useEffect(() => {
@@ -217,16 +240,16 @@ function Player(props) {
 			return;
 		}
 
-		if (fullscreen) {
+		if (fullscreen[0]) {
 			screenfull.request(wrapperRef.current);
 		}
 
 		return () => screenfull.exit();
-	}, [fullscreen]);
+	}, [fullscreen[0]]);
 
 	// handle fullscreen changes (made by browser)
 	useEffect(() => {
-		const callback = () => setFullscreen(screenfull.isFullscreen);
+		const callback = () => changeFullscreen(screenfull.isFullscreen);
 		screenfull.on('change', callback);
 		return () =>  screenfull.off('change', callback);
 	}, []);
@@ -250,8 +273,8 @@ function Player(props) {
 	};
 
 	return (
-		<div className="player">
-			<div className={`player-wrapper ${!userActive && playing ? 'hide-cursor' : ''}`} onPointerMove={() => markActive()} ref={wrapperRef}>
+		<div className="player" ref={wrapperRef}>
+			<div className={`player-wrapper ${!userActive && playing ? 'hide-cursor' : ''}`} onPointerMove={() => markActive()}>
 				{ buffering && !useNativeControls ? <Loading position="absolute" /> : <></> }
 
 				{
@@ -276,7 +299,7 @@ function Player(props) {
 					onBuffer={() => setBuffering(true)}
 					onBufferEnd={() => setBuffering(false)}
 					onSingleClick={warpMarkActive(() => setPlaying(!playing))}
-					onDoubleClick={warpMarkActive(() => setFullscreen(!fullscreen))} />
+					onDoubleClick={warpMarkActive(() => changeFullscreen(!fullscreen[0]))} />
 
 				{
 					openDialog == null
@@ -300,12 +323,12 @@ function Player(props) {
 							volume={volume}
 							muted={muted}
 							playing={playing}
-							fullscreen={fullscreen}
+							fullscreen={fullscreen[0]}
 							sidebarOpen={sidebarOpen}
 							onPlayChange={warpMarkActive(x => setPlaying(x))}
 							onVolumeChange={warpMarkActive(x => setVolume(x))}
 							onMutedChange={warpMarkActive(x => setMuted(x))}
-							onFullscreenChange={warpMarkActive(x => setFullscreen(x))}
+							onFullscreenChange={warpMarkActive(x => changeFullscreen(x))}
 							onSidebarChange={warpMarkActive(x => setSidebarOpen(x))}
 							onTooltipClick={(tooltip, el) => {
 								setOpenDialog([ tooltip, el, playing ]);

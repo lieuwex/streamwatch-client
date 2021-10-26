@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import Snackbar from '@material-ui/core/Snackbar';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
@@ -53,11 +52,9 @@ function Login() {
 		document.title = 'Streamwatch - login';
 	}, []);
 
-	const [isOpen, setIsOpen] = useState(false);
-
 	const onSelect = username => {
 		localStorage.setItem('username', username);
-		setIsOpen(true);
+		window.location.href = '/';
 	};
 
 	return <>
@@ -66,12 +63,6 @@ function Login() {
 			<User onSelect={onSelect} name="Bart" username="bart" />
 			<User onSelect={onSelect} name="Daan" username="daan" />
 		</div>
-
-		<Snackbar
-			open={isOpen}
-			autoHideDuration={6000}
-			message="Username set"
-		/>
 	</>;
 }
 

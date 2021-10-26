@@ -14,16 +14,22 @@ import Login from './Login.js';
 import Loading from './Loading.js';
 import { fetcher } from './util.js';
 
-import { EmoteFetcher, EmoteParser } from '@mkody/twitch-emoticons';
+import { TwitchEmote, EmoteFetcher, EmoteParser } from '@mkody/twitch-emoticons';
+
+import emotes from './emotes.json';
 
 window.twitchFetcher = new EmoteFetcher();
+for (const [key, value] of Object.entries(emotes)) {
+	const emote = new TwitchEmote({ fetcher: null }, value.id, value);
+	window.twitchFetcher.emotes.set(key, emote);
+}
 window.twitchParser = new EmoteParser(window.twitchFetcher, {
 	type: 'html',
 	match: /(\w+)/ig,
 });
 setTimeout(() => {
 	window.twitchFetcher.fetchTwitchEmotes();
-	window.twitchFetcher.fetchTwitchEmotes(52385053);
+	//window.twitchFetcher.fetchTwitchEmotes(52385053);
 }, 0);
 
 async function streamsFetcher(...args) {
@@ -63,9 +69,7 @@ function App() {
 		stream.inProgress = videoInProgress(stream);
 	}
 
-	const streams = streamsData.sort((a, b) => {
-		return b.timestamp - a.timestamp;
-	});
+	const streams = streamsData;
 
 	return (
 		<Router>

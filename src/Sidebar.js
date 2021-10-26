@@ -15,6 +15,10 @@ import ChatManager from './ChatManager.js';
 const linkify = makeLinkify();
 linkify.tlds(tlds);
 
+function getTwitchEmoticonUrl(id, theme='dark') {
+	return `https://static-cdn.jtvnw.net/emoticons/v2/${id}/default/${theme}/2.0`;
+}
+
 function convertUrls(str) {
 	const matches = linkify.match(str);
 	const res = [];
@@ -97,17 +101,18 @@ const Chat = React.memo(props => {
 	}, []);
 
 	const messages = useRef([]);
-	const previousOffset = useRef(null);
+	//const previousOffset = useRef(null);
 	useEffect(() => {
-		const dist = Math.abs(props.offset - previousOffset.current);
-		if (dist >= 3000) {
-			// if more than 3 seconds, clear all messages from the manager
-			manager.current.clear();
-		}
+		//const dist = Math.abs(props.offset - previousOffset.current);
+		//if (dist >= 3000) {
+		//	// if more than 3 seconds, clear all messages from the manager
+		//	manager.current.clear();
+		//}
 
-		let currTimestamp = props.offset + props.video.timestamp*1e3;
+		const actualTimestamp = props.offset + props.video.timestamp*1e3;
+		let currTimestamp = actualTimestamp;
 		for (const jumpcut of props.video.jumpcuts) {
-			if (jumpcut.at > props.offset/1e3) {
+			if (jumpcut.at*1e3 > actualTimestamp) {
 				break;
 			}
 
@@ -125,7 +130,7 @@ const Chat = React.memo(props => {
 		msgs = msgs.slice(Math.max(0, msgs.length - 300), msgs.length);
 
 		messages.current = msgs;
-		previousOffset.current = props.offset;
+		//previousOffset.current = props.offset;
 	});
 
 	const chatRef = useRef(null);

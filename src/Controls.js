@@ -1,5 +1,5 @@
 import { Slider, IconButton } from '@material-ui/core';
-import { Pause, PlayArrow, VolumeUp, VolumeOff, FullscreenExit, Fullscreen, People, SportsEsports, ChevronLeft, ChevronRight } from '@material-ui/icons';
+import { Pause, PlayArrow, VolumeUp, VolumeOff, FullscreenExit, Fullscreen, People, SportsEsports, ChevronLeft, ChevronRight, Info } from '@material-ui/icons';
 import formatDuration from 'format-duration';
 import useMousetrap from 'react-hook-mousetrap';
 import NumberEasing from 'react-number-easing';
@@ -7,8 +7,13 @@ import NumberEasing from 'react-number-easing';
 import { clamp, getCurrentDatapoint } from './util.js';
 
 function Button(props) {
+	const onClick = e => {
+		document.activeElement.blur();
+		return props.onClick(e);
+	};
+
 	return (
-		<IconButton style={{'color': 'white'}} disableFocusRipple={true} onClick={props.onClick}>
+		<IconButton style={{'color': 'white'}} disableFocusRipple={true} onClick={onClick}>
 			{props.children}
 		</IconButton>
 	)
@@ -17,7 +22,9 @@ function Button(props) {
 export default function Controls(props) {
 	const wrap = fn => {
 		return e => {
+			e.stopImmediatePropagation();
 			e.preventDefault();
+
 			fn();
 		};
 	};
@@ -88,6 +95,10 @@ export default function Controls(props) {
 
 				<Button onClick={el => props.onTooltipClick('games', el.currentTarget)}>
 					<SportsEsports />
+				</Button>
+
+				<Button onClick={el => props.onTooltipClick('metadata', el.currentTarget)}>
+					<Info />
 				</Button>
 
 				<Button onClick={() => props.onFullscreenChange(!props.fullscreen)}>

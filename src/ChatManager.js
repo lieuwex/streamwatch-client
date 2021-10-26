@@ -3,6 +3,10 @@ const FETCH_REGION = 30 * 1000;
 const FETCH_MARGIN = 10 * 1000;
 
 function makeMapFromBadges(str) {
+	if (str == null) {
+		return {};
+	}
+
 	const splitted = str.split(',');
 
 	const map = {};

@@ -1,4 +1,4 @@
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import formatDuration from 'format-duration';
 import { isMobile } from 'react-device-detect';
@@ -116,21 +116,33 @@ function Video(props) {
 		}
 	}
 
+	const content = (
+		<div className={`video-entry ${clicked ? 'clicked' : ''} ${animating ? 'animating' : ''}`} onMouseEnter={onEnter} onMouseLeave={onLeave} onClick={onClick}>
+			<VideoPreview video={video} playPreview={hovering || clicked} />
+			<VideoInformation video={video} />
+			<VideoProgress video={video} />
+				{
+					!clicked
+					? <></>
+					: <PlayArrow />
+				}
+		</div>
+	);
+
+	if (isMobile) {
+		return (
+			<Link to={`/video/${video.id}`} className="video-flipper">
+				{content}
+			</Link>
+		);
+	}
+
 	return (
 		<>
 			{ redirect ? <Redirect push to={`/video/${video.id}`} /> : <></> }
 			<Flipper flipKey={clicked} className="video-flipper">
 				<Flipped flipId={`video-${video.id}`} onStart={() => setAnimating(true)} onComplete={() => setAnimating(false)}>
-					<div className={`video-entry ${clicked ? 'clicked' : ''} ${animating ? 'animating' : ''}`} onMouseEnter={onEnter} onMouseLeave={onLeave} onClick={onClick}>
-						<VideoPreview video={video} playPreview={hovering || clicked} />
-						<VideoInformation video={video} />
-						<VideoProgress video={video} />
-							{
-								!clicked
-								? <></>
-								: <PlayArrow />
-							}
-					</div>
+					{content}
 				</Flipped>
 			</Flipper>
 			{

@@ -103,7 +103,7 @@ const GamesDialogItem = props => {
 		<ListItem>
 			<ListItemText primary={game.name} secondary={game.platform} />
 			<Button onClick={onClick}>{formatDuration(1000 * game.start_time)}</Button>
-			<IconButton onClick={() => props.onDelete(game.id)}>
+			<IconButton onClick={() => props.onDelete(game)}>
 				<Clear />
 			</IconButton>
 		</ListItem>
@@ -166,8 +166,8 @@ export default function GamesDialog(props) {
 		setItems(newItems);
 		changed.current = true;
 	};
-	const onDelete = id => {
-		setItems(items.filter(g => g.id !== id));
+	const onDelete = ({ id, start_time }) => {
+		setItems(items.filter(g => !(g.id === id && g.start_time === start_time)));
 		changed.current = true;
 	};
 	const handleClose = () => props.handleClose(changed.current ? items : null, null);
