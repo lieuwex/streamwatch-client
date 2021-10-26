@@ -16,7 +16,7 @@ const linkify = makeLinkify();
 linkify.tlds(tlds);
 
 function getTwitchEmoticonUrl(id, theme='dark') {
-	return `https://static-cdn.jtvnw.net/emoticons/v2/${id}/default/${theme}/2.0`;
+	return `https://static-cdn.jtvnw.net/emoticons/v2/${id}/default/${theme}/4.0`;
 }
 function parseEmotes(emoteString) {
 	const emotes = [];
