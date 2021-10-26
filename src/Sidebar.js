@@ -56,7 +56,7 @@ function convertEmotes(str, emotes) {
 
 		const content = str.slice(emote.start, emote.end);
 		const url = getTwitchEmoticonUrl(emote.id);
-		res.push(`<img alt="${content}" src="${url}"/>`);
+		res.push(`<img alt="${content}" title="${content}" src="${url}"/>`);
 
 		last = emote.end;
 	}
