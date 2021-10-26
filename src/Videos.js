@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 import formatDuration from 'format-duration';
 import { isMobile } from 'react-device-detect';
 import { Flipper, Flipped } from 'react-flip-toolkit';
-import { Backdrop } from '@material-ui/core';
-import { PlayArrow } from '@material-ui/icons';
+import Backdrop from '@mui/material/Backdrop';
+import { PlayArrow } from '@mui/icons-material';
 import useMousetrap from 'react-hook-mousetrap';
 
 import { formatGame, filterGames, formatDate, getTitle } from './util.js';

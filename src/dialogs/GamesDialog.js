@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Clear } from '@material-ui/icons';
-import { Button, IconButton, Dialog, DialogTitle, DialogContent, Autocomplete, TextField, List, ListItem, ListItemText, Box } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { Clear } from '@mui/icons-material';
+import { Button, IconButton, Dialog, DialogTitle, DialogContent, Autocomplete, TextField, List, ListItem, ListItemText, Box } from '@mui/material';
 import swr, { mutate } from 'swr';
 import formatDuration from 'format-duration';
 

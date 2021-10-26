@@ -1,4 +1,4 @@
-import {  Dialog, DialogTitle, DialogContent, Autocomplete, TextField } from '@material-ui/core';
+import {  Dialog, DialogTitle, DialogContent, Autocomplete, TextField } from '@mui/material';
 import { useRef } from 'react';
 import swr from 'swr';
 

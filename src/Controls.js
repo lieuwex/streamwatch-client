@@ -1,5 +1,5 @@
-import { Slider, IconButton } from '@material-ui/core';
-import { Pause, PlayArrow, VolumeUp, VolumeOff, FullscreenExit, Fullscreen, People, SportsEsports, ChevronLeft, ChevronRight, Info } from '@material-ui/icons';
+import { Slider, IconButton } from '@mui/material';
+import { Pause, PlayArrow, VolumeUp, VolumeOff, FullscreenExit, Fullscreen, People, SportsEsports, ChevronLeft, ChevronRight, Info } from '@mui/icons-material';
 import formatDuration from 'format-duration';
 import useMousetrap from 'react-hook-mousetrap';
 import NumberEasing from 'react-number-easing';
