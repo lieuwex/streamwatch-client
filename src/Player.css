@@ -155,3 +155,20 @@
 	}
 }
 */
+
+.ct-chart {
+	position: absolute;
+	filter: invert(1);
+	z-index: 0;
+	height: 100px;
+	bottom: -14px;
+	left: -40px;
+	right: 0;
+	pointer-events: none;
+	opacity: .1;
+}
+
+.slider-container {
+	position: relative;
+	width: 100%;
+}

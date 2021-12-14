@@ -3,6 +3,7 @@ import { Pause, PlayArrow, VolumeUp, VolumeOff, FullscreenExit, Fullscreen, Peop
 import formatDuration from 'format-duration';
 import useMousetrap from 'react-hook-mousetrap';
 import NumberEasing from 'react-number-easing';
+import HypeGraph from './HypeGraph.js';
 
 import { clamp, getCurrentDatapoint } from './util.js';
 
@@ -72,7 +73,11 @@ export default function Controls(props) {
 				<Button onClick={() => props.onPlayChange(!props.playing)}>
 					{ props.playing ? <Pause /> : <PlayArrow /> }
 				</Button>
-				<Slider value={props.progress} max={1} step={0.001} onChange={(_, newValue) => props.onSeek(newValue)} />
+
+				<div className="slider-container">
+					<HypeGraph streamId={props.video.id} />
+					<Slider value={props.progress} max={1} step={0.001} onChange={(_, newValue) => props.onSeek(newValue)} />
+				</div>
 
 				<div className="volume-controls">
 					<Button onClick={() => props.onMutedChange(!props.muted)}>
