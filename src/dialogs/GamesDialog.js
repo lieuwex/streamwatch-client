@@ -2,7 +2,8 @@ import { useRef, useState } from 'react';
 import { makeStyles } from '@mui/styles';
 import { Clear } from '@mui/icons-material';
 import { Button, IconButton, Dialog, DialogTitle, DialogContent, Autocomplete, TextField, List, ListItem, ListItemText, Box } from '@mui/material';
-import swr, { mutate } from 'swr';
+import swrImmutable from 'swr/immutable';
+import { mutate } from 'swr';
 import formatDuration from 'format-duration';
 
 import Loading from '../Loading.js';
@@ -115,7 +116,7 @@ const AddGameRow = props => {
 
 	const classes = useStyles();
 
-	const { data, error } = swr('http://local.lieuwe.xyz:6070/games', fetcher);
+	const { data, error } = swrImmutable('http://local.lieuwe.xyz:6070/games', fetcher);
 	const selectedInfo = useRef({ game: null, time });
 
 	const onAdd = () => {

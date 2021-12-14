@@ -1,6 +1,6 @@
 import {  Dialog, DialogTitle, DialogContent, Autocomplete, TextField } from '@mui/material';
 import { useRef } from 'react';
-import swr from 'swr';
+import swrImmutable from 'swr/immutable';
 
 import Loading from '../Loading.js';
 import { fetcher } from '../util.js';
@@ -22,7 +22,7 @@ export default function PersonsDialog(props) {
 	const selected = useRef(props.video.persons);
 	const changed = useRef(false);
 
-	const { data, error } = swr('http://local.lieuwe.xyz:6070/persons', fetcher);
+	const { data, error } = swrImmutable('http://local.lieuwe.xyz:6070/persons', fetcher);
 	if (data != null) {
 		data.sort(sortFunc);
 	}

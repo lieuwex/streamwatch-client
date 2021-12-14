@@ -23,7 +23,7 @@
     "react-player": "^2.9.0",
     "react-router-dom": "^5.2.0",
     "screenfull": "^5.1.0",
-    "swr": "^0.5.6",
+    "swr": "^1.1.1",
     "tlds": "^1.221.1",
     "typeface-inter": "^3.18.1",
     "use-double-click": "^1.0.5"
