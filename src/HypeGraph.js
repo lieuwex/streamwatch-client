@@ -24,7 +24,7 @@ export default function HypeGraph(props) {
 	const { data, error } = swrImmutable(`http://local.lieuwe.xyz:6070/stream/${props.streamId}/hype`, fetcher);
 
 	if (error) {
-		console.error(error);
+		console.error('error loading hypegraph', error);
 		return <></>;
 	} else if (!data) {
 		return <></>;
@@ -33,7 +33,7 @@ export default function HypeGraph(props) {
 	//const series = smooth(data.map(x => 1.01**(10 * (200+x.hype))));
 	const series = smooth(data.map(x => x.hype));
 
-	console.log(series);
+	//console.log(series);
 
 	const chartData = {
 		series: [ series ],
