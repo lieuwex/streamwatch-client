@@ -108,7 +108,11 @@ function Video(props) {
 
 	const onEnter = () => setHovering(true);
 	const onLeave = () => setHovering(false);
-	const onClick = () => {
+	const onClick = e => {
+		if (!isMobile) {
+			e.preventDefault();
+		}
+
 		if (!clicked) {
 			setClicked(true);
 		} else {
@@ -117,23 +121,23 @@ function Video(props) {
 	}
 
 	const content = (
-		<div className={`video-entry ${clicked ? 'clicked' : ''} ${animating ? 'animating' : ''}`} onMouseEnter={onEnter} onMouseLeave={onLeave} onClick={onClick}>
+		<Link to={`/video/${video.id}`} onClick={onClick} className={`video-entry ${clicked ? 'clicked' : ''} ${animating ? 'animating' : ''}`} onMouseEnter={onEnter} onMouseLeave={onLeave}>
 			<VideoPreview video={video} playPreview={hovering || clicked} />
 			<VideoInformation video={video} />
 			<VideoProgress video={video} />
-				{
-					!clicked
-					? <></>
-					: <PlayArrow />
-				}
-		</div>
+			{
+				!clicked
+				? <></>
+				: <PlayArrow />
+			}
+		</Link>
 	);
 
 	if (isMobile) {
 		return (
-			<Link to={`/video/${video.id}`} className="video-flipper">
+			<div className="video-flipper">
 				{content}
-			</Link>
+			</div>
 		);
 	}
 
