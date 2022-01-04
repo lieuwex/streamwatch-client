@@ -209,7 +209,7 @@ function Player(props) {
 		// make sure the timeout is cleared when leaving the page
 		return () => clearTimeout(activeTimeout.current);
 	}, []);
-	const warpMarkActive = fn => {
+	const wrapMarkActive = fn => {
 		return (...args) => {
 			markActive();
 			return fn(...args);
@@ -294,12 +294,12 @@ function Player(props) {
 					controls={useNativeControls}
 					ref={playerRef}
 					onProgress={onProgress}
-					onPause={warpMarkActive(() => setPlaying(false))}
-					onPlay={warpMarkActive(() => setPlaying(true))}
+					onPause={wrapMarkActive(() => setPlaying(false))}
+					onPlay={wrapMarkActive(() => setPlaying(true))}
 					onBuffer={() => setBuffering(true)}
 					onBufferEnd={() => setBuffering(false)}
-					onSingleClick={warpMarkActive(() => setPlaying(!playing))}
-					onDoubleClick={warpMarkActive(() => changeFullscreen(!fullscreen[0]))} />
+					onSingleClick={wrapMarkActive(() => setPlaying(!playing))}
+					onDoubleClick={wrapMarkActive(() => changeFullscreen(!fullscreen[0]))} />
 
 				{
 					openDialog == null
@@ -325,11 +325,11 @@ function Player(props) {
 							playing={playing}
 							fullscreen={fullscreen[0]}
 							sidebarOpen={sidebarOpen}
-							onPlayChange={warpMarkActive(x => setPlaying(x))}
-							onVolumeChange={warpMarkActive(x => setVolume(x))}
-							onMutedChange={warpMarkActive(x => setMuted(x))}
-							onFullscreenChange={warpMarkActive(x => changeFullscreen(x))}
-							onSidebarChange={warpMarkActive(x => setSidebarOpen(x))}
+							onPlayChange={wrapMarkActive(x => setPlaying(x))}
+							onVolumeChange={wrapMarkActive(x => setVolume(x))}
+							onMutedChange={wrapMarkActive(x => setMuted(x))}
+							onFullscreenChange={wrapMarkActive(x => changeFullscreen(x))}
+							onSidebarChange={wrapMarkActive(x => setSidebarOpen(x))}
 							onTooltipClick={(tooltip, el) => {
 								setOpenDialog([ tooltip, el, playing ]);
 								setPlaying(false);
