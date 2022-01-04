@@ -109,9 +109,11 @@ function Video(props) {
 	const onEnter = () => setHovering(true);
 	const onLeave = () => setHovering(false);
 	const onClick = e => {
-		if (!isMobile) {
-			e.preventDefault();
+		if (isMobile) {
+			return;
 		}
+
+		e.preventDefault();
 
 		if (!clicked) {
 			setClicked(true);
