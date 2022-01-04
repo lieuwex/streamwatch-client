@@ -12,6 +12,7 @@ import Videos from './Videos.js';
 import Player from './Player.js';
 import Login from './Login.js';
 import Loading from './Loading.js';
+import SelectWatchparty from './SelectWatchparty.js';
 import { fetcher } from './util.js';
 
 async function streamsFetcher(...args) {
@@ -58,6 +59,9 @@ function App() {
 			<Switch>
 				<Route path="/video/:id">
 					<Player videos={streams} />
+				</Route>
+				<Route path="/watchparty">
+					<SelectWatchparty />
 				</Route>
 				<Route path="/login">
 					<Login />

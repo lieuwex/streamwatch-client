@@ -43,6 +43,17 @@ async function updateItems(type, streamId, items) {
 	mutate('http://local.lieuwe.xyz:6070/streams');
 }
 
+function sendPartyMessage(msg) {
+	if (window.partyWs == null) {
+		return;
+	}
+
+	msg['sender'] = window.partySelfId;
+
+	console.info('sending to party', msg);
+	window.partyWs.send(JSON.stringify(msg));
+}
+
 const Video = React.forwardRef((props, ref) => {
 	const url = `http://local.lieuwe.xyz:6070/stream/${props.video.file_name}`;
 
@@ -184,10 +195,17 @@ function Player(props) {
 
 	// video listeners
 	const playerRef = useRef(null);
-	const handleSeek = fract => {
+	const handleSeek = (fract, broadcast = true) => {
 		setProgress(fract * video.duration);
 		if (playerRef.current != null) {
 			playerRef.current.seekTo(fract, 'fraction');
+		}
+
+		if (broadcast) {
+			sendPartyMessage({
+				command: 'seek',
+				args: [fract],
+			});
 		}
 	};
 	const onProgress = ({ playedSeconds }) => setProgress(playedSeconds);
@@ -253,6 +271,45 @@ function Player(props) {
 		screenfull.on('change', callback);
 		return () =>  screenfull.off('change', callback);
 	}, []);
+
+	// watch parties receiver
+	useEffect(() => {
+		if (window.partyWs == null) {
+			return;
+		}
+
+		window.partyWs.onmessage = e => {
+			const obj = JSON.parse(e.data);
+
+			if (obj['sender'] === window.partySelfId) {
+				console.info('ignoring party message of our own', obj);
+				return;
+			}
+
+			console.info('received partyWs command', obj);
+
+			const command = obj['command'];
+			const args = obj['args'];
+
+			switch (command) {
+			case 'playing':
+				setPlaying(args[0]);
+				break;
+			case 'seek':
+				handleSeek(args[0], false);
+				break;
+			}
+		};
+
+		return () => window.partyWs.onmessage = null;
+	}, []);
+	// watch parties playing state sender
+	useEffect(() => {
+		sendPartyMessage({
+			command:'playing',
+			args: [playing],
+		});
+	}, [playing]);
 
 	const onDialogClose = (items, newProgress) => {
 		if (items != null) {
