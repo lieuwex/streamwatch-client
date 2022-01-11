@@ -13,7 +13,7 @@ import './Videos.css';
 function VideoPreview(props) {
 	let videoContent = <></>;
 	if (props.playPreview && props.video.has_preview && !isMobile) {
-		const url = `http://local.lieuwe.xyz:6070/preview/${props.video.id}/preview.webm`;
+		const url = `http://local.lieuwe.xyz:6070/preview/${props.video.id}.webm`;
 		videoContent = (
 			<video muted={true} loop={true} playsInline={true} preload="auto" autoPlay={true}>
 				<source src={url} type="video/webm" />
