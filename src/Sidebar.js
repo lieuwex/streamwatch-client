@@ -6,7 +6,7 @@ import { Tooltip } from '@mui/material';
 import { DataUsage } from '@mui/icons-material';
 import tlds from 'tlds';
 import makeLinkify from 'linkify-it';
-import { encode } from 'he';
+// import { encode } from 'he';
 
 import './Sidebar.css';
 import { formatTime } from './util.js';

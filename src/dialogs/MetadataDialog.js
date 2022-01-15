@@ -1,12 +1,10 @@
 import { useRef, useState } from 'react';
 import { makeStyles } from '@mui/styles';
 import { ThumbUp, ThumbDown } from '@mui/icons-material';
-import { Button, IconButton, Dialog, DialogTitle, DialogContent, Autocomplete, TextField, List, ListItem, ListItemText, Box } from '@mui/material';
-import swr, { mutate } from 'swr';
-import formatDuration from 'format-duration';
+import { IconButton, Dialog, DialogTitle, DialogContent, TextField } from '@mui/material';
+import swr from 'swr';
 
-import Loading from '../Loading.js';
-import { fetcher, parseDuration, formatGame } from '../util.js';
+import { fetcher } from '../util.js';
 
 const useStyles = makeStyles({
 	vote: {
@@ -17,7 +15,7 @@ const useStyles = makeStyles({
 
 export default function MetadataDialog(props) {
 	const username = localStorage.getItem('username');
-	let { data, error } = swr(username != null ? `http://local.lieuwe.xyz:6070/user/${username}/ratings` : null, fetcher);
+	let { data } = swr(username != null ? `http://local.lieuwe.xyz:6070/user/${username}/ratings` : null, fetcher);
 
 	const [score, setScore] = useState((data || {})[props.video.id] || null);
 	const titleRef = useRef({ value: props.video.title_type === 'custom' ? props.video.title : null });

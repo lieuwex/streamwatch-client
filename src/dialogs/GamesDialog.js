@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { makeStyles } from '@mui/styles';
 import { Clear } from '@mui/icons-material';
-import { Button, IconButton, Dialog, DialogTitle, DialogContent, Autocomplete, TextField, List, ListItem, ListItemText, Box } from '@mui/material';
+import { Button, IconButton, Dialog, DialogTitle, DialogContent, Autocomplete, TextField, List, ListItem, ListItemText } from '@mui/material';
 import swrImmutable from 'swr/immutable';
 import { mutate } from 'swr';
 import formatDuration from 'format-duration';

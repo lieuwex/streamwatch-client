@@ -114,7 +114,7 @@ function PauseShade(props) {
 		}
 
 		return nodes;
-	}, [props.video.games, props.progress.time]);
+	}, [props.video.games, props.progress]);
 
 	return (
 		<div className={`pause-shade ${props.visible ? 'visible' : ''}`}>
@@ -297,6 +297,9 @@ function Player(props) {
 				break;
 			case 'seek':
 				handleSeek(args[0], false);
+				break;
+			default:
+				console.warn('received unknown partyWs command', obj);
 				break;
 			}
 		};

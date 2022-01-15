@@ -74,19 +74,6 @@ function VideoInformation(props) {
 	);
 }
 
-function VideoThumbnails(props) {
-	const thumbs = [];
-	for (let i = 0; i < props.video.thumbnail_count; i++) {
-		thumbs.push(<div className="video-entry-thumbnail" style={{backgroundImage: `url(/thumbnail/${props.video.id}/${i}.webp)`}} />);
-	}
-
-	return (
-		<div className="video-entry-thumbnails">
-			{thumbs}
-		</div>
-	);
-}
-
 function VideoProgress(props) {
 	if (props.video.progress == null) {
 		return <></>;
