@@ -1,6 +1,6 @@
 import {
 	BrowserRouter as Router,
-	Switch,
+	Routes,
 	Route,
 } from 'react-router-dom';
 import React from 'react';
@@ -56,20 +56,12 @@ function App() {
 
 	return (
 		<Router>
-			<Switch>
-				<Route path="/video/:id">
-					<Player videos={streams} />
-				</Route>
-				<Route path="/watchparty">
-					<SelectWatchparty />
-				</Route>
-				<Route path="/login">
-					<Login />
-				</Route>
-				<Route path="/">
-					<Videos videos={streams} />
-				</Route>
-			</Switch>
+			<Routes>
+				<Route path="/video/:id" element={<Player videos={streams} />} />
+				<Route path="/watchparty" element={<SelectWatchparty />} />
+				<Route path="/login" element={<Login />} />
+				<Route path="/" element={<Videos videos={streams} />} />
+			</Routes>
 		</Router>
 	);
 }

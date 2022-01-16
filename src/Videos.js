@@ -1,4 +1,4 @@
-import { Redirect, Link } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import formatDuration from 'format-duration';
 import { isMobile } from 'react-device-detect';
@@ -132,7 +132,7 @@ function Video(props) {
 
 	return (
 		<>
-			{ redirect ? <Redirect push to={`/video/${video.id}`} /> : <></> }
+			{ redirect ? <Navigate push to={`/video/${video.id}`} /> : <></> }
 			<Flipper flipKey={clicked} className="video-flipper">
 				<Flipped flipId={`video-${video.id}`} onStart={() => setAnimating(true)} onComplete={() => setAnimating(false)}>
 					{content}
