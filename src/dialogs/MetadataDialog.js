@@ -57,6 +57,7 @@ export default function MetadataDialog(props) {
 					<TextField
 						id="title"
 						label="Custom titel"
+						autoFocus={true}
 						inputRef={titleRef}
 						defaultValue={titleRef.current.value}
 						onChange={() => changed.current = true}

@@ -79,6 +79,7 @@ const CreateGameDialog = props => {
 						required
 						id="name"
 						label="Naam"
+						autoFocus={true}
 						inputRef={nameRef}
 					/>
 
@@ -140,7 +141,7 @@ const AddGameRow = props => {
 						<ListItemText primary={game.name} secondary={game.platform} />
 					</li>
 				)}
-				renderInput={params => <TextField {...params} label="Game" />}
+				renderInput={params => <TextField {...params} label="Game" autoFocus={true} />}
 				getOptionSelected={(a, b) => a.id === b.id}
 				onChange={(_, game) => selectedInfo.current.game = game}
 			/>

@@ -46,7 +46,7 @@ export default function PersonsDialog(props) {
 				<TextField
 					{...params}
 					label="Personen"
-					placeholder="Personen"
+					autoFocus={true}
 				/>
 			)}
 		/>;
