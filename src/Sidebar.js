@@ -89,6 +89,7 @@ function convertUrls(str) {
 }
 
 const ChatMessage = React.memo(props => {
+	// HACK: we temp removed that encoding step, this is unsafe. (5474481e09f)
 	//let body = encode(props.message.message);
 	let body = props.message.message;
 	body = convertUrls(body);
