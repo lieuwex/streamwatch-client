@@ -36,3 +36,10 @@ code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
 	monospace;
 }
+
+/*
+ * HACK: fix content in dialogs being cut off
+ */
+.MuiDialogContent-root {
+	overflow-y: visible !important;
+}
