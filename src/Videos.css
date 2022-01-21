@@ -141,6 +141,9 @@
 	text-overflow: ellipsis;
 	/* overflow: hidden; */
 }
+.video-entry.clicked .video-entry-title {
+	white-space: normal;
+}
 /*
 .video-entry-title.long {
 	animation: floatText 15s infinite linear;

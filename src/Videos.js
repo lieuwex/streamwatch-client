@@ -6,6 +6,7 @@ import { Flipper, Flipped } from 'react-flip-toolkit';
 import Backdrop from '@mui/material/Backdrop';
 import { PlayArrow } from '@mui/icons-material';
 import mousetrap from 'mousetrap';
+import filesize from 'filesize';
 
 import { formatGame, filterGames, formatDate, getTitle } from './util.js';
 import './Videos.css';
@@ -53,11 +54,13 @@ function VideoInformation(props) {
 				</div>
 			}
 
-			{/*
-			<div className="video-entry-size">
-				{filesize(props.video.file_size, {output: "array"}).join('')}
-			</div>
-			*/}
+			{
+				!props.fullInfo
+				? <></>
+				: <div className="video-entry-size">
+					{filesize(props.video.file_size, {output: "array"}).join('')}
+				</div>
+			}
 
 			<div className="video-entry-duration">
 				{formatDuration(1000 * props.video.duration)}
@@ -119,7 +122,7 @@ function Video(props) {
 	const content = (
 		<Link to={`/video/${video.id}`} onClick={onClick} className={`video-entry ${clicked ? 'clicked' : ''} ${animating ? 'animating' : ''}`} onMouseEnter={onEnter} onMouseLeave={onLeave}>
 			<VideoPreview video={video} playPreview={hovering || clicked} />
-			<VideoInformation video={video} />
+			<VideoInformation video={video} fullInfo={clicked} />
 			<VideoProgress video={video} />
 			{
 				!clicked
