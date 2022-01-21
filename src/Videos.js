@@ -5,7 +5,7 @@ import { isMobile } from 'react-device-detect';
 import { Flipper, Flipped } from 'react-flip-toolkit';
 import Backdrop from '@mui/material/Backdrop';
 import { PlayArrow } from '@mui/icons-material';
-import useMousetrap from 'react-hook-mousetrap';
+import mousetrap from 'mousetrap';
 
 import { formatGame, filterGames, formatDate, getTitle } from './util.js';
 import './Videos.css';
@@ -91,7 +91,14 @@ function Video(props) {
 	const [animating, setAnimating] = useState(false);
 	const [redirect, setRedirect] = useState(false);
 
-	useMousetrap('esc', () => setClicked(false));
+	useEffect(() => {
+		if (!clicked) {
+			return;
+		}
+
+		mousetrap.bind('esc', () => setClicked(false));
+		return () => mousetrap.unbind('esc');
+	}, [clicked]);
 
 	const onEnter = () => setHovering(true);
 	const onLeave = () => setHovering(false);
