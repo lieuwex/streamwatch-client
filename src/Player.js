@@ -197,7 +197,7 @@ function Player(props) {
 	useUpdateProgress(video, playing, progress);
 
 	useEffect(() => {
-		if (!playing) {
+		if (!playing && clip == null) {
 			const url = getCurrentUrl();
 			url.searchParams.set('s', Math.floor(progress));
 			window.history.replaceState(null, "", url.toString());
