@@ -150,7 +150,14 @@ function useUpdateProgress(video, playing, progress) {
 
 function Player(props) {
 	const video = props.video;
+	const clip = props.clip;
 	const useNativeControls = isMobile;
+
+	let region = [ 0, video.duration ];
+	if (clip != null) {
+		region = [ clip.start_time, clip.start_time+clip.duration ];
+	}
+	const loop = clip != null;
 
 	// state
 	const [volume, setVolume] = useState(() => +localStorage.getItem('volume') || 1);
@@ -172,9 +179,13 @@ function Player(props) {
 
 	// update document title
 	useEffect(() => {
-		const [title, _] = getTitle(video, true);
-		document.title = `${title} - Streamwatch`;
-	});
+		if (clip != null) {
+			document.title = `${clip.title} - Streamwatch`;
+		} else {
+			const [title, _] = getTitle(video, true);
+			document.title = `${title} - Streamwatch`;
+		}
+	}, []);
 
 	// keep localStorage up-to-date
 	useEffect(() => {
@@ -208,7 +219,16 @@ function Player(props) {
 			});
 		}
 	};
-	const onProgress = ({ playedSeconds }) => setProgress(playedSeconds);
+	const onProgress = ({ playedSeconds }) => {
+		if (loop && playedSeconds >= region[1]) {
+			if (playerRef.current != null) {
+				playerRef.current.seekTo(region[0], 'seconds');
+			}
+			setProgress(region[0]);
+		} else {
+			setProgress(playedSeconds);
+		}
+	};
 
 	// handle user activity
 	const activeTimeout = useRef(null);
@@ -380,6 +400,8 @@ function Player(props) {
 							visible={!playing || userActive}
 							onSeek={handleSeek}
 							progress={progress / video.duration}
+							isClip={clip != null}
+							region={region}
 							volume={volume}
 							muted={muted}
 							playing={playing}
@@ -415,8 +437,20 @@ function getUrlProgress() {
 
 export default function PlayerWrapper(props) {
 	const { id } = useParams();
-	const video = props.videos.find(v => v.id === +id);
 
+	let videoId, clip;
+	if (props.isClip) {
+		clip = props.clips.find(c => c.id === +id);
+		if (clip == null) {
+			return <div>clip not found</div>;
+		}
+
+		videoId = clip.stream_id;
+	} else {
+		videoId = id;
+	}
+
+	const video = props.videos.find(v => v.id === +videoId);
 	if (video == null) {
 		return <div>video not found</div>;
 	}
@@ -429,5 +463,9 @@ export default function PlayerWrapper(props) {
 		}
 	}
 
-	return <Player video={video} initialProgress={initialProgress} />;
+	if (clip != null) {
+		initialProgress = clip.start_time;
+	}
+
+	return <Player video={video} clip={clip} initialProgress={initialProgress} />;
 }

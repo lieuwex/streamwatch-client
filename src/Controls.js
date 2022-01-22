@@ -51,11 +51,17 @@ export default function Controls(props) {
 	const datapoint = getCurrentDatapoint(props.video, props.progress);
 	const viewcount = datapoint == null ? null : datapoint.viewcount;
 
+	const [start, end] = props.region;
+	const min = start / props.video.duration;
+	const max = end / props.video.duration;
+
+	const progressSecs = props.progress * props.video.duration;
+
 	return (
 		<div className={`video-controls ${props.visible ? 'visible' : ''}`}>
 			<div className="controls-row information">
 				<div className="duration fixed-width-num">
-					{formatDuration(1000 * props.progress * props.video.duration)} / {formatDuration(1000 * props.video.duration)}
+					{formatDuration(1000 * (progressSecs - start))} / {formatDuration(1000 * (end - start))}
 				</div>
 				{
 					viewcount == null
@@ -75,8 +81,8 @@ export default function Controls(props) {
 				</Button>
 
 				<div className="slider-container">
-					<HypeGraph streamId={props.video.id} />
-					<Slider value={props.progress} max={1} step={0.001} onChange={(_, newValue) => props.onSeek(newValue)} />
+					<HypeGraph video={props.video} region={props.region} />
+					<Slider value={props.progress} min={min} max={max} step={0.00001} onChange={(_, newValue) => props.onSeek(newValue)} />
 				</div>
 
 				<div className="volume-controls">
@@ -94,21 +100,27 @@ export default function Controls(props) {
 						onChange={(_, x) => props.onVolumeChange(x / 100)} />
 				</div>
 
-				<Button onClick={el => props.onTooltipClick('participants', el.currentTarget)}>
-					<People />
-				</Button>
+				{
+					props.isClip
+					? <></>
+					: <>
+						<Button onClick={el => props.onTooltipClick('participants', el.currentTarget)}>
+							<People />
+						</Button>
 
-				<Button onClick={el => props.onTooltipClick('games', el.currentTarget)}>
-					<SportsEsports />
-				</Button>
+						<Button onClick={el => props.onTooltipClick('games', el.currentTarget)}>
+							<SportsEsports />
+						</Button>
 
-				<Button onClick={el => props.onTooltipClick('clipper', el.currentTarget)}>
-					<MovieCreation />
-				</Button>
+						<Button onClick={el => props.onTooltipClick('clipper', el.currentTarget)}>
+							<MovieCreation />
+						</Button>
 
-				<Button onClick={el => props.onTooltipClick('metadata', el.currentTarget)}>
-					<Info />
-				</Button>
+						<Button onClick={el => props.onTooltipClick('metadata', el.currentTarget)}>
+							<Info />
+						</Button>
+					</>
+				}
 
 				<Button onClick={() => props.onFullscreenChange(!props.fullscreen)}>
 					{ props.fullscreen ? <FullscreenExit /> : <Fullscreen /> }

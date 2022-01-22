@@ -32,12 +32,21 @@ function videoInProgress(video) {
 
 function App() {
 	const { data: streamsData, error: streamsError } = swr('http://local.lieuwe.xyz:6070/streams', streamsFetcher);
+	const { data: clipsData, error: clipsError } = swr('http://local.lieuwe.xyz:6070/clips', fetcher);
 	const username = localStorage.getItem('username');
 	let { data: progressData, error: progressError } = swr(username != null ? `http://local.lieuwe.xyz:6070/user/${username}/progress` : null, fetcher);
 
 	if (streamsError) {
+		console.error('error while loading streams', streamsError);
 		return <div>Error while loading streams</div>;
 	} else if (!streamsData) {
+		return <Loading heavyLoad={true} />;
+	}
+
+	if (clipsError) {
+		console.error('error while loading clips', clipsError);
+		return <div>Error while loading clips</div>;
+	} else if (!clipsData) {
 		return <Loading heavyLoad={true} />;
 	}
 
@@ -53,14 +62,16 @@ function App() {
 	}
 
 	const streams = streamsData;
+	const clips = clipsData;
 
 	return (
 		<Router>
 			<Routes>
-				<Route path="/video/:id" element={<Player videos={streams} />} />
+				<Route path="/video/:id" element={<Player videos={streams} clips={clips} isClip={false} />} />
+				<Route path="/clip/:id" element={<Player videos={streams} clips={clips} isClip={true} />} />
 				<Route path="/watchparty" element={<SelectWatchparty />} />
 				<Route path="/login" element={<Login />} />
-				<Route path="/" element={<Videos videos={streams} />} />
+				<Route path="/" element={<Videos videos={streams} clips={clips} />} />
 			</Routes>
 		</Router>
 	);
