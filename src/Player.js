@@ -54,7 +54,7 @@ function sendPartyMessage(msg) {
 	window.partyWs.send(JSON.stringify(msg));
 }
 
-const Video = React.forwardRef((props, ref) => {
+export const Video = React.forwardRef((props, ref) => {
 	const url = `http://local.lieuwe.xyz:6070/stream/${props.video.file_name}`;
 
 	const wrapperRef = useRef(null);

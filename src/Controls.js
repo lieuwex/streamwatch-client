@@ -1,5 +1,5 @@
 import { Slider, IconButton } from '@mui/material';
-import { Pause, PlayArrow, VolumeUp, VolumeOff, FullscreenExit, Fullscreen, People, SportsEsports, ChevronLeft, ChevronRight, Info } from '@mui/icons-material';
+import { Pause, MovieCreation, PlayArrow, VolumeUp, VolumeOff, FullscreenExit, Fullscreen, People, SportsEsports, ChevronLeft, ChevronRight, Info } from '@mui/icons-material';
 import formatDuration from 'format-duration';
 import useMousetrap from 'react-hook-mousetrap';
 import NumberEasing from 'react-number-easing';
@@ -7,7 +7,7 @@ import HypeGraph from './HypeGraph.js';
 
 import { clamp, getCurrentDatapoint } from './util.js';
 
-function Button(props) {
+export function Button(props) {
 	const onClick = e => {
 		document.activeElement.blur();
 		return props.onClick(e);
@@ -100,6 +100,10 @@ export default function Controls(props) {
 
 				<Button onClick={el => props.onTooltipClick('games', el.currentTarget)}>
 					<SportsEsports />
+				</Button>
+
+				<Button onClick={el => props.onTooltipClick('clipper', el.currentTarget)}>
+					<MovieCreation />
 				</Button>
 
 				<Button onClick={el => props.onTooltipClick('metadata', el.currentTarget)}>
