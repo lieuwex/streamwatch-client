@@ -114,6 +114,7 @@
 
 .video-entry-information {
 	flex-grow: 1;
+	height: 100%;
 	padding: 10px;
 	z-index: 2;
 	flex-wrap: wrap;
@@ -212,7 +213,7 @@
 .video-list.in-progress {
 	flex-wrap: nowrap;
 	overflow-x: scroll;
-	overflow-y: visible;
+	overflow-y: hidden;
 	padding-left: 20px;
 	padding-right: 20px;
 	justify-content: unset;
@@ -233,10 +234,20 @@
 		flex-flow: column;
 	}
 
+	.video-list.in-progress .video-flipper {
+		height: 400px;
+	}
+
+	.video-list.in-progress .video-flipper .video-entry {
+		height: 100%;
+	}
+
+	/*
 	.video-list div.video-flipper:hover {
 		transform: none;
 		box-shadow: 0px 20px 19px -7px rgba(0,0,0,0.5);
 	}
+	*/
 
 	.video-entry-information {
 		grid-template-rows: none;
