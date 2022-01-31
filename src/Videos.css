@@ -120,6 +120,8 @@
 	flex-wrap: wrap;
 	overflow: hidden;
 
+	position: relative;
+
 	display: grid;
 	grid-template-columns: repeat(5, 1fr);
 	grid-template-rows: repeat(5, .4fr);
@@ -197,9 +199,9 @@
 	position: absolute;
 	bottom: 0;
 	left: 0;
-	height: 3px;
-	background-color: darkgreen;
-	z-index: 20;
+	height: 100%;
+	z-index: 3;
+	backdrop-filter: invert(1);
 }
 
 .video-list-wrapper hr {

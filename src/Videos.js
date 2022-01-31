@@ -73,6 +73,8 @@ function VideoInformation(props) {
 			<div className="video-entry-persons">
 				{props.video.persons.map(g => g.name).join(', ')}
 			</div>
+
+			<VideoProgress video={props.video} />
 		</div>
 	);
 }
@@ -123,7 +125,6 @@ function Video(props) {
 		<Link to={`/video/${video.id}`} onClick={onClick} className={`video-entry ${clicked ? 'clicked' : ''} ${animating ? 'animating' : ''}`} onMouseEnter={onEnter} onMouseLeave={onLeave}>
 			<VideoPreview video={video} playPreview={hovering || clicked} />
 			<VideoInformation video={video} fullInfo={clicked} />
-			<VideoProgress video={video} />
 			{
 				!clicked
 				? <></>
