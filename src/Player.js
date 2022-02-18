@@ -131,9 +131,13 @@ function PauseShade(props) {
 	);
 }
 
-function useUpdateProgress(video, playing, progress) {
+function useUpdateProgress(video, playingAsClip, playing, progress) {
 	const previousUpdateAt = useRef(progress);
 	useEffect(() => {
+		if (playingAsClip) {
+			return;
+		}
+
 		if (!playing || Math.abs(progress - previousUpdateAt.current) < 5) {
 			return;
 		}
@@ -153,11 +157,13 @@ function Player(props) {
 	const clip = props.clip;
 	const useNativeControls = isMobile;
 
+	const playingAsClip = clip != null;
+	const loop = playingAsClip;
+
 	let region = [ 0, video.duration ];
 	if (clip != null) {
 		region = [ clip.start_time, clip.start_time+clip.duration ];
 	}
-	const loop = clip != null;
 
 	// state
 	const [volume, setVolume] = useState(() => +localStorage.getItem('volume') || 1);
@@ -194,7 +200,7 @@ function Player(props) {
 	}, [volume, muted]);
 
 	// sync watch progress
-	useUpdateProgress(video, playing, progress);
+	useUpdateProgress(video, playingAsClip, playing, progress);
 
 	useEffect(() => {
 		if (!playing && clip == null) {
@@ -400,7 +406,7 @@ function Player(props) {
 							visible={!playing || userActive}
 							onSeek={handleSeek}
 							progress={progress / video.duration}
-							isClip={clip != null}
+							isClip={playingAsClip}
 							region={region}
 							volume={volume}
 							muted={muted}
@@ -420,7 +426,7 @@ function Player(props) {
 						/>
 				}
 			</div>
-			<Sidebar video={video} progress={progress} playing={playing} visible={sidebarOpen} />
+			<Sidebar video={video} progress={progress} playing={playing} visible={sidebarOpen} region={region} />
 		</div>
 	);
 }
@@ -467,5 +473,21 @@ export default function PlayerWrapper(props) {
 		initialProgress = clip.start_time;
 	}
 
-	return <Player video={video} clip={clip} initialProgress={initialProgress} />;
+	const player = (
+		<div className={`player-root ${clip == null ? 'stream' : 'clip'}`}>
+			<Player video={video} clip={clip} initialProgress={initialProgress} />
+		</div>
+	);
+
+	if (clip == null) {
+		return player;
+	}
+
+	return <>
+		<div className="clip-info">
+			<h1 className="clip-header">{clip.title}</h1>
+			<h2 className="clip-subheader">door {clip.author_username}</h2>
+		</div>
+		{player}
+	</>;
 }

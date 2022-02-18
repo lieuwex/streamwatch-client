@@ -122,10 +122,12 @@ const ChatMessage = React.memo(props => {
 	const predictionColor = prediction && chroma(prediction.slice(0, prediction.length-2)).saturate(10).brighten().hex();
 	const predictionText = props.message.tags['badge-info'].predictions || null;
 
+	const region = props.region[0] * 1000;
+
 	return (
 		<div className={`chat-message ${props.message.type} ${isVip ? 'vip' : ''}`}>
 			<Tooltip title={formatTime(new Date(props.message.ts))} placement="left">
-				<div className="message-timestamp">{formatDuration(props.message.ts - props.videoTimestamp)}</div>
+				<div className="message-timestamp">{formatDuration(props.message.ts - (props.videoTimestamp + region))}</div>
 			</Tooltip>
 				{
 					prediction == null
@@ -197,7 +199,7 @@ const Chat = React.memo(props => {
 	});
 
 	const items = messages.current.map(m => {
-		return <ChatMessage key={m.tags.id} message={m} videoTimestamp={props.video.timestamp*1e3} />;
+		return <ChatMessage key={m.tags.id} message={m} videoTimestamp={props.video.timestamp*1e3} region={props.region} />;
 	});
 
 	return (
@@ -219,7 +221,7 @@ export default function Sidebar(props) {
 
 	return (
 		<div className={`sidebar ${props.visible ? 'visible' : ''}`}>
-			<Chat video={props.video} offset={offset} sticky={props.playing} />
+			<Chat video={props.video} offset={offset} sticky={props.playing} region={props.region} />
 		</div>
 	);
 }

@@ -24,6 +24,10 @@
 	scroll-snap-type: y mandatory;
 }
 
+.player-root.clip .sidebar-chat::-webkit-scrollbar {
+	display: none;
+}
+
 /*
 .chat-message {
 	font-size: .85em;

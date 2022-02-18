@@ -15,6 +15,28 @@ import { Button as ControlsButton } from './../Controls.js';
 
 import { clamp } from './../util.js';
 
+async function createClip(videoId, start, end, title) {
+	const username = localStorage.getItem('username');
+	if (username == null) {
+		throw new Error('user not logged in');
+	}
+
+	const res = await fetch(`http://local.lieuwe.xyz:6070/clips`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			author_username: username,
+			stream_id: videoId,
+			start_time: Math.round(start),
+			duration: Math.round(end - start),
+			title,
+		}),
+	});
+	return await res.json();
+}
+
 const useStyles = makeStyles({
 	videoWrapper: {
 		position: 'relative',
@@ -54,7 +76,7 @@ function ClipperControls(props) {
 				</ControlsButton>
 
 				<div className="clipper-slider slider-container">
-					<HypeGraph streamId={props.video.id} />
+					<HypeGraph video={props.video} region={[0, props.video.duration]} />
 					<Slider
 						value={[ props.start, props.progress, props.end ]}
 						disableSwap
@@ -87,29 +109,15 @@ function Clipper(props) {
 	const [end, setEnd] = useState(initialEnd);
 
 	const handleClose = () => props.handleClose(null, null);
-	const createClip = () => {
-		const username = localStorage.getItem('username');
-		if (username == null) {
-			console.warn('user not logged in, no clip made');
-			return;
-		}
-
-		// TODO: create clip
-		fetch(`http://local.lieuwe.xyz:6070/clips`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				author_username: username,
-				stream_id: video.id,
-				start_time: Math.round(start),
-				duration: Math.round(end - start),
-				title: titleRef.current.value || null,
-			}),
-		}).catch(e => console.error(e));
-
-		handleClose();
+	const onCreateClip = () => {
+		createClip(
+			video.id,
+			start,
+			end,
+			titleRef.current.value || null
+		)
+		.then(clip => props.handleClose(clip, null))
+		.catch(e => props.handleClose(null, e));
 	};
 
 	const playerRef = useRef(null);
@@ -135,6 +143,80 @@ function Clipper(props) {
 		}
 	};
 
+	const content = <>
+		<TextField
+			id="title"
+			label="Titel"
+			inputRef={titleRef}
+			defaultValue={titleRef.current}
+			sx={{ width: '100%' }}
+		/>
+
+		<div className={classes.videoWrapper}>
+			<Video
+				video={video}
+				//volume={muted ? 0 : volume}
+				playing={playing}
+				initialProgress={initialProgress}
+				//controls={useNativeControls}
+				ref={playerRef}
+				onProgress={onProgress}
+				onPause={() => setPlaying(false)}
+				onPlay={() => setPlaying(true)}
+				onBuffer={() => setBuffering(true)}
+				onBufferEnd={() => setBuffering(false)}
+				//onSingleClick={wrapMarkActive(() => setPlaying(!playing))}
+				//onDoubleClick={wrapMarkActive(() => changeFullscreen(!fullscreen[0]))}
+			/>
+
+			<ClipperControls
+				video={video}
+				visible={true}
+				onSeek={handleSeek}
+				start={start / video.duration}
+				progress={progress / video.duration}
+				end={end / video.duration}
+				playing={playing}
+				onPlayChange={x => setPlaying(x)}
+			/>
+		</div>
+	</>;
+
+	const actions = <>
+		<Button onClick={handleClose}>Annuleren</Button>
+		<Button onClick={onCreateClip}>Clip aanmaken</Button>
+	</>;
+
+	return [content, actions];
+}
+
+function ClipperWrapper(props) {
+	const [[state, data], setState] = useState([ 'create' ]);
+
+	const handleClose = () => props.handleClose(null, null);
+
+	let content, actions;
+	if (state === 'create') {
+		[content, actions] = Clipper({
+			...props,
+			handleClose: (clip, err) => {
+				if (err != null) {
+					setState([ 'error', err ]);
+				} else if (clip != null) {
+					setState([ 'result', clip ]);
+				} else {
+					handleClose();
+				}
+			}
+		});
+	} else if (state === 'error') {
+		content = <div>Error while creating clip: {data}</div>;
+		actions = <Button onClick={handleClose}>Sluiten</Button>;
+	} else if (state === 'result') {
+		content = <div>{`http://local.lieuwe.xyz:6070/clip/${data.id}`}</div>;
+		actions = <Button onClick={handleClose}>Sluiten</Button>;
+	}
+
 	return (
 		<Dialog
 				open={true}
@@ -143,51 +225,16 @@ function Clipper(props) {
 				maxWidth="md"
 		>
 			<DialogTitle>Clip aanmaken</DialogTitle>
+
 			<DialogContent>
-				<TextField
-					id="title"
-					label="Titel"
-					inputRef={titleRef}
-					defaultValue={titleRef.current}
-					sx={{ width: '100%' }}
-				/>
-
-				<div className={classes.videoWrapper}>
-					<Video
-						video={video}
-						//volume={muted ? 0 : volume}
-						playing={playing}
-						initialProgress={initialProgress}
-						//controls={useNativeControls}
-						ref={playerRef}
-						onProgress={onProgress}
-						onPause={() => setPlaying(false)}
-						onPlay={() => setPlaying(true)}
-						onBuffer={() => setBuffering(true)}
-						onBufferEnd={() => setBuffering(false)}
-						//onSingleClick={wrapMarkActive(() => setPlaying(!playing))}
-						//onDoubleClick={wrapMarkActive(() => changeFullscreen(!fullscreen[0]))}
-					/>
-
-					<ClipperControls
-						video={video}
-						visible={true}
-						onSeek={handleSeek}
-						start={start / video.duration}
-						progress={progress / video.duration}
-						end={end / video.duration}
-						playing={playing}
-						onPlayChange={x => setPlaying(x)}
-					/>
-				</div>
+				{content}
 			</DialogContent>
 
 			<DialogActions>
-				<Button onClick={handleClose}>Annuleren</Button>
-				<Button onClick={createClip}>Clip aanmaken</Button>
+				{actions}
 			</DialogActions>
 		</Dialog>
 	);
 }
 
-export default Clipper;
+export default ClipperWrapper;
