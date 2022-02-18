@@ -74,7 +74,11 @@ function VideoInformation(props) {
 				{props.video.persons.map(g => g.name).join(', ')}
 			</div>
 
-			<VideoProgress video={props.video} />
+			{
+				props.fullInfo
+				? <></>
+				: <VideoProgress video={props.video} />
+			}
 		</div>
 	);
 }
