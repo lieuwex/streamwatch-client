@@ -1,11 +1,29 @@
-.player {
+.player-root.stream {
 	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+
+.player-root.clip {
+	position: fixed;
+	top: 150px;
+	bottom: 50px;
+	left: 50px;
+	right: 50px;
+}
+
+.player {
+	position: absolute;
 	top: 0;
 	left: 0;
 	right: 0;
 	bottom: 0;
 
 	display: flex;
+
+	background-color: #151515;
 }
 
 .player-wrapper {
