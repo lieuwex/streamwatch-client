@@ -26,11 +26,11 @@ export default function MetadataDialog(props) {
 	}
 
 	const titleRef = useRef({ value: props.video.title_type === 'custom' ? props.video.title : null });
-	const changed = useRef(false);
+	const titleChanged = useRef(false);
 
 	const classes = useStyles();
 
-	const handleClose = () => props.handleClose(changed.current ? titleRef.current.value : null, null);
+	const handleClose = () => props.handleClose(titleChanged.current ? titleRef.current.value : null, null);
 
 	const vote = val => {
 		if (val === score) {
@@ -68,7 +68,7 @@ export default function MetadataDialog(props) {
 						autoFocus={true}
 						inputRef={titleRef}
 						defaultValue={titleRef.current.value}
-						onChange={() => changed.current = true}
+						onChange={() => titleChanged.current = true}
 						sx={{ width: '100%' }}
 					/>
 
