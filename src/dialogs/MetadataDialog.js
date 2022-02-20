@@ -17,7 +17,14 @@ export default function MetadataDialog(props) {
 	const username = localStorage.getItem('username');
 	let { data } = swr(username != null ? `http://local.lieuwe.xyz:6070/user/${username}/ratings` : null, fetcher);
 
-	const [score, setScore] = useState((data || {})[props.video.id] || null);
+	const [newScore, setNewScore] = useState(null);
+	let score;
+	if (newScore != null) {
+		score = newScore;
+	} else {
+		score = (data || {})[props.video.id] || 0;
+	}
+
 	const titleRef = useRef({ value: props.video.title_type === 'custom' ? props.video.title : null });
 	const changed = useRef(false);
 
@@ -25,9 +32,10 @@ export default function MetadataDialog(props) {
 
 	const handleClose = () => props.handleClose(changed.current ? titleRef.current.value : null, null);
 
-	const vote = newScore => {
-		if (newScore === score) {
-			newScore = 0;
+	const vote = val => {
+		if (val === score) {
+			// undo vote
+			val = 0;
 		}
 
 		fetch(`http://local.lieuwe.xyz:6070/stream/${props.video.id}/rate`, {
@@ -37,11 +45,11 @@ export default function MetadataDialog(props) {
 			},
 			body: JSON.stringify({
 				username,
-				score: newScore,
+				score: val,
 			}),
 		});
 
-		setScore(newScore);
+		setNewScore(val);
 	};
 
 	return (
