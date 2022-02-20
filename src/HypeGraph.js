@@ -1,3 +1,5 @@
+import React from 'react';
+
 import ChartistGraph from 'react-chartist';
 import swrImmutable from 'swr/immutable';
 
@@ -24,7 +26,7 @@ function smooth(data) {
 	return res;
 }
 
-export default function HypeGraph(props) {
+const HypeGraph = React.memo(function HypeGraph(props) {
 	let { data, error } = swrImmutable(`http://local.lieuwe.xyz:6070/stream/${props.video.id}/hype`, fetcher);
 
 	if (error) {
@@ -72,4 +74,6 @@ export default function HypeGraph(props) {
 	};
 
 	return <ChartistGraph data={chartData} options={options} type='Line' />;
-};
+});
+
+export default HypeGraph;
