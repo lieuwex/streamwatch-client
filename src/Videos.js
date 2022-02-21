@@ -39,7 +39,15 @@ function VideoPreview(props) {
 }
 
 function VideoInformation(props) {
-	const [title, hasNiceTitle] = getTitle(props.video, true);
+	let title, hasNiceTitle;
+	if (props.clip != null) {
+		title = props.clip.title;
+		hasNiceTitle = true;
+	} else {
+		[title, hasNiceTitle] = getTitle(props.video, true);
+	}
+
+	//const [title, hasNiceTitle] = getTitle(props.video, true);
 	const isLong = title.length > 33;
 	const pixels = Math.max(Math.min(750 / title.length, 40), 25);
 
@@ -104,6 +112,7 @@ function VideoProgress(props) {
 
 function Video(props) {
 	const video = props.video;
+	const clip = props.clip;
 
 	const [hovering, setHovering] = useState(false);
 	const [clicked, setClicked] = useState(false);
@@ -138,7 +147,7 @@ function Video(props) {
 	const content = (
 		<Link to={`/video/${video.id}`} onClick={onClick} className={`video-entry ${clicked ? 'clicked' : ''} ${animating ? 'animating' : ''}`} onMouseEnter={onEnter} onMouseLeave={onLeave}>
 			<VideoPreview video={video} playPreview={hovering || clicked} />
-			<VideoInformation video={video} fullInfo={clicked} />
+			<VideoInformation video={video} clip={clip} fullInfo={clicked} />
 			{
 				!clicked
 				? <></>
@@ -175,7 +184,7 @@ function Video(props) {
 function VideosList(props) {
 	return <>
 		<h1>{props.header}</h1>
-		<div className={`video-list ${props.inProgress ? 'in-progress' : ''}`}>
+		<div className={`video-list ${props.horizontal ? 'horizontal' : ''}`}>
 			{props.children}
 		</div>
 	</>;
@@ -202,14 +211,30 @@ function Videos() {
 		.map(mapVideo);
 	const items = videos.map(mapVideo);
 
+	const mapClip = (c, v) => <Video key={c.id} video={v} clip={c} />;
+	const clips = props.clips.map(clip => {
+		const video = props.videos.find(v => v.id === clip.stream_id);
+		return mapClip(clip, video);
+	});
+
 	return (
 		<div className="video-list-wrapper">
 			{
 				inProgress.length === 0
 				? <></>
-				: <VideosList header="Ga verder met kijken" inProgress={true}>
+				: <VideosList header="Ga verder met kijken" horizontal={true}>
 					{inProgress}
 				</VideosList>
+			}
+
+			{
+			/*
+				clips.length === 0
+				? <></>
+				: <VideosList header="Clips" horizontal={true}>
+					{clips}
+				</VideosList>
+			*/
 			}
 
 			<VideosList header="Alle streams" inProgress={false}>

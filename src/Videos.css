@@ -243,7 +243,7 @@
 	font-weight: 450;
 }
 
-.video-list.in-progress {
+.video-list.horizontal {
 	flex-wrap: nowrap;
 	overflow-x: scroll;
 	overflow-y: hidden;
@@ -251,10 +251,10 @@
 	padding-right: 20px;
 	justify-content: unset;
 }
-.video-list.in-progress::-webkit-scrollbar {
+.video-list.horizontal::-webkit-scrollbar {
 	display: none;
 }
-.video-list.in-progress .video-flipper {
+.video-list.horizontal .video-flipper {
 	margin-left: 15px;
 	margin-right: 15px;
 	flex-shrink: 0;
@@ -267,11 +267,11 @@
 		flex-flow: column;
 	}
 
-	.video-list.in-progress .video-flipper {
+	.video-list.horizontal .video-flipper {
 		height: 400px;
 	}
 
-	.video-list.in-progress .video-flipper .video-entry {
+	.video-list.horizontal .video-flipper .video-entry {
 		height: 100%;
 	}
 
