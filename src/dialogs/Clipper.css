@@ -1,11 +1,3 @@
 .clipper-slider {
 	margin-right: 10px;
 }
-
-.clipper-slider .MuiSlider-thumb[data-index="0"] {
-	color: red;
-}
-
-.clipper-slider .MuiSlider-thumb[data-index="2"] {
-	color: green;
-}

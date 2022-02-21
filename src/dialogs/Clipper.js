@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Slider } from '@mui/material';
 import { makeStyles } from '@mui/styles';
@@ -13,7 +13,7 @@ import { Video } from './../Player.js';
 import HypeGraph from './../HypeGraph.js';
 import { Button as ControlsButton } from './../Controls.js';
 
-import { clamp } from './../util.js';
+import { clamp, parseDuration } from './../util.js';
 
 async function createClip(videoId, start, end, title) {
 	const username = localStorage.getItem('username');
@@ -38,10 +38,34 @@ async function createClip(videoId, start, end, title) {
 }
 
 const useStyles = makeStyles({
+	durationsBar: {
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'space-evenly',
+
+		paddingLeft: '50px',
+		paddingRight: '50px',
+
+		marginTop: '20px',
+		marginBottom: '10px',
+	},
+
 	videoWrapper: {
 		position: 'relative',
 		width: '100%',
 		marginTop: '20px',
+
+		'& .duration': {
+			color: 'white',
+		},
+	},
+
+	urlOutput: {
+		border: 'none !important',
+		width: '100%',
+		fontSize: '1em',
+		fontFamily: '"Inter Var"',
+		outline: 'none !important',
 	},
 });
 
@@ -78,7 +102,7 @@ function ClipperControls(props) {
 				<div className="clipper-slider slider-container">
 					<HypeGraph video={props.video} region={[0, props.video.duration]} />
 					<Slider
-						value={[ props.start, props.progress, props.end ]}
+						value={props.progress}
 						disableSwap
 						max={1}
 						step={0.001}
@@ -93,27 +117,29 @@ function ClipperControls(props) {
 function Clipper(props) {
 	const video = props.video;
 
-	const initialStart = props.currentTime - 10;
-	const initialEnd = props.currentTime + 10;
-	const initialProgress = initialStart;
+	const center = props.currentTime;
+	const initialProgress = center - 10;
 
 	const classes = useStyles();
 
 	const titleRef = useRef(null);
+	const startRef = useRef({ value: '10' });
+	const endRef = useRef({ value: '10' });
+
+	const getStart = () => center - +startRef.current.value;
+	const getEnd = () => center + +endRef.current.value;
 
 	const [playing, setPlaying] = useState(true);
 	const [buffering, setBuffering] = useState(true);
 
-	const [start, setStart] = useState(initialStart);
 	const [progress, setProgress] = useState(initialProgress);
-	const [end, setEnd] = useState(initialEnd);
 
 	const handleClose = () => props.handleClose(null, null);
 	const onCreateClip = () => {
 		createClip(
 			video.id,
-			start,
-			end,
+			getStart(),
+			getEnd(),
 			titleRef.current.value || null
 		)
 		.then(clip => props.handleClose(clip, null))
@@ -121,26 +147,27 @@ function Clipper(props) {
 	};
 
 	const playerRef = useRef(null);
-	const handleSeek = ([ startFract, nowFract, endFract ]) => {
-		nowFract = clamp(nowFract, startFract, endFract);
-
+	const handleSeek = (nowFract) => {
 		setProgress(nowFract * video.duration);
 		if (playerRef.current != null) {
 			playerRef.current.seekTo(nowFract, 'fraction');
 		}
-
-		setStart(startFract * video.duration);
-		setEnd(endFract * video.duration);
 	};
 	const onProgress = ({ playedSeconds }) => {
-		if (playedSeconds > end) {
-			if (playerRef.current != null) {
-				playerRef.current.seekTo(start, 'seconds');
-			}
-			setProgress(start);
-		} else {
+		const start = getStart();
+		const end = getEnd();
+
+		console.log(start, playedSeconds, end);
+
+		if (start <= playedSeconds && playedSeconds <= end) {
 			setProgress(playedSeconds);
+			return;
 		}
+
+		if (playerRef.current != null) {
+			playerRef.current.seekTo(start, 'seconds');
+		}
+		setProgress(start);
 	};
 
 	const content = <>
@@ -151,6 +178,26 @@ function Clipper(props) {
 			defaultValue={titleRef.current}
 			sx={{ width: '100%' }}
 		/>
+
+		<div className={classes.durationsBar}>
+			<TextField
+				id="start"
+				label="Ervoor"
+				inputRef={startRef}
+				defaultValue={startRef.current.value}
+				sx={{ width: '100px' }}
+			/>
+
+			{formatDuration(1000 * center)}
+
+			<TextField
+				id="end"
+				label="Erna"
+				inputRef={endRef}
+				defaultValue={endRef.current.value}
+				sx={{ width: '100px' }}
+			/>
+		</div>
 
 		<div className={classes.videoWrapper}>
 			<Video
@@ -173,11 +220,10 @@ function Clipper(props) {
 				video={video}
 				visible={true}
 				onSeek={handleSeek}
-				start={start / video.duration}
 				progress={progress / video.duration}
-				end={end / video.duration}
 				playing={playing}
 				onPlayChange={x => setPlaying(x)}
+				region={[0, video.duration]}
 			/>
 		</div>
 	</>;
@@ -187,19 +233,38 @@ function Clipper(props) {
 		<Button onClick={onCreateClip}>Clip aanmaken</Button>
 	</>;
 
-	return [content, actions];
+	return <>
+		<DialogContent>
+			{content}
+		</DialogContent>
+
+		<DialogActions>
+			{actions}
+		</DialogActions>
+	</>;
 }
 
 function ClipperWrapper(props) {
+	const classes = useStyles();
+
 	const [[state, data], setState] = useState([ 'create' ]);
 
 	const handleClose = () => props.handleClose(null, null);
 
-	let content, actions;
+	const inputRef = useRef(null);
+	useEffect(() => {
+		if (state !== 'result' || inputRef.current == null) {
+			return;
+		}
+
+		inputRef.current.select();
+	});
+
+	let content;
 	if (state === 'create') {
-		[content, actions] = Clipper({
-			...props,
-			handleClose: (clip, err) => {
+		content = <Clipper
+			{...props}
+			handleClose={(clip, err) => {
 				if (err != null) {
 					setState([ 'error', err ]);
 				} else if (clip != null) {
@@ -207,14 +272,33 @@ function ClipperWrapper(props) {
 				} else {
 					handleClose();
 				}
-			}
-		});
+			}}
+		/>;
 	} else if (state === 'error') {
-		content = <div>Error while creating clip: {data}</div>;
-		actions = <Button onClick={handleClose}>Sluiten</Button>;
+		content = <>
+			<DialogContent>
+				<div>Error while creating clip: {data.toString()}</div>
+			</DialogContent>
+
+			<DialogActions>
+				<Button onClick={handleClose}>Sluiten</Button>
+			</DialogActions>
+		</>;
 	} else if (state === 'result') {
-		content = <div>{`http://local.lieuwe.xyz:6070/clip/${data.id}`}</div>;
-		actions = <Button onClick={handleClose}>Sluiten</Button>;
+		content = <>
+			<DialogContent>
+				<input
+					className={classes.urlOutput}
+					ref={inputRef}
+					readOnly
+					value={`http://local.lieuwe.xyz:6070/clip/${data.id}`}
+				/>
+			</DialogContent>
+
+			<DialogActions>
+				<Button onClick={handleClose}>Sluiten</Button>
+			</DialogActions>
+		</>;
 	}
 
 	return (
@@ -222,17 +306,11 @@ function ClipperWrapper(props) {
 				open={true}
 				onClose={handleClose}
 				fullWidth={true}
-				maxWidth="md"
+				maxWidth="sm"
 		>
 			<DialogTitle>Clip aanmaken</DialogTitle>
 
-			<DialogContent>
-				{content}
-			</DialogContent>
-
-			<DialogActions>
-				{actions}
-			</DialogActions>
+			{content}
 		</Dialog>
 	);
 }
