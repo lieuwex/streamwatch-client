@@ -143,6 +143,8 @@ const ChatMessage = React.memo(props => {
 			<div className="message-content" dangerouslySetInnerHTML={{__html: body}} />
 		</div>
 	);
+}, (prevProps, nextProps) => {
+	return prevProps.message.tags.id === nextProps.message.tags.id;
 });
 
 const Chat = React.memo(props => {
