@@ -276,16 +276,13 @@ function Player(props) {
 	};
 
 	// handle fullscreen change requests (made by user)
-	const wrapperRef = useRef(null);
 	useEffect(() => {
-		if (wrapperRef.current == null) {
-			return;
-		} else if (!screenfull.isEnabled) {
+		if (!screenfull.isEnabled) {
 			return;
 		}
 
 		if (fullscreen[0]) {
-			screenfull.request(wrapperRef.current);
+			screenfull.request(window.document.body);
 		}
 
 		return () => screenfull.exit();
@@ -293,7 +290,10 @@ function Player(props) {
 
 	// handle fullscreen changes (made by browser)
 	useEffect(() => {
-		const callback = () => changeFullscreen(screenfull.isFullscreen);
+		const callback = () => {
+			console.log(screenfull.isFullscreen); // this line is needed, otherwise it doesn't work, wtf?
+			changeFullscreen(screenfull.isFullscreen);
+		};
 		screenfull.on('change', callback);
 		return () =>  screenfull.off('change', callback);
 	}, []);
@@ -359,7 +359,7 @@ function Player(props) {
 	};
 
 	return (
-		<div className="player" ref={wrapperRef}>
+		<div className="player">
 			<div className={`player-wrapper ${!userActive && playing ? 'hide-cursor' : ''}`} onPointerMove={() => markActive()}>
 				{ buffering && !useNativeControls ? <Loading position="absolute" /> : <></> }
 
