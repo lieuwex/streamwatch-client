@@ -152,6 +152,28 @@ function useUpdateProgress(video, playingAsClip, playing, progress) {
 	}, [progress]);
 }
 
+function useMediaSession(video) {
+	useState(() => {
+		if (!('mediaSession' in navigator)) {
+			return;
+		}
+
+		const [title, _] = getTitle(video, true);
+
+		navigator.mediaSession.metadata = new window.MediaMetadata({
+			title: title,
+			artist: video.persons.map(g => g.name).join(', '),
+			artwork: [{
+				src: `http://local.lieuwe.xyz:6070/thumbnail/${video.id}/0.webp`,
+				sizes: '1920x1080',
+				type: 'image/webp',
+			}]
+		});
+
+		return () => navigator.mediaSession.metadata = null;
+	}, [video.id]);
+}
+
 function Player(props) {
 	const video = props.video;
 	const clip = props.clip;
@@ -201,6 +223,9 @@ function Player(props) {
 
 	// sync watch progress
 	useUpdateProgress(video, playingAsClip, playing, progress);
+
+	// update mediaSession information
+	useMediaSession(video);
 
 	useEffect(() => {
 		if (!playing && clip == null) {
