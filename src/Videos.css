@@ -2,7 +2,6 @@
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-around;
-	padding-top: 15px;
 
 	padding-left: 10px; /* new */
 	padding-right: 10px; /* new */
@@ -13,8 +12,8 @@
 	margin-bottom: 15px;
 	border-radius: 15px;
 	/* max-width: 600px; */
-    /* max-width: calc(100% - 50px); */
-    max-width: 725px;
+	/* max-width: calc(100% - 50px); */
+	max-width: 725px;
 }
 .video-list div.video-flipper > a {
 	color: #fff;
@@ -210,6 +209,7 @@
 }
 .video-list-wrapper h1 {
 	text-align: center;
+	font-weight: 450;
 }
 
 .video-list.in-progress {
