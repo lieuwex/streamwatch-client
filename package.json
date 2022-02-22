@@ -29,7 +29,6 @@
     "screenfull": "^6.0.0",
     "swr": "^1.1.2",
     "tlds": "^1.228.0",
-    "typeface-inter": "^3.18.1",
     "use-double-click": "^1.0.5"
   },
   "scripts": {
