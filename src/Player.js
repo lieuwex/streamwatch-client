@@ -12,6 +12,7 @@ import Loading from './Loading.js';
 import Sidebar from './Sidebar.js';
 import Controls from './Controls.js';
 import PlayerDialog from './Dialogs.js';
+import useStreams from './streamsHook.js';
 
 async function updateItems(type, streamId, items) {
 	if (type === 'participants') {
@@ -467,11 +468,19 @@ function getUrlProgress() {
 };
 
 export default function PlayerWrapper(props) {
+	const { isLoading, clips: clipsInfo, streams: streamsInfo } = useStreams();
+	const clips = clipsInfo[0];
+	const videos = streamsInfo[0];
+
 	const { id } = useParams();
+
+	if (isLoading) {
+		return <Loading />;
+	}
 
 	let videoId, clip;
 	if (props.isClip) {
-		clip = props.clips.find(c => c.id === +id);
+		clip = clips.find(c => c.id === +id);
 		if (clip == null) {
 			return <div>clip not found</div>;
 		}
@@ -481,7 +490,7 @@ export default function PlayerWrapper(props) {
 		videoId = id;
 	}
 
-	const video = props.videos.find(v => v.id === +videoId);
+	const video = videos.find(v => v.id === +videoId);
 	if (video == null) {
 		return <div>video not found</div>;
 	}

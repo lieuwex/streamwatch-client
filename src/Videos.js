@@ -10,6 +10,8 @@ import filesize from 'filesize';
 
 import { formatGame, filterGames, formatDate, getTitle } from './util.js';
 import './Videos.css';
+import useStreams from './streamsHook.js';
+import Loading from './Loading.js';
 
 function VideoPreview(props) {
 	let videoContent = <></>;
@@ -171,19 +173,26 @@ function VideosList(props) {
 	</>;
 }
 
-function Videos(props) {
+function Videos() {
 	useEffect(() => {
 		document.title = 'Streamwatch';
 	}, []);
 
+	const { isLoading, streams: streamsInfo } = useStreams();
+	const videos = streamsInfo[0];
+
+	if (isLoading) {
+		return <Loading heavyLoad={true} />;
+	}
+
 	const mapVideo = v => <Video key={v.id} video={v} />;
-	const inProgress = [...props.videos]
+	const inProgress = [...videos]
 		.filter(v => v.inProgress)
 		.sort((a, b) => {
 			return b.progress.real_time - a.progress.real_time;
 		})
 		.map(mapVideo);
-	const items = props.videos.map(mapVideo);
+	const items = videos.map(mapVideo);
 
 	return (
 		<div className="video-list-wrapper">
