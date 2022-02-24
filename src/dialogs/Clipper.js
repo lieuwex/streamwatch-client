@@ -126,8 +126,8 @@ function Clipper(props) {
 	const startRef = useRef({ value: '10' });
 	const endRef = useRef({ value: '10' });
 
-	const getStart = () => center - +startRef.current.value;
-	const getEnd = () => center + +endRef.current.value;
+	const getStart = () => center - (+startRef.current.value || 0);
+	const getEnd = () => center + (+endRef.current.value || 0);
 
 	const [playing, setPlaying] = useState(true);
 	const [buffering, setBuffering] = useState(true);
@@ -170,6 +170,21 @@ function Clipper(props) {
 		setProgress(start);
 	};
 
+	const showStart = () => {
+		const start = getStart();
+		if (playerRef.current != null) {
+			playerRef.current.seekTo(start, 'seconds');
+		}
+		setProgress(start);
+	};
+	const showEnd = () => {
+		const end = getEnd() - 3;
+		if (playerRef.current != null) {
+			playerRef.current.seekTo(end, 'seconds');
+		}
+		setProgress(end);
+	};
+
 	const content = <>
 		<TextField
 			id="title"
@@ -184,6 +199,7 @@ function Clipper(props) {
 				id="start"
 				label="Ervoor"
 				inputRef={startRef}
+				onChange={showStart}
 				defaultValue={startRef.current.value}
 				sx={{ width: '100px' }}
 			/>
@@ -194,6 +210,7 @@ function Clipper(props) {
 				id="end"
 				label="Erna"
 				inputRef={endRef}
+				onChange={showEnd}
 				defaultValue={endRef.current.value}
 				sx={{ width: '100px' }}
 			/>
