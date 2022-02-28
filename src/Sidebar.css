@@ -131,4 +131,5 @@
 
 .chat-message > .message-content img {
 	height: 2rem;
+	width: auto;
 }

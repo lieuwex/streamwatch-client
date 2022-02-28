@@ -15,8 +15,12 @@ import ChatManager from './ChatManager.js';
 const linkify = makeLinkify();
 linkify.tlds(tlds);
 
-function getTwitchEmoticonUrl(id, theme='dark') {
-	return `https://static-cdn.jtvnw.net/emoticons/v2/${id}/default/${theme}/4.0`;
+function getTwitchEmoticon(id, theme='dark') {
+	return {
+		url: `https://static-cdn.jtvnw.net/emoticons/v2/${id}/default/${theme}/4.0`,
+		width: 112,
+		height: 112,
+	};
 }
 function parseEmotes(emoteString) {
 	const emotes = [];
@@ -55,8 +59,8 @@ function convertEmotes(str, emotes) {
 		}
 
 		const content = str.slice(emote.start, emote.end);
-		const url = getTwitchEmoticonUrl(emote.id);
-		res.push(`<img alt="${content}" title="${content}" src="${url}"/>`);
+		const { url, width, height } = getTwitchEmoticon(emote.id);
+		res.push(`<img alt="${content}" title="${content}" src="${url}" width="${width}" height="${height}" decoding="sync"/>`);
 
 		last = emote.end;
 	}
