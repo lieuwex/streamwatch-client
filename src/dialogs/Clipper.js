@@ -130,7 +130,6 @@ function Clipper(props) {
 	const getEnd = () => center + (+endRef.current.value || 0);
 
 	const [playing, setPlaying] = useState(true);
-	const [buffering, setBuffering] = useState(true);
 
 	const [progress, setProgress] = useState(initialProgress);
 
@@ -227,8 +226,6 @@ function Clipper(props) {
 				onProgress={onProgress}
 				onPause={() => setPlaying(false)}
 				onPlay={() => setPlaying(true)}
-				onBuffer={() => setBuffering(true)}
-				onBufferEnd={() => setBuffering(false)}
 				//onSingleClick={wrapMarkActive(() => setPlaying(!playing))}
 				//onDoubleClick={wrapMarkActive(() => changeFullscreen(!fullscreen[0]))}
 			/>
