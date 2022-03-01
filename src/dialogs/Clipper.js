@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Slider } from '@mui/material';
 import { makeStyles } from '@mui/styles';
@@ -12,8 +12,9 @@ import './Clipper.css';
 import { Video } from './../Player.js';
 import HypeGraph from './../HypeGraph.js';
 import { Button as ControlsButton } from './../Controls.js';
+import SelectedText from './../SelectedText.js';
 
-import { clamp, parseDuration } from './../util.js';
+import { clamp } from './../util.js';
 
 async function createClip(videoId, start, end, title) {
 	const username = localStorage.getItem('username');
@@ -58,14 +59,6 @@ const useStyles = makeStyles({
 		'& .duration': {
 			color: 'white',
 		},
-	},
-
-	urlOutput: {
-		border: 'none !important',
-		width: '100%',
-		fontSize: '1em',
-		fontFamily: '"Inter Var"',
-		outline: 'none !important',
 	},
 });
 
@@ -259,20 +252,9 @@ function Clipper(props) {
 }
 
 function ClipperWrapper(props) {
-	const classes = useStyles();
-
 	const [[state, data], setState] = useState([ 'create' ]);
 
 	const handleClose = () => props.handleClose(null, null);
-
-	const inputRef = useRef(null);
-	useEffect(() => {
-		if (state !== 'result' || inputRef.current == null) {
-			return;
-		}
-
-		inputRef.current.select();
-	});
 
 	let content;
 	if (state === 'create') {
@@ -301,12 +283,7 @@ function ClipperWrapper(props) {
 	} else if (state === 'result') {
 		content = <>
 			<DialogContent>
-				<input
-					className={classes.urlOutput}
-					ref={inputRef}
-					readOnly
-					value={`http://local.lieuwe.xyz:6070/clip/${data.id}`}
-				/>
+				<SelectedText value={`http://local.lieuwe.xyz:6070/clip/${data.id}`} />
 			</DialogContent>
 
 			<DialogActions>
