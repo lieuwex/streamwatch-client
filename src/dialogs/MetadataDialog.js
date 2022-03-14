@@ -15,7 +15,8 @@ const useStyles = makeStyles({
 
 export default function MetadataDialog(props) {
 	const username = localStorage.getItem('username');
-	let { data } = swr(username != null ? `http://local.lieuwe.xyz:6070/user/${username}/ratings` : null, fetcher);
+	const password = localStorage.getItem('password') || '';
+	let { data } = swr(username != null ? `http://local.lieuwe.xyz:6070/user/${username}/ratings?password=${password}` : null, fetcher);
 
 	const [newScore, setNewScore] = useState(null);
 	let score;
@@ -38,7 +39,7 @@ export default function MetadataDialog(props) {
 			val = 0;
 		}
 
-		fetch(`http://local.lieuwe.xyz:6070/stream/${props.video.id}/rate`, {
+		fetch(`http://local.lieuwe.xyz:6070/stream/${props.video.id}/rate?password=${password}`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

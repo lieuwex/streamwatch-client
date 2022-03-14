@@ -34,7 +34,8 @@ export default function useStreams() {
 	clipsData = clipsData || [];
 
 	const username = localStorage.getItem('username');
-	let { data: progressData, error: progressError } = swr(username != null ? `http://local.lieuwe.xyz:6070/user/${username}/progress` : null, fetcher);
+	const password = localStorage.getItem('password') || '';
+	let { data: progressData, error: progressError } = swr(username != null ? `http://local.lieuwe.xyz:6070/user/${username}/progress?password=${password}` : null, fetcher);
 	const progressLoading = username != null && progressData == null && progressError == null;
 	if (progressError != null) {
 		console.warn('error while loading user progress', progressError);

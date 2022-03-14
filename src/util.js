@@ -33,8 +33,9 @@ export async function updateStreamsProgress(dict) {
 	if (username == null) {
 		return;
 	}
+	const password = localStorage.getItem('password') || '';
 
-	await fetch(`http://local.lieuwe.xyz:6070/user/${username}/progress`, {
+	await fetch(`http://local.lieuwe.xyz:6070/user/${username}/progress?password=${password}`, {
 		method: 'PUT',
 		headers: {
 			'Content-Type': 'application/json',

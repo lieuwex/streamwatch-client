@@ -53,7 +53,14 @@ function Login() {
 	}, []);
 
 	const onSelect = username => {
+		let password = null;
+		if ([ 'lieuwe', 'bart' ].includes(username)) {
+			password = window.prompt('Voer je wachtwoord in (let op, het is gewoon zichtbaar gast)');
+		}
+
 		localStorage.setItem('username', username);
+		localStorage.setItem('password', password);
+
 		window.location.href = '/';
 	};
 

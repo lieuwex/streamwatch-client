@@ -21,8 +21,9 @@ async function createClip(videoId, start, end, title) {
 	if (username == null) {
 		throw new Error('user not logged in');
 	}
+	const password = localStorage.getItem('password') || '';
 
-	const res = await fetch(`http://local.lieuwe.xyz:6070/clips`, {
+	const res = await fetch(`http://local.lieuwe.xyz:6070/clips?password=${password}`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
