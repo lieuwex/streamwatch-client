@@ -54,7 +54,7 @@ function Login() {
 
 	const onSelect = username => {
 		let password = null;
-		if ([ 'lieuwe', 'bart' ].includes(username)) {
+		if ([ 'lieuwe', 'bart', 'lisanne' ].includes(username)) {
 			password = window.prompt('Voer je wachtwoord in (let op, het is gewoon zichtbaar gast)');
 		}
 
@@ -68,6 +68,7 @@ function Login() {
 		<div className={classes.login}>
 			<User onSelect={onSelect} name="Lieuwe" username="lieuwe" />
 			<User onSelect={onSelect} name="Bart" username="bart" />
+			<User onSelect={onSelect} name="Lisanne" username="lisanne" />
 			<User onSelect={onSelect} name="Daan" username="daan" />
 		</div>
 	</>;
