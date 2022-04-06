@@ -44,7 +44,7 @@ function VideoInformation(props) {
 	const pixels = Math.max(Math.min(750 / title.length, 40), 25);
 
 	return (
-		<div className="video-entry-information">
+		<div className={`video-entry-information ${props.fullInfo ? 'expanded' : ''}`}>
 			<div className={`video-entry-title ${isLong ? 'long' : ''}`} style={{ fontSize: `${pixels}px` }}>
 				{title}
 			</div>
@@ -61,6 +61,14 @@ function VideoInformation(props) {
 				? <></>
 				: <div className="video-entry-size">
 					{filesize(props.video.file_size, {output: "array"}).join('')}
+				</div>
+			}
+
+			{
+				!props.fullInfo
+				? <></>
+				: <div className="video-entry-addeddate">
+					{formatDate(props.video.addedDate)}
 				</div>
 			}
 

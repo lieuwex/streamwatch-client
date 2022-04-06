@@ -8,6 +8,7 @@ async function streamsFetcher(...args) {
 	const streams = await res.json();
 	for (let stream of streams) {
 		stream.date = DateTime.fromSeconds(stream.timestamp);
+		stream.addedDate = stream.inserted_at ? DateTime.fromSeconds(stream.inserted_at) : null;
 	}
 	return streams;
 }
