@@ -137,13 +137,20 @@ function useUpdateProgress(video, playingAsClip, playing, progress) {
 	useEffect(() => {
 		if (playingAsClip) {
 			return;
-		}
-
-		if (!playing || Math.abs(progress - previousUpdateAt.current) < 5) {
+		} else if (!playing || Math.abs(progress - previousUpdateAt.current) < 5) {
 			return;
 		}
 
 		previousUpdateAt.current = progress;
+
+		if (progress < 1) {
+			// When watching on mobile and reopening the web browser after it
+			// has been backgrounded, sometimes streamwatch sends a progress
+			// update with a time of 0.0.
+			// To cirumvent this, don't send progress updates when the progress
+			// is less than 1 second (just to be safe).
+			return;
+		}
 
 		requestIdleCallback(() => {
 			updateStreamsProgress({
