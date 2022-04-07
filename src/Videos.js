@@ -65,7 +65,7 @@ function VideoInformation(props) {
 			}
 
 			{
-				!props.fullInfo
+				!props.fullInfo || !props.video.addedDate
 				? <></>
 				: <div className="video-entry-addeddate">
 					{formatDate(props.video.addedDate)}
