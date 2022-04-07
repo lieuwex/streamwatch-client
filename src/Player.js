@@ -252,10 +252,9 @@ function Player(props) {
 		}
 	};
 	const onProgress = ({ playedSeconds }) => {
-		if (loop && playedSeconds >= region[1]) {
-			if (playerRef.current != null) {
-				playerRef.current.seekTo(region[0], 'seconds');
-			}
+		const outbounds = playedSeconds < region[0] || playedSeconds >= region[1];
+		if (loop && outbounds) {
+			playerRef.current?.seekTo(region[0], 'seconds');
 			setProgress(region[0]);
 		} else {
 			setProgress(playedSeconds);
