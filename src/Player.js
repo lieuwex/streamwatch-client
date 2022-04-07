@@ -173,7 +173,7 @@ function useMediaSession(video) {
 			artist: video.persons.map(g => g.name).join(', '),
 			artwork: [{
 				src: `http://local.lieuwe.xyz:6070/thumbnail/${video.id}/0.webp`,
-				sizes: '1920x1080',
+				sizes: '1920x1080', // TODO: this might not always be the case, actually
 				type: 'image/webp',
 			}]
 		});
