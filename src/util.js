@@ -69,6 +69,9 @@ export function filterGames(games) {
 }
 
 export function formatDate(date) {
+	if (date == null) {
+		return date;
+	}
 	return date.toFormat('yyyy-MM-dd HH:mm:ss');
 }
 
