@@ -513,21 +513,18 @@ export default function PlayerWrapper(props) {
 		initialProgress = clip.start_time;
 	}
 
-	const player = (
-		<div className={`player-root ${clip == null ? 'stream' : 'clip'}`}>
-			<Player video={video} clip={clip} initialProgress={initialProgress} />
-		</div>
-	);
-
-	if (clip == null) {
-		return player;
+	let clipInfo = <></>;
+	if (clip != null) {
+		clipInfo = (
+			<div className="clip-info">
+				<h1 className="clip-header">{clip.title}</h1>
+				<h2 className="clip-subheader">door {clip.author_username}</h2>
+			</div>
+		);
 	}
 
-	return <>
-		<div className="clip-info">
-			<h1 className="clip-header">{clip.title}</h1>
-			<h2 className="clip-subheader">door {clip.author_username}</h2>
-		</div>
-		{player}
-	</>;
+	return <div className={`player-root ${clip == null ? 'stream' : 'clip'}`}>
+		{clipInfo}
+		<Player video={video} clip={clip} initialProgress={initialProgress} />
+	</div>;
 }

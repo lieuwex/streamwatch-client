@@ -1,25 +1,17 @@
-.player-root.stream {
+.player-root {
 	position: fixed;
 	top: 0;
 	left: 0;
 	right: 0;
 	bottom: 0;
-}
 
-.player-root.clip {
-	position: fixed;
-	top: 150px;
-	bottom: 50px;
-	left: 50px;
-	right: 50px;
+	display: flex;
+	flex-direction: column;
 }
 
 .player {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
+	height: 0;
+	flex-grow: 1;
 
 	display: flex;
 
@@ -192,8 +184,9 @@
 }
 
 .clip-info {
-	margin-top: 30px;
-	margin-left: 120px;
+	margin-bottom: 15px;
+	margin-left: 25px;
+	margin-top: 10px;
 }
 
 .clip-info > * {
