@@ -40,7 +40,8 @@ function User(props) {
 
 	return (
 		<div className={classes.user} onClick={onClick}>
-			{props.name} ({props.username})
+			{/* {props.name} ({props.username}) */}
+			{props.name}
 		</div>
 	)
 }
@@ -69,6 +70,7 @@ function Login() {
 			<User onSelect={onSelect} name="Lieuwe" username="lieuwe" />
 			<User onSelect={onSelect} name="Bart" username="bart" />
 			<User onSelect={onSelect} name="Lisanne" username="lisanne" />
+			<User onSelect={onSelect} name="Marente" username="marente" />
 			<User onSelect={onSelect} name="Daan" username="daan" />
 		</div>
 	</>;
