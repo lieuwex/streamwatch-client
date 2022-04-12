@@ -171,6 +171,7 @@ const Chat = React.memo(props => {
 	}, []);
 
 	const messages = useRef([]);
+	const jumpcutOffset = useRef(0);
 	const previousOffset = useRef(null);
 	useEffect(() => {
 		const dist = Math.abs(props.offset - previousOffset.current);
@@ -181,13 +182,15 @@ const Chat = React.memo(props => {
 
 		const actualTimestamp = props.offset + props.video.timestamp*1e3;
 		let currTimestamp = actualTimestamp;
+		let currJumpcutOffset = 0;
 		for (const jumpcut of props.video.jumpcuts) {
 			if (jumpcut.at*1e3 > actualTimestamp) {
 				break;
 			}
 
-			currTimestamp += jumpcut.duration*1e3;
+			currJumpcutOffset += jumpcut.duration*1e3;
 		}
+		currTimestamp += currJumpcutOffset;
 		//console.log('currTimestamp', currTimestamp);
 
 		// ensure that we have enough data for now and the future, does not
@@ -200,6 +203,7 @@ const Chat = React.memo(props => {
 		msgs = msgs.slice(Math.max(0, msgs.length - 300), msgs.length);
 
 		messages.current = msgs;
+		jumpcutOffset.current = currJumpcutOffset;
 		previousOffset.current = props.offset;
 	});
 
@@ -216,7 +220,7 @@ const Chat = React.memo(props => {
 	});
 
 	const items = messages.current.map(m => {
-		return <ChatMessage key={m.tags.id} message={m} videoTimestamp={props.video.timestamp*1e3} region={props.region} />;
+		return <ChatMessage key={m.tags.id} message={m} videoTimestamp={props.video.timestamp*1e3 + jumpcutOffset.current} region={props.region} />;
 	});
 
 	return (
