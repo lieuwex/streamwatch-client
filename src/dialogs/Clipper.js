@@ -150,8 +150,6 @@ function Clipper(props) {
 		const start = getStart();
 		const end = getEnd();
 
-		console.log(start, playedSeconds, end);
-
 		if (start <= playedSeconds && playedSeconds <= end) {
 			setProgress(playedSeconds);
 			return;
