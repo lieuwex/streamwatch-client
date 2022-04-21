@@ -72,6 +72,8 @@ function Login() {
 			<User onSelect={onSelect} name="Lisanne" username="lisanne" />
 			<User onSelect={onSelect} name="Marente" username="marente" />
 			<User onSelect={onSelect} name="Daan" username="daan" />
+			<User onSelect={onSelect} name="Mees" username="mees" />
+			<User onSelect={onSelect} name="Victor" username="victor" />
 		</div>
 	</>;
 }
