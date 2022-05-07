@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import ReactPlayer from 'react-player';
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import screenfull from 'screenfull';
 import useDoubleClick from 'use-double-click';
 import { isMobile } from 'react-device-detect';
@@ -292,20 +292,19 @@ function Player(props) {
 		};
 	};
 
-	const changeFullscreen = newValue => {
+	const changeFullscreen = useCallback(newValue => {
 		if (fullscreen[0] === newValue) {
 			return;
 		}
 
 		if (newValue) {
-			console.log('setFullscreen', true, sidebarOpen);
 			setFullscreen([ true, sidebarOpen ]);
 			setSidebarOpen(false);
 		} else {
 			setFullscreen([ false, false ]);
 			setSidebarOpen(fullscreen[1]);
 		}
-	};
+	}, [...fullscreen, sidebarOpen]);
 
 	// handle fullscreen change requests (made by user)
 	useEffect(() => {
@@ -323,12 +322,11 @@ function Player(props) {
 	// handle fullscreen changes (made by browser)
 	useEffect(() => {
 		const callback = () => {
-			console.log(screenfull.isFullscreen); // this line is needed, otherwise it doesn't work, wtf?
 			changeFullscreen(screenfull.isFullscreen);
 		};
 		screenfull.on('change', callback);
 		return () =>  screenfull.off('change', callback);
-	}, []);
+	}, [changeFullscreen]);
 
 	// watch parties receiver
 	useEffect(() => {
