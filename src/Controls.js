@@ -84,7 +84,16 @@ export default function Controls(props) {
 
 				<div className="slider-container">
 					<HypeGraph video={props.video} region={props.region} />
-					<Slider value={props.progress} min={min} max={max} step={0.00001} onChange={(_, newValue) => props.onSeek(newValue)} />
+					<Slider
+						value={props.progress}
+						min={min} max={max} step={0.00001}
+						componentsProps={{
+							input: {
+								className: 'mousetrap',
+							},
+						}}
+						onChange={(_, newValue) => props.onSeek(newValue)}
+					/>
 				</div>
 
 				<div className="volume-controls">
