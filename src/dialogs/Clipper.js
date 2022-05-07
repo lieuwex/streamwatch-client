@@ -64,23 +64,6 @@ const useStyles = makeStyles({
 });
 
 function ClipperControls(props) {
-	const wrap = fn => {
-		return e => {
-			e.stopImmediatePropagation();
-			e.preventDefault();
-
-			fn();
-		};
-	};
-
-	const seekDelta = delta => {
-		const deltaFract = delta / props.video.duration;
-		const newValue = props.progress + deltaFract;
-		props.onSeek(clamp(newValue, 0, 1));
-	};
-	useMousetrap('left', wrap(() => seekDelta(-10)));
-	useMousetrap('right', wrap(() => seekDelta(10)));
-
 	return (
 		<div className={`video-controls ${props.visible ? 'visible' : ''}`}>
 			<div className="controls-row information">
