@@ -4,7 +4,9 @@ import { ThumbUp, ThumbDown } from '@mui/icons-material';
 import { IconButton, Dialog, DialogTitle, DialogContent, TextField } from '@mui/material';
 import swr from 'swr';
 
-import { fetcher } from '../util.js';
+import { fetcher, getCurrentUrl } from '../util.js';
+
+import SelectedText from '../SelectedText.js';
 
 const useStyles = makeStyles({
 	vote: {
@@ -53,6 +55,9 @@ export default function MetadataDialog(props) {
 		setNewScore(val);
 	};
 
+	const url = getCurrentUrl();
+	url.searchParams.set('s', Math.floor(props.currentTime));
+
 	return (
 		<>
 			<Dialog
@@ -63,6 +68,8 @@ export default function MetadataDialog(props) {
 			>
 				<DialogTitle>Metadata</DialogTitle>
 				<DialogContent>
+					<SelectedText value={url.toString()} />
+
 					<TextField
 						id="title"
 						label="Custom titel"
@@ -73,18 +80,18 @@ export default function MetadataDialog(props) {
 						sx={{ width: '100%' }}
 					/>
 
-				{
-					username == null
-					? <></>
-					: <div className={classes.vote}>
-						<IconButton onClick={() => vote(1)}>
-							<ThumbUp color={score === 1 ? 'primary' : ''} />
-						</IconButton>
-						<IconButton onClick={() => vote(-1)}>
-							<ThumbDown color={score === -1 ? 'primary' : ''} />
-						</IconButton>
-					</div>
-				}
+					{
+						username == null
+						? <></>
+						: <div className={classes.vote}>
+							<IconButton onClick={() => vote(1)}>
+								<ThumbUp color={score === 1 ? 'primary' : ''} />
+							</IconButton>
+							<IconButton onClick={() => vote(-1)}>
+								<ThumbDown color={score === -1 ? 'primary' : ''} />
+							</IconButton>
+						</div>
+					}
 
 				</DialogContent>
 			</Dialog>

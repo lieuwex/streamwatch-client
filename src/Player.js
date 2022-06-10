@@ -235,14 +235,6 @@ function Player(props) {
 	// update mediaSession information
 	useMediaSession(video);
 
-	useEffect(() => {
-		if (!playing && clip == null) {
-			const url = getCurrentUrl();
-			url.searchParams.set('s', Math.floor(progress));
-			window.history.replaceState(null, "", url.toString());
-		}
-	}, [playing]);
-
 	// video listeners
 	const playerRef = useRef(null);
 	const handleSeek = (fract, broadcast = true) => {
