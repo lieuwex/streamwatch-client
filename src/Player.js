@@ -7,7 +7,7 @@ import { isMobile } from 'react-device-detect';
 import { mutate } from 'swr';
 
 import './Player.css';
-import { updateStreamsProgress, filterGames, getTitle, formatDate, getCurrentUrl } from './util.js';
+import { updateStreamsProgress, addClipView, filterGames, getTitle, formatDate, getCurrentUrl } from './util.js';
 import Loading from './Loading.js';
 import Sidebar from './Sidebar.js';
 import Controls from './Controls.js';
@@ -255,6 +255,10 @@ function Player(props) {
 		if (loop && outbounds) {
 			playerRef.current?.seekTo(region[0], 'seconds');
 			setProgress(region[0]);
+
+			requestIdleCallback(() => {
+				addClipView(clip.id).catch(e => console.error(e));
+			}, { timeout: 500 });
 		} else {
 			setProgress(playedSeconds);
 		}

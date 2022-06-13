@@ -45,6 +45,16 @@ export async function updateStreamsProgress(dict) {
 	mutate(`http://local.lieuwe.xyz:6070/user/${username}/progress`);
 }
 
+export async function addClipView(clipId) {
+	const username = localStorage.getItem('username') || '';
+	const password = localStorage.getItem('password') || '';
+
+	await fetch(`http://local.lieuwe.xyz:6070/clips/${clipId}/view?username=${username}&password=${password}`, {
+		method: 'POST',
+	});
+	// TODO: mutate
+}
+
 export function clamp(num, min, max) {
 	return Math.min(Math.max(num, min), max);
 }
