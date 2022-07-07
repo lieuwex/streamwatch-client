@@ -11,7 +11,7 @@ export default function PlayerDialog(props) {
 	} else if (props.type === 'metadata') {
 		return <MetadataDialog handleClose={props.handleClose} video={props.video} currentTime={props.currentTime} />;
 	} else if (props.type === 'clipper') {
-		return <Clipper handleClose={props.handleClose} video={props.video} currentTime={props.currentTime} />;
+		return <Clipper handleClose={props.handleClose} video={props.video} clip={props.clip} currentTime={props.currentTime} />;
 	}
 
 	return <></>;

@@ -16,15 +16,26 @@ import SelectedText from './../SelectedText.js';
 
 import { clamp } from './../util.js';
 
-async function createClip(videoId, start, end, title) {
+async function createClip(clipId, videoId, start, end, title) {
 	const username = localStorage.getItem('username');
 	if (username == null) {
 		throw new Error('user not logged in');
 	}
 	const password = localStorage.getItem('password') || '';
 
-	const res = await fetch(`http://local.lieuwe.xyz:6070/clips?password=${password}`, {
-		method: 'POST',
+	let url = 'http://local.lieuwe.xyz:6070';
+	let method;
+	if (clipId == null) {
+		url += '/clips';
+		method = 'POST';
+	} else {
+		url += `/clips/${clipId}`;
+		method = 'PUT';
+	}
+	url += `?password=${password}`;
+
+	const res = await fetch(url, {
+		method,
 		headers: {
 			'Content-Type': 'application/json',
 		},
@@ -93,13 +104,14 @@ function ClipperControls(props) {
 
 function Clipper(props) {
 	const video = props.video;
+	const originalId = props.clip?.id;
 
 	const center = props.currentTime;
 	const initialProgress = center - 10;
 
 	const classes = useStyles();
 
-	const titleRef = useRef(null);
+	const titleRef = useRef(props.clip?.title || null);
 	const startRef = useRef({ value: '10' });
 	const endRef = useRef({ value: '10' });
 
@@ -113,6 +125,7 @@ function Clipper(props) {
 	const handleClose = () => props.handleClose(null, null);
 	const onCreateClip = () => {
 		createClip(
+			originalId,
 			video.id,
 			getStart(),
 			getEnd(),

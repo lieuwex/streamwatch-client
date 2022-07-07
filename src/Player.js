@@ -420,6 +420,7 @@ function Player(props) {
 							type={openDialog[0]}
 							anchorEl={openDialog[1]}
 							video={video}
+							clip={clip}
 							currentTime={progress}
 							handleClose={onDialogClose}/>
 				}
@@ -429,10 +430,10 @@ function Player(props) {
 						? <></>
 						: <Controls
 							video={video}
+							clip={clip}
 							visible={!playing || userActive}
 							onSeek={handleSeek}
 							progress={progress / video.duration}
-							isClip={playingAsClip}
 							region={region}
 							volume={volume}
 							muted={muted}

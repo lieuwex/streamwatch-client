@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 
 import { Slider, IconButton } from '@mui/material';
 import { Pause, MovieCreation, PlayArrow, VolumeUp, VolumeOff, FullscreenExit, Fullscreen, People, SportsEsports, ChevronLeft, ChevronRight, Info } from '@mui/icons-material';
@@ -49,6 +49,8 @@ export default function Controls(props) {
 	};
 	useMousetrap('up', wrap(() => volumeDelta(0.1)));
 	useMousetrap('down', wrap(() => volumeDelta(-0.1)));
+
+	const username = useMemo(() => localStorage.getItem('username') || null, []);
 
 	const datapoint = getCurrentDatapoint(props.video, props.progress);
 	const viewcount = datapoint == null ? null : datapoint.viewcount;
@@ -112,25 +114,32 @@ export default function Controls(props) {
 				</div>
 
 				{
-					props.isClip
+					props.clip != null
 					? <></>
-					: <>
-						<Button onClick={el => props.onTooltipClick('participants', el.currentTarget)}>
-							<People />
-						</Button>
-
-						<Button onClick={el => props.onTooltipClick('games', el.currentTarget)}>
-							<SportsEsports />
-						</Button>
-
-						<Button onClick={el => props.onTooltipClick('clipper', el.currentTarget)}>
-							<MovieCreation />
-						</Button>
-
-						<Button onClick={el => props.onTooltipClick('metadata', el.currentTarget)}>
-							<Info />
-						</Button>
-					</>
+					: <Button onClick={el => props.onTooltipClick('participants', el.currentTarget)}>
+						<People />
+					</Button>
+				}
+				{
+					props.clip != null
+					? <></>
+					: <Button onClick={el => props.onTooltipClick('games', el.currentTarget)}>
+						<SportsEsports />
+					</Button>
+				}
+				{
+					!(props.clip == null || (username != null && props.clip.author_username == username))
+					? <></>
+					: <Button onClick={el => props.onTooltipClick('clipper', el.currentTarget)}>
+						<MovieCreation />
+					</Button>
+				}
+				{
+					props.clip != null
+					? <></>
+					: <Button onClick={el => props.onTooltipClick('metadata', el.currentTarget)}>
+						<Info />
+					</Button>
 				}
 
 				<Button onClick={() => props.onFullscreenChange(!props.fullscreen)}>
