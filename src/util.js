@@ -35,21 +35,21 @@ export async function updateStreamsProgress(dict) {
 	}
 	const password = localStorage.getItem('password') || '';
 
-	await fetch(`http://local.lieuwe.xyz:6070/user/${username}/progress?password=${password}`, {
+	await fetch(`http://local.lieuwe.xyz:6070/api/user/${username}/progress?password=${password}`, {
 		method: 'PUT',
 		headers: {
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify(dict),
 	});
-	mutate(`http://local.lieuwe.xyz:6070/user/${username}/progress`);
+	mutate(`http://local.lieuwe.xyz:6070/api/user/${username}/progress`);
 }
 
 export async function addClipView(clipId) {
 	const username = localStorage.getItem('username') || '';
 	const password = localStorage.getItem('password') || '';
 
-	await fetch(`http://local.lieuwe.xyz:6070/clips/${clipId}/view?username=${username}&password=${password}`, {
+	await fetch(`http://local.lieuwe.xyz:6070/api/clips/${clipId}/view?username=${username}&password=${password}`, {
 		method: 'POST',
 	});
 	// TODO: mutate

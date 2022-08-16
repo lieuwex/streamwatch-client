@@ -35,14 +35,14 @@ const useStyles = makeStyles({
 });
 
 async function addGame(dict) {
-	await fetch(`http://local.lieuwe.xyz:6070/games`, {
+	await fetch(`http://local.lieuwe.xyz:6070/api/games`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify(dict),
 	});
-	mutate('http://local.lieuwe.xyz:6070/games');
+	mutate('http://local.lieuwe.xyz:6070/api/games');
 }
 
 const CreateGameDialog = props => {
@@ -117,7 +117,7 @@ const AddGameRow = props => {
 
 	const classes = useStyles();
 
-	const { data, error } = swrImmutable('http://local.lieuwe.xyz:6070/games', fetcher);
+	const { data, error } = swrImmutable('http://local.lieuwe.xyz:6070/api/games', fetcher);
 	const selectedInfo = useRef({ game: null, time });
 
 	const onAdd = () => {

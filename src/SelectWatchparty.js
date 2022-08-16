@@ -68,7 +68,7 @@ export default function SelectWatchparty() {
 
 	const [connectedTo, setConnectedTo] = useState(null);
 
-	const { data, error } = swr('http://local.lieuwe.xyz:6070/parties', fetcher);
+	const { data, error } = swr('http://local.lieuwe.xyz:6070/api/parties', fetcher);
 
 	const join = name => {
 		if (window.partyWs != null) {
@@ -77,7 +77,7 @@ export default function SelectWatchparty() {
 
 		window.partySelfId = generateId(10);
 
-		const ws = new WebSocket(`ws://local.lieuwe.xyz:6070/party/ws?party_id=${name}`);
+		const ws = new WebSocket(`ws://local.lieuwe.xyz:6070/api/party/ws?party_id=${name}`);
 
 		ws.onopen = () => setConnectedTo(name);
 		ws.onmessage = msg => {

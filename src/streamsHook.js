@@ -20,14 +20,14 @@ function videoInProgress(video) {
 }
 
 export default function useStreams() {
-	let { data: streamsData, error: streamsError } = swr('http://local.lieuwe.xyz:6070/streams', streamsFetcher);
+	let { data: streamsData, error: streamsError } = swr('http://local.lieuwe.xyz:6070/api/streams', streamsFetcher);
 	const streamsLoading = streamsData == null && streamsError == null;
 	if (streamsError != null) {
 		console.warn('error while loading streams', streamsError);
 	}
 	streamsData = streamsData || [];
 
-	let { data: clipsData, error: clipsError } = swr('http://local.lieuwe.xyz:6070/clips', fetcher);
+	let { data: clipsData, error: clipsError } = swr('http://local.lieuwe.xyz:6070/api/clips', fetcher);
 	const clipsLoading = clipsData == null && clipsError == null;
 	if (clipsError != null) {
 		console.warn('error while loading clips', clipsError);
@@ -36,7 +36,7 @@ export default function useStreams() {
 
 	const username = localStorage.getItem('username');
 	const password = localStorage.getItem('password') || '';
-	let { data: progressData, error: progressError } = swr(username != null ? `http://local.lieuwe.xyz:6070/user/${username}/progress?password=${password}` : null, fetcher);
+	let { data: progressData, error: progressError } = swr(username != null ? `http://local.lieuwe.xyz:6070/api/user/${username}/progress?password=${password}` : null, fetcher);
 	const progressLoading = username != null && progressData == null && progressError == null;
 	if (progressError != null) {
 		console.warn('error while loading user progress', progressError);

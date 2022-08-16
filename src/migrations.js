@@ -2,7 +2,7 @@ import { fetcher, updateStreamsProgress } from './util.js';
 
 const migrations = [
 	async function() {
-		const streams = await fetcher('http://local.lieuwe.xyz:6070/streams');
+		const streams = await fetcher('http://local.lieuwe.xyz:6070/api/streams');
 
 		const dict = {};
 		for (const stream of streams) {

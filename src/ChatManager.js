@@ -38,7 +38,7 @@ export default class ChatManager {
 	async _requestData(start, end) {
 		console.info('fetching from', start, 'to', end);
 
-		let url = `http://local.lieuwe.xyz:6070/stream/${this.video_id}/chat?start=${start}&end=${end}`;
+		let url = `http://local.lieuwe.xyz:6070/api/stream/${this.video_id}/chat?start=${start}&end=${end}`;
 		if (this.session_token != null) {
 			url += `&session_token=${this.session_token}`;
 		}
