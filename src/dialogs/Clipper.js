@@ -23,7 +23,7 @@ async function createClip(clipId, videoId, start, end, title) {
 	}
 	const password = localStorage.getItem('password') || '';
 
-	let url = 'http://local.lieuwe.xyz:6070';
+	let url = 'http://local.lieuwe.xyz:6070/api';
 	let method;
 	if (clipId == null) {
 		url += '/clips';
