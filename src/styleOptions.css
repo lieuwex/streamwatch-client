@@ -1,0 +1,9 @@
+/* === no-timestamps === */
+
+body.no-timestamps .message-timestamp {
+	display: none !important;
+}
+
+body.no-timestamps .sidebar.visible {
+	width: 350px !important;
+}
