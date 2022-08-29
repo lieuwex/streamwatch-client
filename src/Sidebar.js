@@ -49,23 +49,20 @@ function parseEmotes(emoteString) {
 
 	return emotes;
 }
-function convertEmotes(str, deltas, emotes) {
+function convertEmotes(str, emotes) {
 	const res = [];
 	let last = 0;
 
 	for (const emote of emotes) {
-		const emoteStart = deltas.indexOf(emote.start);
-		const emoteEnd = deltas.lastIndexOf(emote.end);
-
-		if (last < emoteStart) {
-			res.push(str.slice(last, emoteStart));
+		if (last < emote.start) {
+			res.push(str.slice(last, emote.start));
 		}
 
-		const content = str.slice(emoteStart, emoteEnd);
+		const content = str.slice(emote.start, emote.end);
 		const { url, width, height } = getTwitchEmoticon(emote.id);
 		res.push(`<img alt="${content}" title="${content}" src="${url}" width="${width}" height="${height}" decoding="sync"/>`);
 
-		last = emoteEnd;
+		last = emote.end;
 	}
 
 	if (last < str.length) {
@@ -95,32 +92,12 @@ function convertUrls(str) {
 	return res.join('');
 }
 
-function encode(str) {
-	const deltas = [];
-	let res = '';
-
-	for (let i = 0; i < str.length; i++) {
-		const c = str[i];
-		const esc = ({
-			'&': '&amp;',
-			'<': '&lt;',
-			'>': '&gt;',
-		})[c] || c;
-
-		res += esc;
-		for (let x = 0; x < esc.length; x++) {
-			deltas.push(i);
-		}
-	}
-
-	return [deltas, res];
-}
-
 const ChatMessage = React.memo(props => {
 	// HACK: we temp removed that encoding step, this is unsafe. (5474481e09f)
-	let [deltas, body] = encode(props.message.message);
+	//let body = encode(props.message.message);
+	let body = props.message.message;
 	body = convertUrls(body);
-	body = convertEmotes(body, deltas, parseEmotes(props.message.tags.emotes || ''));
+	body = convertEmotes(body, parseEmotes(props.message.tags.emotes || ''));
 
 	let color;
 	let fontColor;
