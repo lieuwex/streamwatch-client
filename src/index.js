@@ -18,7 +18,7 @@ window.requestIdleCallback(() => {
 });
 
 window.requestIdleCallback(() => {
-	const json = JSON.parse(localStorage.getItem('styleOptions'));
+	const json = JSON.parse(localStorage.getItem('styleOptions') || '[]');
 	for (const className of json) {
 		document.body.classList.add(className);
 	}
