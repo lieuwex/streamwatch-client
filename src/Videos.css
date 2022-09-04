@@ -172,6 +172,7 @@
 
 	white-space: nowrap;
 	text-overflow: ellipsis;
+	overflow-x: clip;
 	/* overflow: hidden; */
 }
 .video-entry.clicked .video-entry-title {
