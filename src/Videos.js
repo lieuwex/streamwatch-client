@@ -10,6 +10,7 @@ import filesize from 'filesize';
 
 import { formatGame, filterGames, formatDate, getTitle } from './util.js';
 import './Videos.css';
+import { ClipVideo } from './Clips.js';
 import useStreams from './streamsHook.js';
 import Loading from './Loading.js';
 
@@ -39,13 +40,7 @@ function VideoPreview(props) {
 }
 
 function VideoInformation(props) {
-	let title, hasNiceTitle;
-	if (props.clip != null) {
-		title = props.clip.title;
-		hasNiceTitle = true;
-	} else {
-		[title, hasNiceTitle] = getTitle(props.video, true);
-	}
+	const [title, hasNiceTitle] = getTitle(props.video, true);
 
 	//const [title, hasNiceTitle] = getTitle(props.video, true);
 	const isLong = title.length > 33;
@@ -112,7 +107,6 @@ function VideoProgress(props) {
 
 function Video(props) {
 	const video = props.video;
-	const clip = props.clip;
 
 	const [hovering, setHovering] = useState(false);
 	const [clicked, setClicked] = useState(false);
@@ -147,7 +141,7 @@ function Video(props) {
 	const content = (
 		<Link to={`/video/${video.id}`} onClick={onClick} className={`video-entry ${clicked ? 'clicked' : ''} ${animating ? 'animating' : ''}`} onMouseEnter={onEnter} onMouseLeave={onLeave}>
 			<VideoPreview video={video} playPreview={hovering || clicked} />
-			<VideoInformation video={video} clip={clip} fullInfo={clicked} />
+			<VideoInformation video={video} fullInfo={clicked} />
 			{
 				!clicked
 				? <></>
@@ -181,21 +175,24 @@ function Video(props) {
 	);
 }
 
-function VideosList(props) {
+export function VideosList(props) {
 	return <>
-		<h1>{props.header}</h1>
+		<h1>
+			{props.header}
+			{props.button || <></>}
+		</h1>
 		<div className={`video-list ${props.horizontal ? 'horizontal' : ''}`}>
 			{props.children}
 		</div>
 	</>;
 }
 
-function Videos() {
+export default function Videos() {
 	useEffect(() => {
 		document.title = 'Streamwatch';
 	}, []);
 
-	const { isLoading, streams: streamsInfo } = useStreams();
+	const { isLoading, streams: streamsInfo, clips: clipsInfo } = useStreams();
 	const videos = streamsInfo[0];
 
 	if (isLoading) {
@@ -211,11 +208,11 @@ function Videos() {
 		.map(mapVideo);
 	const items = videos.map(mapVideo);
 
-	const mapClip = (c, v) => <Video key={c.id} video={v} clip={c} />;
-	const clips = props.clips.map(clip => {
-		const video = props.videos.find(v => v.id === clip.stream_id);
+	const mapClip = (c, v) => <ClipVideo key={c.id} video={v} clip={c} />;
+	const clips = clipsInfo[0].map(clip => {
+		const video = videos.find(v => v.id === clip.stream_id);
 		return mapClip(clip, video);
-	});
+	}).reverse();
 
 	return (
 		<div className="video-list-wrapper">
@@ -228,13 +225,15 @@ function Videos() {
 			}
 
 			{
-			/*
 				clips.length === 0
 				? <></>
-				: <VideosList header="Clips" horizontal={true}>
+				: <VideosList header="Recente clips" horizontal={true} button={
+					<Link to="/clips">
+						<button>Alle clips &rarr;</button>
+					</Link>
+				}>
 					{clips}
 				</VideosList>
-			*/
 			}
 
 			<VideosList header="Alle streams" inProgress={false}>
@@ -243,5 +242,3 @@ function Videos() {
 		</div>
 	);
 }
-
-export default Videos;

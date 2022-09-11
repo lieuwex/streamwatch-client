@@ -262,6 +262,20 @@
 	flex-grow: 0;
 }
 
+.video-list-wrapper button {
+	background: none;
+	color: white;
+	cursor: pointer;
+	outline: none;
+	border: 0;
+	font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+	font-size: initial;
+	position: absolute;
+	right: 40px;
+	font-size: 1.2rem;
+	height: 40px;
+}
+
 @media only screen and (max-width: 600px) {
 	.video-entry {
 		height: auto;
