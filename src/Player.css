@@ -197,6 +197,7 @@
 .clip-info h1 {
 	font-weight: 500;
 	font-size: 3em;
+	white-space: break-spaces;
 }
 
 .clip-info h2 {
