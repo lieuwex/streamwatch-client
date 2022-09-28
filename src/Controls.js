@@ -85,7 +85,7 @@ export default function Controls(props) {
 				</Button>
 
 				<div className="slider-container">
-					<HypeGraph video={props.video} region={props.region} />
+					<HypeGraph video={props.video} region={props.region} smooth={(props.region[1] - props.region[0]) >= 30} />
 					<Slider
 						value={props.progress}
 						min={min} max={max} step={0.00001}
