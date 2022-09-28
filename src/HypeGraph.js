@@ -7,21 +7,13 @@ import { fetcher } from './util.js';
 
 function smooth(data) {
 	const res = [];
-
-	let buffer = [];
 	for (let i = 0; i < data.length; i++) {
-		buffer.push(data[i]);
+		const start = Math.max(i - 5, 0);
+		const end = Math.min(i + 5, data.length - 1);
 
-		if (buffer.length === 30) {
-			const sum = buffer.reduce(((a, b) => a+b), 0);
-			res.push(sum / buffer.length);
-			buffer = [];
-		}
-	}
-
-	if (res.length === 0) {
-		// HACK
-		return buffer;
+		const items = data.slice(start, end+1);
+		const sum = items.reduce(((a, b) => a+b), 0);
+		res.push(sum / items.length);
 	}
 	return res;
 }
