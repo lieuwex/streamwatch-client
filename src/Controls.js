@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { Slider, IconButton } from '@mui/material';
 import { Pause, MovieCreation, PlayArrow, VolumeUp, VolumeOff, FullscreenExit, Fullscreen, People, SportsEsports, ChevronLeft, ChevronRight, Info } from '@mui/icons-material';
@@ -52,6 +52,9 @@ export default function Controls(props) {
 
 	const username = useMemo(() => localStorage.getItem('username') || null, []);
 
+	const [hypegraphUpdateTime, setHypegraphUpdateTime] = useState(() => Date.now());
+	useEffect(() => setHypegraphUpdateTime(Date.now()), [props.fullscreen, props.sidebarOpen]);
+
 	const datapoint = getCurrentDatapoint(props.video, props.progress);
 	const viewcount = datapoint == null ? null : datapoint.viewcount;
 
@@ -85,7 +88,11 @@ export default function Controls(props) {
 				</Button>
 
 				<div className="slider-container">
-					<HypeGraph video={props.video} region={props.region} smooth={(props.region[1] - props.region[0]) >= 30} />
+					<HypeGraph
+						video={props.video}
+						region={props.region}
+						smooth={(props.region[1] - props.region[0]) >= 30}
+						updateTime={hypegraphUpdateTime} />
 					<Slider
 						value={props.progress}
 						min={min} max={max} step={0.00001}

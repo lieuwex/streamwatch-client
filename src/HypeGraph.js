@@ -67,7 +67,8 @@ const HypeGraph = React.memo(function HypeGraph(props) {
 
 	return <ChartistGraph data={chartData} options={options} type='Line' />;
 }, (prevProps, nextProps) => {
-	return prevProps.video.id === nextProps.video.id
+	return prevProps.updateTime === nextProps.updateTime
+		&& prevProps.video.id === nextProps.video.id
 		&& prevProps.region[0] === nextProps.region[0]
 		&& prevProps.region[1] === nextProps.region[1];
 });
