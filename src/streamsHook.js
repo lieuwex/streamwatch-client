@@ -3,9 +3,7 @@ import swr from 'swr';
 
 import { fetcher } from './util.js';
 
-async function streamsFetcher(...args) {
-	const res = await fetch(...args);
-	const streams = await res.json();
+function mapStreams(streams) {
 	for (let stream of streams) {
 		stream.date = DateTime.fromSeconds(stream.timestamp);
 		stream.addedDate = stream.inserted_at ? DateTime.fromSeconds(stream.inserted_at) : null;
@@ -20,12 +18,12 @@ function videoInProgress(video) {
 }
 
 export default function useStreams() {
-	let { data: streamsData, error: streamsError } = swr('http://local.lieuwe.xyz:6070/api/streams', streamsFetcher);
+	let { data: streamsData, error: streamsError } = swr('http://local.lieuwe.xyz:6070/api/streams', fetcher);
 	const streamsLoading = streamsData == null && streamsError == null;
 	if (streamsError != null) {
 		console.warn('error while loading streams', streamsError);
 	}
-	streamsData = streamsData || [];
+	streamsData = mapStreams(streamsData || []);
 
 	let { data: clipsData, error: clipsError } = swr('http://local.lieuwe.xyz:6070/api/clips', fetcher);
 	const clipsLoading = clipsData == null && clipsError == null;
