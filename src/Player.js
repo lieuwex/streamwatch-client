@@ -453,7 +453,11 @@ function Player(props) {
 						/>
 				}
 			</div>
-			<Sidebar video={video} progress={progress} playing={playing} visible={sidebarOpen} region={region} />
+			{
+				video.has_chat
+					? <Sidebar video={video} progress={progress} playing={playing} visible={sidebarOpen} region={region} />
+					: <></>
+			}
 		</div>
 	);
 }
