@@ -122,7 +122,7 @@ const ChatMessage = React.memo(props => {
 		"lekkerspelen",
 	].includes(props.message.tags['display-name'].toLowerCase());
 
-	const isMod = props.message.tags.mod === '1';
+	const isMod = props.message.tags.badges.moderator === '1';
 
 	const prediction = props.message.tags.badges.predictions;
 	const predictionColor = prediction && chroma(prediction.slice(0, prediction.length-2)).saturate(10).brighten().hex();
