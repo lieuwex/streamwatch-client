@@ -174,11 +174,9 @@ const Chat = React.memo(props => {
 	const jumpcutOffset = useRef(0);
 	const previousOffset = useRef(null);
 	useEffect(() => {
-		const dist = Math.abs(props.offset - previousOffset.current);
-		if (dist >= 3000) {
-			// if more than 3 seconds, clear all messages from the manager
-			manager.current.clear();
-		}
+		// TODO: When we are lagging, we can create a hole. We should keep track
+		// of the last time we fetched messages, and when that exists, fill up
+		// the whole hole.
 
 		const actualTimestamp = props.offset + props.video.timestamp*1e3;
 		let currTimestamp = actualTimestamp;
