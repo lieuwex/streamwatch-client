@@ -77,7 +77,7 @@ export default function MetadataDialog(props) {
 						inputRef={titleRef}
 						defaultValue={titleRef.current.value}
 						onChange={() => titleChanged.current = true}
-						sx={{ width: '100%' }}
+						sx={{ width: '100%', marginTop: '25px' }}
 					/>
 
 					{
