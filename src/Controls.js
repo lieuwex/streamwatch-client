@@ -135,7 +135,7 @@ export default function Controls(props) {
 					</Button>
 				}
 				{
-					!(props.clip == null || (username != null && props.clip.author_username === username))
+					username == null || !(props.clip == null || props.clip.author_username === username)
 					? <></>
 					: <Button onClick={el => props.onTooltipClick('clipper', el.currentTarget)}>
 						<MovieCreation />
