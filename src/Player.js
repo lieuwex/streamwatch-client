@@ -13,6 +13,7 @@ import Sidebar from './Sidebar.js';
 import Controls from './Controls.js';
 import PlayerDialog from './Dialogs.js';
 import useStreams from './streamsHook.js';
+import { getName } from './users.js';
 
 async function updateItems(type, streamId, items) {
 	if (type === 'participants') {
@@ -517,7 +518,7 @@ export default function PlayerWrapper(props) {
 		clipInfo = (
 			<div className="clip-info">
 				<h1 className="clip-header">{clip.title}</h1>
-				<h2 className="clip-subheader">door {clip.author_username}</h2>
+				<h2 className="clip-subheader">door {getName(clip.author_username)}</h2>
 			</div>
 		);
 	}

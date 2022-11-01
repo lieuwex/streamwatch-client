@@ -8,6 +8,7 @@ import { formatDate } from './util.js';
 import { VideosList } from './Videos.js';
 import useStreams from './streamsHook.js';
 import Loading from './Loading.js';
+import { getName } from './users.js';
 
 function ClipPreview(props) {
 	let videoContent = <></>;
@@ -52,7 +53,7 @@ function ClipInformation(props) {
 			</div>
 
 			<div className="video-entry-games">
-				{props.clip.author_username}
+				{getName(props.clip.author_username)}
 			</div>
 		</div>
 	);

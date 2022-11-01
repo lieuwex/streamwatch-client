@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
 
+import { users } from './users.js';
+
 const useStyles = makeStyles({
 	login: {
 		position: 'fixed',
@@ -65,15 +67,13 @@ function Login() {
 		window.location.href = '/';
 	};
 
+	const buttons = Object.entries(users).map((username, name) => {
+		return <User onSelect={onSelect} username={username} name={name} />;
+	});
+
 	return <>
 		<div className={classes.login}>
-			<User onSelect={onSelect} name="Lieuwe" username="lieuwe" />
-			<User onSelect={onSelect} name="Bart" username="bart" />
-			<User onSelect={onSelect} name="Lisanne" username="lisanne" />
-			<User onSelect={onSelect} name="Marente" username="marente" />
-			<User onSelect={onSelect} name="Daan" username="daan" />
-			<User onSelect={onSelect} name="Mees" username="mees" />
-			<User onSelect={onSelect} name="Victor" username="victor" />
+			{buttons}
 		</div>
 	</>;
 }
