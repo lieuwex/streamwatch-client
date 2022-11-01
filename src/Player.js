@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import ReactPlayer from 'react-player';
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import screenfull from 'screenfull';
@@ -519,6 +519,9 @@ export default function PlayerWrapper(props) {
 			<div className="clip-info">
 				<h1 className="clip-header">{clip.title}</h1>
 				<h2 className="clip-subheader">door {getName(clip.author_username)}</h2>
+				<Link to={`/video/${video.id}`} className="clip-stream-link">
+					Uit stream: {video.title}
+				</Link>
 			</div>
 		);
 	}

@@ -203,3 +203,13 @@
 .clip-info h2 {
 	font-weight: 300;
 }
+
+.clip-info > .clip-stream-link {
+	position: absolute;
+	top: 20px;
+	right: 25px;
+
+	color: white;
+	opacity: .75;
+	text-decoration: none;
+}
