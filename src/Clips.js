@@ -4,7 +4,7 @@ import formatDuration from 'format-duration';
 import { isMobile } from 'react-device-detect';
 import { DateTime } from 'luxon';
 
-import { formatDate } from './util.js';
+import { formatDate, plural } from './util.js';
 import { VideosList } from './Videos.js';
 import useStreams from './streamsHook.js';
 import Loading from './Loading.js';
@@ -54,6 +54,10 @@ function ClipInformation(props) {
 
 			<div className="video-entry-games">
 				{getName(props.clip.author_username)}
+			</div>
+
+			<div className="video-entry-persons">
+				{props.clip.view_count} {plural(props.clip.view_count, "view", "views")}
 			</div>
 		</div>
 	);

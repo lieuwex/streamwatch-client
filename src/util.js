@@ -111,3 +111,11 @@ export function getTitle(video, includeGames) {
 export function getCurrentUrl() {
 	return new URL(window.location.href);
 }
+
+export function plural(count, singular, plural) {
+	if (Math.abs(count) == 1) {
+		return singular;
+	} else {
+		return plural;
+	}
+}
