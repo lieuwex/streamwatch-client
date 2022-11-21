@@ -8,7 +8,7 @@ import { PlayArrow } from '@mui/icons-material';
 import mousetrap from 'mousetrap';
 import filesize from 'filesize';
 
-import { formatGame, filterGames, formatDate, getTitle } from './util.js';
+import { formatGame, filterGames, formatDate, getTitle, isChromeLike } from './util.js';
 import './Videos.css';
 import { ClipVideo } from './Clips.js';
 import useStreams from './streamsHook.js';
@@ -48,7 +48,7 @@ function VideoInformation(props) {
 
 	return (
 		<div className={`video-entry-information ${props.fullInfo ? 'expanded' : ''}`}>
-			<div className={`video-entry-title ${isLong ? 'long' : ''}`} style={{ fontSize: `${pixels}px` }}>
+			<div className={`video-entry-title ${isLong ? 'long' : ''} ${isChromeLike() ? 'clip' : ''}`} style={{ fontSize: `${pixels}px` }}>
 				{title}
 			</div>
 			{

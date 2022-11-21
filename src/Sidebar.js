@@ -1,5 +1,4 @@
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
-import { isChrome, isChromium, isEdgeChromium } from 'react-device-detect';
 import chroma from 'chroma-js';
 import formatDuration from 'format-duration';
 import { Tooltip } from '@mui/material';
@@ -9,7 +8,7 @@ import makeLinkify from 'linkify-it';
 // import { encode } from 'he';
 
 import './Sidebar.css';
-import { formatTime } from './util.js';
+import { formatTime, isChromeLike } from './util.js';
 import ChatManager from './ChatManager.js';
 
 const linkify = makeLinkify();
@@ -209,7 +208,7 @@ const Chat = React.memo(props => {
 
 	const chatRef = useRef(null);
 	useLayoutEffect(() => {
-		if (isChrome || isChromium || isEdgeChromium) {
+		if (isChromeLike()) {
 			return;
 		} else if (chatRef.current == null) {
 			return;

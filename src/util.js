@@ -1,4 +1,5 @@
 import { mutate } from 'swr';
+import { isChrome, isChromium, isEdgeChromium } from 'react-device-detect';
 
 export function formatTime(date) {
 	return [
@@ -113,9 +114,13 @@ export function getCurrentUrl() {
 }
 
 export function plural(count, singular, plural) {
-	if (Math.abs(count) == 1) {
+	if (Math.abs(count) === 1) {
 		return singular;
 	} else {
 		return plural;
 	}
+}
+
+export function isChromeLike() {
+	return isChrome || isChromium || isEdgeChromium;
 }
