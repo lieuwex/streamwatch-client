@@ -42,7 +42,10 @@
 	margin-bottom: .55em;
 }
 
-.chat-message.resub, .chat-message.subscription {
+.chat-message.resub,
+.chat-message.sub,
+.chat-message.subscription,
+.chat-message.subgift {
 	background-color: #242424;
 	/* border: 1px gold solid; */
 	/* border-left: none; */
