@@ -33,6 +33,8 @@ const HypeGraph = React.memo(function HypeGraph(props) {
 		return props.region[0] <= delta && delta <= props.region[1];
 	});
 
+	// TODO: keep in mind the jumpcuts here also
+
 	let series = data.map(x => x.hype);
 	if (props.smooth ?? true) {
 		series = smooth(series);
