@@ -67,7 +67,7 @@ function Login() {
 		window.location.href = '/';
 	};
 
-	const buttons = Object.entries(users).map((username, name) => {
+	const buttons = Object.entries(users).map(([username, name]) => {
 		return <User onSelect={onSelect} username={username} name={name} />;
 	});
 
