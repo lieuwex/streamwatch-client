@@ -11,6 +11,20 @@ function mapStreams(streams) {
 	return streams;
 }
 
+function mapClips(clips) {
+	for (let clip of clips) {
+		// HACK
+		if (clip._start_time == null) {
+			clip._start_time = clip.start_time;
+			clip._duration = clip.duration;
+		}
+
+		clip.start_time = clip._start_time / 1e3;
+		clip.duration = clip._duration / 1e3;
+	}
+	return clips;
+}
+
 function videoInProgress(video) {
 	return video.progress != null
 		&& video.progress.time > 60
@@ -30,7 +44,7 @@ export default function useStreams() {
 	if (clipsError != null) {
 		console.warn('error while loading clips', clipsError);
 	}
-	clipsData = clipsData || [];
+	clipsData = mapClips(clipsData || []);
 
 	const username = localStorage.getItem('username');
 	const password = localStorage.getItem('password') || '';

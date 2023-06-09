@@ -42,8 +42,8 @@ async function createClip(clipId, videoId, start, end, title) {
 		body: JSON.stringify({
 			author_username: username,
 			stream_id: videoId,
-			start_time: Math.round(start),
-			duration: Math.round(end - start),
+			start_time: Math.round(start * 1e3),
+			duration: Math.round((end - start) * 1e3),
 			title,
 		}),
 	});
