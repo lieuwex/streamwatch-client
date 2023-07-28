@@ -451,6 +451,19 @@ function Player(props) {
 								setPlaying(false);
 								markActive();
 							}}
+							onSetLW={() => {
+								if (!window.confirm("Einde LW nu instellen?")) {
+									return;
+								}
+
+								let items = video.games.filter(g => g.id !== 7);
+								items.push({ id: 7, start_time: progress });
+								items.sort((a, b) => a.start_time < b.start_time);
+
+								requestIdleCallback(() => {
+									updateItems('games', video.id, items).catch(e => console.error(e));
+								}, { timeout: 1000 });
+							}}
 						/>
 				}
 			</div>

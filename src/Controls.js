@@ -36,6 +36,7 @@ export default function Controls(props) {
 	useMousetrap('m', wrap(() => props.onMutedChange(!props.muted)));
 	useMousetrap('f', wrap(() => props.onFullscreenChange(!props.fullscreen)));
 	useMousetrap('s', wrap(() => props.onSidebarChange(!props.sidebarOpen)));
+	useMousetrap('e', wrap(() => props.onSetLW()));
 	const seekDelta = delta => {
 		const deltaFract = delta / props.video.duration;
 		const newValue = props.progress + deltaFract;
