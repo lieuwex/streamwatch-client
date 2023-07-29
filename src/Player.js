@@ -200,11 +200,7 @@ function Player(props) {
 	const [volume, setVolume] = useState(() => +localStorage.getItem('volume') || 1);
 	const [muted, setMuted] = useState(() => {
 		const muted = localStorage.getItem('muted');
-		if (muted === 'true') {
-			return true;
-		} else {
-			return false;
-		}
+		return muted === 'true';
 	});
 	const [progress, setProgress] = useState(props.initialProgress);
 	const [playing, setPlaying] = useState(true);
