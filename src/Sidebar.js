@@ -102,7 +102,11 @@ const ChatMessage = React.memo(props => {
 	let fontColor;
 	if (props.message.tags.color) {
 		color = chroma(props.message.tags.color).darken(2).saturate(2).hex();
-		fontColor = chroma(color).luminance() > .45 ? 'black' : 'white';
+		if (chroma.contrast(color, 'white') > chroma.contrast(color, 'black')) {
+			fontColor = 'white';
+		} else {
+			fontColor = 'black';
+		}
 	} else {
 		color = '#383838';
 		fontColor = 'white';
