@@ -108,12 +108,20 @@
 }
 
 .chat-message > .message-icon {
-	display: inline;
+	display: inline-block;
+
+	height: 1.2rem;
+	width: auto;
+
 	margin-left: -4px;
 	margin-right: 4px;
 }
 .message-icon > svg {
 	font-size: 1.2em;
+}
+.message-icon > img {
+	width: inherit;
+	height: inherit;
 }
 
 .chat-message > .message-action {

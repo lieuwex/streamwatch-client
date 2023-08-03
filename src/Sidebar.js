@@ -148,7 +148,7 @@ const ChatMessage = React.memo(props => {
 				? <></>
 				: <div className="message-icon">
 					<Tooltip title="Moderator" placement="bottom">
-						<img alt="Moderator" src="https://static-cdn.jtvnw.net/badges/v1/3267646d-33f0-4b17-b3df-f923a41db1d0/1" />
+						<img alt="Moderator" src="https://static-cdn.jtvnw.net/badges/v1/3267646d-33f0-4b17-b3df-f923a41db1d0/3" />
 					</Tooltip>
 				</div>
 			}
