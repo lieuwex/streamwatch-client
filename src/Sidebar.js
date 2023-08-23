@@ -123,6 +123,7 @@ const ChatMessage = React.memo(props => {
 		"lieuwex",
 		"genotsknots",
 		"lekkerspelen",
+		"egbertlive",
 	].includes(props.message.tags['display-name'].toLowerCase());
 
 	const isMod = props.message.tags.badges.moderator === '1';
