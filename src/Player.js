@@ -16,30 +16,22 @@ import useStreams from './streamsHook.js';
 import { getName } from './users.js';
 
 async function updateItems(type, streamId, items) {
+	const send = (type, body) => {
+		return fetch(`http://local.lieuwe.xyz:6070/api/stream/${streamId}/${type}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(body),
+		});
+	};
+
 	if (type === 'participants') {
-		await fetch(`http://local.lieuwe.xyz:6070/api/stream/${streamId}/persons`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(items.map(p => p.id)),
-		});
+		await send('persons', items.map(p => p.id));
 	} else if (type === 'games') {
-		await fetch(`http://local.lieuwe.xyz:6070/api/stream/${streamId}/games`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(items.map(g => ({ id: g.id, start_time: g.start_time }))),
-		});
+		await send('games', items.map(g => ({ id: g.id, start_time: g.start_time })));
 	} else if (type === 'metadata') {
-		await fetch(`http://local.lieuwe.xyz:6070/api/stream/${streamId}/title`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(items),
-		});
+		await send('title', items);
 	}
 
 	mutate('http://local.lieuwe.xyz:6070/api/streams');
