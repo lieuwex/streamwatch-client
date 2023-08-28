@@ -529,7 +529,7 @@ export default function PlayerWrapper(props) {
 				<h1 className="clip-header">{clip.title}</h1>
 				<h2 className="clip-subheader">door {getName(clip.author_username)}</h2>
 				<Link to={`/video/${video.id}`} className="clip-stream-link">
-					Uit stream: {video.title}
+					Uit stream: {getTitle(video, true)}
 				</Link>
 			</div>
 		);
