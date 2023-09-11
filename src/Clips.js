@@ -59,6 +59,8 @@ function ClipInformation(props) {
 			<div className="video-entry-persons">
 				{props.clip.view_count} {plural(props.clip.view_count, "view", "views")}
 			</div>
+
+			<div className="video-entry-progress" style={{ width: `${props.clip.watched * 100}%` }} />
 		</div>
 	);
 }
