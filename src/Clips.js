@@ -4,7 +4,7 @@ import formatDuration from 'format-duration';
 import { isMobile } from 'react-device-detect';
 import { DateTime } from 'luxon';
 
-import { formatDate, plural } from './util.js';
+import { formatDate, plural, isChromeLike } from './util.js';
 import { VideosList } from './Videos.js';
 import useStreams from './streamsHook.js';
 import Loading from './Loading.js';
@@ -40,7 +40,7 @@ function ClipInformation(props) {
 
 	return (
 		<div className="video-entry-information">
-			<div className={`video-entry-title ${isLong ? 'long' : ''}`} style={{ fontSize: `${pixels}px` }}>
+			<div className={`video-entry-title ${isLong ? 'long' : ''} ${isChromeLike() ? 'clip' : ''}`} style={{ fontSize: `${pixels}px` }}>
 				{title}
 			</div>
 
