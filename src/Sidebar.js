@@ -48,20 +48,23 @@ function parseEmotes(emoteString) {
 
 	return emotes;
 }
-function convertEmotes(str, emotes) {
+function convertEmotes(str, emotes, map) {
 	const res = [];
 	let last = 0;
 
 	for (const emote of emotes) {
-		if (last < emote.start) {
-			res.push(str.slice(last, emote.start));
+		const start = map[emote.start];
+		const end = map[emote.end];
+
+		if (last < start) {
+			res.push(str.slice(last, start));
 		}
 
-		const content = str.slice(emote.start, emote.end);
+		const content = str.slice(start, end);
 		const { url, width, height } = getTwitchEmoticon(emote.id);
 		res.push(`<img alt="${content}" title="${content}" src="${url}" width="${width}" height="${height}" decoding="sync"/>`);
 
-		last = emote.end;
+		last = end;
 	}
 
 	if (last < str.length) {
@@ -91,12 +94,45 @@ function convertUrls(str) {
 	return res.join('');
 }
 
+function encode(str) {
+	const map = [];
+	for (let i = 0; i < str.length; i++) {
+		map[i] = i;
+	}
+
+	const originalLength = str.length;
+	for (let i = 0; i < str.length; i++) {
+		const c = str[i];
+
+		const replace = replacement => {
+			const l = replacement.length;
+			str = str.slice(0, i) + replacement + str.slice(i+1);
+
+			for (let j = i + 1; j < originalLength; j++) {
+				map[j] += l - 1;
+			}
+
+			i += l - 1;
+		};
+
+		const fn  = ({
+			'&': () => replace('&amp;'),
+			'<': () => replace('&lt;'),
+			'>': () => replace('&gt;'),
+			'"': () => replace('&quot;'),
+			"'": () => replace('&#39;'),
+			'`': () => replace('&#x60;'),
+		})[c] || (() => {});
+		fn();
+	}
+
+	return [str, map];
+}
+
 const ChatMessage = React.memo(props => {
-	// HACK: we temp removed that encoding step, this is unsafe. (5474481e09f)
-	//let body = encode(props.message.message);
-	let body = props.message.message;
+	let [body, map] = encode(props.message.message);
 	body = convertUrls(body);
-	body = convertEmotes(body, parseEmotes(props.message.tags.emotes || ''));
+	body = convertEmotes(body, parseEmotes(props.message.tags.emotes || ''), map);
 
 	let color;
 	let fontColor;
