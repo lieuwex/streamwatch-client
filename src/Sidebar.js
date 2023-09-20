@@ -160,6 +160,7 @@ const ChatMessage = React.memo(props => {
 				return `gifted 1 sub to ${props.message.tags['msg-param-recipient-display-name']}`;
 			}
 		},
+		'submysterygift': () => props.message.tags['system-msg'],
 	})[props.message.type] || (() => {});
 	const action = actionFn();
 

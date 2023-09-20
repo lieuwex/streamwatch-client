@@ -45,7 +45,8 @@
 .chat-message.resub,
 .chat-message.sub,
 .chat-message.subscription,
-.chat-message.subgift {
+.chat-message.subgift,
+.chat-message.submysterygift {
 	background-color: #242424;
 	/* border: 1px gold solid; */
 	/* border-left: none; */
