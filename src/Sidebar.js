@@ -8,7 +8,7 @@ import makeLinkify from 'linkify-it';
 // import { encode } from 'he';
 
 import './Sidebar.css';
-import { formatTime, isChromeLike } from './util.js';
+import { formatTime, isChromeLike, plural } from './util.js';
 import ChatManager from './ChatManager.js';
 
 const linkify = makeLinkify();
@@ -148,12 +148,20 @@ const ChatMessage = React.memo(props => {
 		fontColor = 'white';
 	}
 
-	const action = ({
-		'resub': 'resubscribed',
-		'sub': 'subscribed',
-		'subscription': 'subscribed',
-		'subgift': `gifted ${+props.message.tags['msg-param-sender-count'] || 1} sub(s)`,
-	})[props.message.type];
+	const actionFn = ({
+		'resub': () => 'resubscribed',
+		'sub': () => 'subscribed',
+		'subscription': () => 'subscribed',
+		'subgift': () => {
+			const count = +props.message.tags['msg-param-sender-count'] || 1;
+			if (count > 1) {
+				return `gifted ${count} ${plural(count, 'sub', 'subs')}`;
+			} else {
+				return `gifted 1 sub to ${props.message.tags['msg-param-recipient-display-name']}`;
+			}
+		},
+	})[props.message.type] || (() => {});
+	const action = actionFn();
 
 	const isVip = [
 		"lieuwex",
