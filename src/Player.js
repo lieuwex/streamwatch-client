@@ -154,7 +154,7 @@ function useUpdateProgress(video, playingAsClip, playing, progress) {
 }
 
 function useMediaSession(video) {
-	useState(() => {
+	useEffect(() => {
 		if (!('mediaSession' in navigator)) {
 			return;
 		}
