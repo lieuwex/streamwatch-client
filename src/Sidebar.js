@@ -184,24 +184,28 @@ const ChatMessage = React.memo(props => {
 			<Tooltip title={formatTime(new Date(props.message.ts))} placement="left">
 				<div className="message-timestamp">{formatDuration(props.message.ts - (props.videoTimestamp + region))}</div>
 			</Tooltip>
-			{
-				prediction == null
-				? <></>
-				: <div className="message-icon prediction" style={{ color: predictionColor }}>
-					<Tooltip title={predictionText} placement="bottom">
-						<DataUsage />
-					</Tooltip>
-				</div>
-			}
-			{
-				!isMod
-				? <></>
-				: <div className="message-icon">
-					<Tooltip title="Moderator" placement="bottom">
-						<img alt="Moderator" src="https://static-cdn.jtvnw.net/badges/v1/3267646d-33f0-4b17-b3df-f923a41db1d0/3" />
-					</Tooltip>
-				</div>
-			}
+
+			<div className="message-icons">
+				{
+					prediction == null
+					? <></>
+					: <div className="message-icon prediction" style={{ color: predictionColor }}>
+						<Tooltip title={predictionText} placement="bottom">
+							<DataUsage />
+						</Tooltip>
+					</div>
+				}
+				{
+					!isMod
+					? <></>
+					: <div className="message-icon">
+						<Tooltip title="Moderator" placement="bottom">
+							<img alt="Moderator" src="https://static-cdn.jtvnw.net/badges/v1/3267646d-33f0-4b17-b3df-f923a41db1d0/3" />
+						</Tooltip>
+					</div>
+				}
+			</div>
+
 			<div className="message-author" style={{ backgroundColor: color, color: fontColor }}>{props.message.tags['display-name']}</div>
 			{action != null ? <div className="message-action">{action}</div> : <></>}
 			<div className="message-content" dangerouslySetInnerHTML={{__html: body}} />
