@@ -1,0 +1,5 @@
+/* TODO: make this more beautiful */
+.video-entry.clip:not(.safe) {
+	/* opacity: .6; */
+	outline: 3px #7c0000 solid;
+}

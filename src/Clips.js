@@ -4,6 +4,7 @@ import formatDuration from 'format-duration';
 import { isMobile } from 'react-device-detect';
 import { DateTime } from 'luxon';
 
+import './Clips.css';
 import { formatDate, plural, isChromeLike } from './util.js';
 import { VideosList } from './Videos.js';
 import useStreams from './streamsHook.js';
@@ -69,6 +70,8 @@ export function ClipVideo(props) {
 	const video = props.video;
 	const clip = props.clip;
 
+	const safe = clip.safe_to_watch;
+
 	const [hovering, setHovering] = useState(false);
 
 	const onEnter = () => setHovering(true);
@@ -76,7 +79,7 @@ export function ClipVideo(props) {
 
 	return (
 		<div className="video-flipper">
-			<Link to={`/clip/${clip.id}`} className="video-entry" onMouseEnter={onEnter} onMouseLeave={onLeave}>
+			<Link to={`/clip/${clip.id}`} className={`video-entry clip ${safe ? 'safe' : ''}`} onMouseEnter={onEnter} onMouseLeave={onLeave}>
 				<ClipPreview clip={clip} playPreview={hovering} />
 				<ClipInformation video={video} clip={clip} fullInfo={false} />
 			</Link>
