@@ -39,6 +39,9 @@ function ClipInformation(props) {
 	const isLong = title.length > 33;
 	const pixels = Math.max(Math.min(750 / title.length, 40), 25);
 
+	const username = localStorage.getItem('username');
+	const watched = props.clip.watched || props.clip.author_username === username;
+
 	return (
 		<div className="video-entry-information">
 			<div className={`video-entry-title ${isLong ? 'long' : ''} ${isChromeLike() ? 'clip' : ''}`} style={{ fontSize: `${pixels}px` }}>
@@ -61,7 +64,7 @@ function ClipInformation(props) {
 				{props.clip.view_count} {plural(props.clip.view_count, "view", "views")}
 			</div>
 
-			<div className="video-entry-progress" style={{ width: `${props.clip.watched * 100}%` }} />
+			<div className="video-entry-progress" style={{ width: `${watched * 100}%` }} />
 		</div>
 	);
 }
