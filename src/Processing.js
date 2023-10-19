@@ -45,7 +45,7 @@ function Information(props) {
 
 			<div className="video-entry-persons">
 				{!info.finished
-					? <>Klaar over {humanizeDuration(info.eta * 1e3, { round: true, language: 'nl' })}</>
+					? <>Klaar over zo'n {humanizeDuration(info.eta * 1e3, { round: true, language: 'nl' })}</>
 					: <>Klaar, ga zeuren tegen Lieuwe dat die de stream erop moet zetten</>
 				}
 			</div>
