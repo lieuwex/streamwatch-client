@@ -7,12 +7,14 @@ import Backdrop from '@mui/material/Backdrop';
 import { PlayArrow } from '@mui/icons-material';
 import mousetrap from 'mousetrap';
 import filesize from 'filesize';
+import swr from 'swr';
 
-import { formatGame, filterGames, formatDate, getTitle, isChromeLike } from './util.js';
+import { formatGame, filterGames, formatDate, getTitle, isChromeLike, fetcher } from './util.js';
 import './Videos.css';
 import { ClipVideo } from './Clips.js';
 import useStreams from './streamsHook.js';
 import Loading from './Loading.js';
+import { ProcessingVideo } from './Processing.js';
 
 function VideoPreview(props) {
 	let videoContent = <></>;
@@ -192,8 +194,11 @@ export default function Videos() {
 		document.title = 'Streamwatch';
 	}, []);
 
-	const { isLoading, streams: streamsInfo, clips: clipsInfo } = useStreams();
+	let { isLoading, streams: streamsInfo, clips: clipsInfo } = useStreams();
 	const videos = streamsInfo[0];
+
+	let { data: processingData, error: processingError } = swr('http://local.lieuwe.xyz:6070/api/processing', fetcher);
+	isLoading = isLoading || (processingData == null && processingError == null);
 
 	if (isLoading) {
 		return <Loading heavyLoad={true} />;
@@ -207,6 +212,12 @@ export default function Videos() {
 		})
 		.map(mapVideo);
 	const items = videos.map(mapVideo);
+
+	// TODO: ordering
+	for (const item of processingData) {
+		const el = <ProcessingVideo key={`p_${item.id}`} info={item} />;
+		items.unshift(el);
+	}
 
 	const mapClip = (c, v) => <ClipVideo key={c.id} video={v} clip={c} />;
 	const clips = clipsInfo[0].map(clip => {

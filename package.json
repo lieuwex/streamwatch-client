@@ -16,6 +16,7 @@
     "filesize": "^8.0.7",
     "format-duration": "^2.0.0",
     "he": "^1.2.0",
+    "humanize-duration": "^3.30.0",
     "linkify-it": "^3.0.2",
     "luxon": "^2.3.0",
     "mousetrap": "^1.6.5",

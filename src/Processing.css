@@ -1,0 +1,4 @@
+.video-entry.processing {
+	opacity: .5;
+	cursor: initial;
+}
