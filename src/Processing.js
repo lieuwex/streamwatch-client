@@ -23,6 +23,15 @@ function Information(props) {
 
 	const progress = info.finished ? 1 : info.progress;
 
+	let status = <></>;
+	if (info.finished) {
+		status = <>Klaar, ga zeuren tegen Lieuwe dat die de stream erop moet zetten</>;
+	} else if (info.eta == null) {
+		status = <>Stream wordt omgezet, eindtijd onbekend</>;
+	} else {
+		status = <>Klaar over zo'n {humanizeDuration(info.eta * 1e3, { round: true, language: 'nl' })}</>;
+	}
+
 	return (
 		<div className="video-entry-information">
 			<div className={`video-entry-title ${isLong ? 'long' : ''} ${isChromeLike() ? 'clip' : ''}`} style={{ fontSize: `${pixels}px` }}>
@@ -44,10 +53,7 @@ function Information(props) {
 			</div>
 
 			<div className="video-entry-persons">
-				{!info.finished
-					? <>Klaar over zo'n {humanizeDuration(info.eta * 1e3, { round: true, language: 'nl' })}</>
-					: <>Klaar, ga zeuren tegen Lieuwe dat die de stream erop moet zetten</>
-				}
+				{status}
 			</div>
 
 			<div className="video-entry-progress" style={{ width: `${progress * 100}%` }} />
