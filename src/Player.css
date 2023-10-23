@@ -234,14 +234,14 @@
 }
 
 .progress-marker {
-	position: absolute;
-	top: 50%;
-	bottom: 0;
-	width: 3px;
 	background-color: white;
-	transform: translateY(-50%);
-	z-index: 1;
 	cursor: pointer;
+	position: absolute;
+	bottom: 50%;
+	width: 3px;
+	z-index: 1;
+	height: 5px;
+	opacity: .6;
 }
 .video-controls .MuiSlider-thumb {
 	z-index: 2;

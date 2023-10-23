@@ -9,6 +9,7 @@ import NumberEasing from 'react-number-easing';
 import HypeGraph from './HypeGraph.js';
 
 import { clamp, getCurrentDatapoint, fetcher } from './util.js';
+import { getName } from './users.js';
 
 export function Button(props) {
 	const onClick = e => {
@@ -72,7 +73,7 @@ export default function Controls(props) {
 	const markers = Object.entries(otherProgress).map(([username, time]) => {
 		const fract = time / props.video.duration;
 
-		return <Tooltip title={username} placement="top">
+		return <Tooltip title={getName(username)} placement="top">
 			<div
 				className="progress-marker"
 				style={{ 'left': `${100 * fract}%` }}
