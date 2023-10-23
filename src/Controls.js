@@ -68,7 +68,7 @@ export default function Controls(props) {
 
 	const progressSecs = props.progress * props.video.duration;
 
-	const { data } = swr(`http://local.lieuwe.xyz:6070/api/stream/${props.video.id}/otherProgress?username=${username}&password=${password}`, fetcher);
+	const { data } = swr(props.clip == null ? `http://local.lieuwe.xyz:6070/api/stream/${props.video.id}/otherProgress?username=${username}&password=${password}` : null, fetcher);
 	const otherProgress = data || [];
 	const markers = Object.entries(otherProgress).map(([username, time]) => {
 		const fract = time / props.video.duration;
