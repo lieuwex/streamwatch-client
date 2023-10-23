@@ -232,3 +232,17 @@
 		font-size: .8em;
 	}
 }
+
+.progress-marker {
+	position: absolute;
+	top: 50%;
+	bottom: 0;
+	width: 3px;
+	background-color: white;
+	transform: translateY(-50%);
+	z-index: 1;
+	cursor: pointer;
+}
+.video-controls .MuiSlider-thumb {
+	z-index: 2;
+}

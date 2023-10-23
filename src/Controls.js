@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { Slider, IconButton } from '@mui/material';
+import swr from 'swr';
+import { Slider, IconButton, Tooltip } from '@mui/material';
 import { Pause, MovieCreation, PlayArrow, VolumeUp, VolumeOff, FullscreenExit, Fullscreen, People, SportsEsports, ChevronLeft, ChevronRight, Info } from '@mui/icons-material';
 import formatDuration from 'format-duration';
 import useMousetrap from 'react-hook-mousetrap';
 import NumberEasing from 'react-number-easing';
 import HypeGraph from './HypeGraph.js';
 
-import { clamp, getCurrentDatapoint } from './util.js';
+import { clamp, getCurrentDatapoint, fetcher } from './util.js';
 
 export function Button(props) {
 	const onClick = e => {
@@ -52,6 +53,7 @@ export default function Controls(props) {
 	useMousetrap('down', wrap(() => volumeDelta(-0.1)));
 
 	const username = useMemo(() => localStorage.getItem('username') || null, []);
+	const password = useMemo(() => localStorage.getItem('password') || null, []);
 
 	const [hypegraphUpdateTime, setHypegraphUpdateTime] = useState(() => Date.now());
 	useEffect(() => setHypegraphUpdateTime(Date.now()), [props.fullscreen, props.sidebarOpen]);
@@ -64,6 +66,20 @@ export default function Controls(props) {
 	const max = end / props.video.duration;
 
 	const progressSecs = props.progress * props.video.duration;
+
+	const { data } = swr(`http://local.lieuwe.xyz:6070/api/stream/${props.video.id}/otherProgress?username=${username}&password=${password}`, fetcher);
+	const otherProgress = data || [];
+	const markers = Object.entries(otherProgress).map(([username, time]) => {
+		const fract = time / props.video.duration;
+
+		return <Tooltip title={username} placement="top">
+			<div
+				className="progress-marker"
+				style={{ 'left': `${100 * fract}%` }}
+				onClick={() => props.onSeek(fract)}
+			/>
+		</Tooltip>;
+	});
 
 	return (
 		<div className={`video-controls ${props.visible ? 'visible' : ''}`}>
@@ -94,6 +110,7 @@ export default function Controls(props) {
 						region={props.region}
 						smooth={(props.region[1] - props.region[0]) >= 30}
 						updateTime={hypegraphUpdateTime} />
+					{markers}
 					<Slider
 						value={props.progress}
 						min={min} max={max} step={0.00001}
