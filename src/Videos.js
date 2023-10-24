@@ -197,7 +197,13 @@ export default function Videos() {
 	let { isLoading, streams: streamsInfo, clips: clipsInfo } = useStreams();
 	const videos = streamsInfo[0];
 
-	let { data: processingData, error: processingError } = swr('http://local.lieuwe.xyz:6070/api/processing', fetcher);
+	let { data: processingData, error: processingError } = swr(
+		'http://local.lieuwe.xyz:6070/api/processing',
+		fetcher,
+		{
+			refreshInterval: 2 * 60 * 1000, // 2 minutes
+		},
+	);
 	isLoading = isLoading || (processingData == null && processingError == null);
 
 	if (isLoading) {
