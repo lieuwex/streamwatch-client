@@ -189,7 +189,11 @@
 	margin-top: 10px;
 }
 
-.clip-info > * {
+.clip-info-row {
+	display: flex;
+}
+
+.clip-info h1, .clip-info h2 {
 	margin-top: 0;
 	margin-bottom: 0;
 }
@@ -204,16 +208,25 @@
 	font-weight: 300;
 }
 
-.clip-info > .clip-stream-link {
-	position: absolute;
-	top: 20px;
-	right: 25px;
+.clip-info .clip-header {
+	flex-grow: 1;
+}
+
+.clip-info .clip-stream-link {
+	flex-grow: 1;
+	flex-shrink: 1;
+	max-width: 30%;
+	min-width: 100px;
+
+	padding-top: 10px;
+	padding-right: 25px;
 
 	color: white;
 	opacity: .75;
 	text-decoration: none;
+	text-align: right;
 }
-.clip-info > .clip-stream-link:hover {
+.clip-info .clip-stream-link:hover {
 	opacity: 1;
 }
 
@@ -224,7 +237,7 @@
 	.clip-info h2 {
 		font-size: 1.2em;
 	}
-	.clip-info > .clip-stream-link {
+	.clip-info .clip-stream-link {
 		position: relative;
 		top: initial;
 		right: initial;

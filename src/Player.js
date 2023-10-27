@@ -518,11 +518,16 @@ export default function PlayerWrapper(props) {
 	if (clip != null) {
 		clipInfo = (
 			<div className="clip-info">
-				<h1 className="clip-header">{clip.title}</h1>
-				<h2 className="clip-subheader">door {getName(clip.author_username)}</h2>
-				<Link to={`/video/${video.id}`} className="clip-stream-link">
-					Uit stream: {getTitle(video, true)}
-				</Link>
+				<div className="clip-info-row">
+					<h1 className="clip-header">{clip.title}</h1>
+					<Link to={`/video/${video.id}`} className="clip-stream-link">
+						Uit stream: {getTitle(video, true)}
+					</Link>
+				</div>
+
+				<div className="clip-info-row">
+					<h2 className="clip-subheader">door {getName(clip.author_username)}</h2>
+				</div>
 			</div>
 		);
 	}
