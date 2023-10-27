@@ -81,7 +81,7 @@ export default function Controls(props) {
 	const markers = Object.entries(otherProgress).map(([username, time]) => {
 		const fract = time / props.video.duration;
 
-		return <Tooltip title={getName(username)} placement="top">
+		return <Tooltip title={getName(username)} placement="top" arrow>
 			<div
 				className="progress-marker"
 				style={{ 'left': `${100 * fract}%` }}
