@@ -86,7 +86,7 @@ export const Video = React.forwardRef((props, ref) => {
 });
 
 function PauseShade(props) {
-	const [title, hasNiceTitle] = getTitle(props.video, false);
+	const [title, hasNiceTitle] = getTitle(props.video, false, props.progress / props.video.duration);
 
 	const games = useMemo(() => {
 		const games = filterGames(props.video.games);
@@ -153,13 +153,13 @@ function useUpdateProgress(video, playingAsClip, playing, progress) {
 	}, [progress]);
 }
 
-function useMediaSession(video) {
+function useMediaSession(video, progress) {
 	useEffect(() => {
 		if (!('mediaSession' in navigator)) {
 			return;
 		}
 
-		const [title, _] = getTitle(video, true);
+		const [title, _] = getTitle(video, true, progress / video.duration);
 
 		navigator.mediaSession.metadata = new window.MediaMetadata({
 			title: title,
@@ -172,7 +172,7 @@ function useMediaSession(video) {
 		});
 
 		return () => navigator.mediaSession.metadata = null;
-	}, [video.id]);
+	}, [video.id, progress]);
 }
 
 function Player(props) {
@@ -207,10 +207,10 @@ function Player(props) {
 		if (clip != null) {
 			document.title = `${clip.title} - Streamwatch`;
 		} else {
-			const [title, _] = getTitle(video, true);
+			const [title, _] = getTitle(video, true, progress / video.duration);
 			document.title = `${title} - Streamwatch`;
 		}
-	}, []);
+	}, [progress]);
 
 	// keep localStorage up-to-date
 	useEffect(() => {
@@ -222,7 +222,7 @@ function Player(props) {
 	useUpdateProgress(video, playingAsClip, playing, progress);
 
 	// update mediaSession information
-	useMediaSession(video);
+	useMediaSession(video, progress);
 
 	// video listeners
 	const playerRef = useRef(null);

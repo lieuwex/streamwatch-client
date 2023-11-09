@@ -99,8 +99,11 @@ export function getCurrentDatapoint(video, progressFrac) {
 	return res;
 }
 
-export function getTitle(video, includeGames) {
-	if (video.title != null && (includeGames || video.title_type !== 'games')) {
+export function getTitle(video, includeGames, progressFrac = null) {
+	if (video.title_type === 'datapoint' && progressFrac != null) {
+		const dp = getCurrentDatapoint(video, progressFrac);
+		return [dp.title, true];
+	} else if (video.title != null && (includeGames || video.title_type !== 'games')) {
 		return [video.title, true];
 	}
 
