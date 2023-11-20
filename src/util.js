@@ -91,7 +91,7 @@ export function getCurrentDatapoint(video, progressFrac) {
 
 	for (const datapoint of video.datapoints) {
 		const fract = (datapoint.timestamp - video.timestamp) / video.duration;
-		if (progressFrac > fract) {
+		if (progressFrac >= fract) {
 			res = datapoint;
 		}
 	}
@@ -100,8 +100,12 @@ export function getCurrentDatapoint(video, progressFrac) {
 }
 
 export function getTitle(video, includeGames, progressFrac = null) {
+	let dp = null;
 	if (video.title_type === 'datapoint' && progressFrac != null) {
-		const dp = getCurrentDatapoint(video, progressFrac);
+		dp = getCurrentDatapoint(video, progressFrac);
+	}
+
+	if (dp != null) {
 		return [dp.title, true];
 	} else if (video.title != null && (includeGames || video.title_type !== 'games')) {
 		return [video.title, true];
