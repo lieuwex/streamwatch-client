@@ -39,9 +39,7 @@ function Information(props) {
 			</div>
 
 			<div className="video-entry-date">
-				{info.started_at
-					? formatDate(DateTime.fromSeconds(info.started_at))
-					: <></>}
+				{formatDate(DateTime.fromSeconds(info.ts))}
 			</div>
 
 			<div className="video-entry-duration">
