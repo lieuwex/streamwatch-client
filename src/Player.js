@@ -154,12 +154,14 @@ function useUpdateProgress(video, playingAsClip, playing, progress) {
 }
 
 function useMediaSession(video, progress) {
+	const [title, _] = useMemo(() => {
+		return getTitle(video, true, progress / video.duration);
+	}, [video.id, progress]);
+
 	useEffect(() => {
 		if (!('mediaSession' in navigator)) {
 			return;
 		}
-
-		const [title, _] = getTitle(video, true, progress / video.duration);
 
 		navigator.mediaSession.metadata = new window.MediaMetadata({
 			title: title,
@@ -172,7 +174,7 @@ function useMediaSession(video, progress) {
 		});
 
 		return () => navigator.mediaSession.metadata = null;
-	}, [video.id, progress]);
+	}, [video.id, title]);
 }
 
 function Player(props) {
