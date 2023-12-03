@@ -176,6 +176,7 @@ function Clipper(props) {
 		<TextField
 			id="title"
 			label="Titel"
+			autoFocus={true}
 			inputRef={titleRef}
 			defaultValue={titleRef.current}
 			sx={{ width: '100%' }}
