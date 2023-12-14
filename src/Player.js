@@ -205,14 +205,15 @@ function Player(props) {
 	const [openDialog, setOpenDialog] = useState(null);
 
 	// update document title
-	useEffect(() => {
+	const title = useMemo(() => {
 		if (clip != null) {
-			document.title = `${clip.title} - Streamwatch`;
+			return clip.title;
 		} else {
 			const [title, _] = getTitle(video, true, progress / video.duration);
-			document.title = `${title} - Streamwatch`;
+			return title;
 		}
-	}, [progress]);
+	})
+	useEffect(() => document.title = `${title} - Streamwatch`, [title]);
 
 	// keep localStorage up-to-date
 	useEffect(() => {
