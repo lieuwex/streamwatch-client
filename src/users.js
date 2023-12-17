@@ -5,6 +5,7 @@ export const users = {
 	'marente': 'Marente',
 	'daan': 'Daan',
 	'mark': 'Mark',
+	'luuk': 'Luuk',
 };
 
 export function getName(username) {
