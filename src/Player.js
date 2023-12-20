@@ -213,7 +213,7 @@ function Player(props) {
 			return title;
 		}
 	})
-	useEffect(() => document.title = `${title} - Streamwatch`, [title]);
+	useEffect(() => { document.title = `${title} - Streamwatch`; }, [title]);
 
 	// keep localStorage up-to-date
 	useEffect(() => {
