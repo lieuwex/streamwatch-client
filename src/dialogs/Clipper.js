@@ -23,7 +23,7 @@ async function createClip(clipId, videoId, start, end, title) {
 	}
 	const password = localStorage.getItem('password') || '';
 
-	let url = 'http://local.lieuwe.xyz:6070/api';
+	let url = 'https://streams.lieuwe.xyz/api';
 	let method;
 	if (clipId == null) {
 		url += '/clips';
@@ -279,7 +279,7 @@ function ClipperWrapper(props) {
 	} else if (state === 'result') {
 		content = <>
 			<DialogContent>
-				<SelectedText value={`http://local.lieuwe.xyz:6070/clip/${data.id}`} />
+				<SelectedText value={`https://streams.lieuwe.xyz/clip/${data.id}`} />
 			</DialogContent>
 
 			<DialogActions>

@@ -14,7 +14,7 @@ import { getName } from './users.js';
 function ClipPreview(props) {
 	let videoContent = <></>;
 	if (props.playPreview && !isMobile) {
-		const url = `http://local.lieuwe.xyz:6070/preview/clips/${props.clip.id}.webm`;
+		const url = `https://streams.lieuwe.xyz/preview/clips/${props.clip.id}.webm`;
 		videoContent = (
 			<video muted={true} loop={true} playsInline={true} preload="auto" autoPlay={true}>
 				<source src={url} type="video/webm" />
@@ -23,7 +23,7 @@ function ClipPreview(props) {
 	}
 
 	let imageContent
-		= <img src={`http://local.lieuwe.xyz:6070/thumbnail/clips/${props.clip.id}.webp`} loading="lazy" alt="" />;
+		= <img src={`https://streams.lieuwe.xyz/thumbnail/clips/${props.clip.id}.webp`} loading="lazy" alt="" />;
 
 	return (
 		<div className="video-entry-preview">

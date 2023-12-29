@@ -22,7 +22,7 @@ export default function PersonsDialog(props) {
 	const selected = useRef(props.video.persons);
 	const changed = useRef(false);
 
-	const { data, error } = swrImmutable('http://local.lieuwe.xyz:6070/api/persons', fetcher);
+	const { data, error } = swrImmutable('https://streams.lieuwe.xyz/api/persons', fetcher);
 	if (data != null) {
 		data.sort(sortFunc);
 	}

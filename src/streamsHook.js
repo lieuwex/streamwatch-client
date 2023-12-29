@@ -35,21 +35,21 @@ export default function useStreams() {
 	const username = localStorage.getItem('username');
 	const password = localStorage.getItem('password') || '';
 
-	let { data: streamsData, error: streamsError } = swr('http://local.lieuwe.xyz:6070/api/streams', fetcher);
+	let { data: streamsData, error: streamsError } = swr('https://streams.lieuwe.xyz/api/streams', fetcher);
 	const streamsLoading = streamsData == null && streamsError == null;
 	if (streamsError != null) {
 		console.warn('error while loading streams', streamsError);
 	}
 	streamsData = mapStreams(streamsData || []);
 
-	let { data: clipsData, error: clipsError } = swr(`http://local.lieuwe.xyz:6070/api/clips?username=${username || ''}&password=${password}`, fetcher);
+	let { data: clipsData, error: clipsError } = swr(`https://streams.lieuwe.xyz/api/clips?username=${username || ''}&password=${password}`, fetcher);
 	const clipsLoading = clipsData == null && clipsError == null;
 	if (clipsError != null) {
 		console.warn('error while loading clips', clipsError);
 	}
 	clipsData = mapClips(clipsData || []);
 
-	let { data: progressData, error: progressError } = swr(username != null ? `http://local.lieuwe.xyz:6070/api/user/${username}/progress?password=${password}` : null, fetcher);
+	let { data: progressData, error: progressError } = swr(username != null ? `https://streams.lieuwe.xyz/api/user/${username}/progress?password=${password}` : null, fetcher);
 	const progressLoading = username != null && progressData == null && progressError == null;
 	if (progressError != null) {
 		console.warn('error while loading user progress', progressError);

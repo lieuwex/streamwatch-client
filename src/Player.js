@@ -17,7 +17,7 @@ import { getName } from './users.js';
 
 async function updateItems(type, streamId, items) {
 	const send = (type, body) => {
-		return fetch(`http://local.lieuwe.xyz:6070/api/stream/${streamId}/${type}`, {
+		return fetch(`https://streams.lieuwe.xyz/api/stream/${streamId}/${type}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ async function updateItems(type, streamId, items) {
 		await send('title', items);
 	}
 
-	mutate('http://local.lieuwe.xyz:6070/api/streams');
+	mutate('https://streams.lieuwe.xyz/api/streams');
 }
 
 function sendPartyMessage(msg) {
@@ -49,7 +49,7 @@ function sendPartyMessage(msg) {
 }
 
 export const Video = React.forwardRef((props, ref) => {
-	const url = `http://local.lieuwe.xyz:6070/stream/${props.video.file_name}`;
+	const url = `https://streams.lieuwe.xyz/stream/${props.video.file_name}`;
 
 	const wrapperRef = useRef(null);
 	useDoubleClick({
@@ -167,7 +167,7 @@ function useMediaSession(video, progress) {
 			title: title,
 			artist: video.persons.map(g => g.name).join(', '),
 			artwork: [{
-				src: `http://local.lieuwe.xyz:6070/thumbnail/${video.id}/0.webp`,
+				src: `https://streams.lieuwe.xyz/thumbnail/${video.id}/0.webp`,
 				sizes: '1920x1080', // TODO: this might not always be the case, actually
 				type: 'image/webp',
 			}]

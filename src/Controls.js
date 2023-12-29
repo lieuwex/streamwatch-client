@@ -70,7 +70,7 @@ export default function Controls(props) {
 
 	const { data } = swr(
 		props.clip == null
-			? `http://local.lieuwe.xyz:6070/api/stream/${props.video.id}/otherProgress?username=${username}&password=${password}`
+			? `https://streams.lieuwe.xyz/api/stream/${props.video.id}/otherProgress?username=${username}&password=${password}`
 			: null,
 		fetcher,
 		{

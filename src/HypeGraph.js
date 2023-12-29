@@ -19,7 +19,7 @@ function smooth(data) {
 }
 
 const HypeGraph = React.memo(function HypeGraph(props) {
-	let { data, error } = swrImmutable(`http://local.lieuwe.xyz:6070/api/stream/${props.video.id}/hype`, fetcher);
+	let { data, error } = swrImmutable(`https://streams.lieuwe.xyz/api/stream/${props.video.id}/hype`, fetcher);
 
 	if (error) {
 		console.error('error loading hypegraph', error);

@@ -68,7 +68,7 @@ export default function SelectWatchparty() {
 
 	const [connectedTo, setConnectedTo] = useState(null);
 
-	const { data, error } = swr('http://local.lieuwe.xyz:6070/api/parties', fetcher);
+	const { data, error } = swr('https://streams.lieuwe.xyz/api/parties', fetcher);
 
 	const join = name => {
 		if (window.partyWs != null) {

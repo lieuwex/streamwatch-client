@@ -19,7 +19,7 @@ import { ProcessingVideo } from './Processing.js';
 function VideoPreview(props) {
 	let videoContent = <></>;
 	if (props.playPreview && props.video.has_preview && !isMobile) {
-		const url = `http://local.lieuwe.xyz:6070/preview/${props.video.id}.webm`;
+		const url = `https://streams.lieuwe.xyz/preview/${props.video.id}.webm`;
 		videoContent = (
 			<video muted={true} loop={true} playsInline={true} preload="auto" autoPlay={true}>
 				<source src={url} type="video/webm" />
@@ -30,7 +30,7 @@ function VideoPreview(props) {
 	let imageContent = <></>;
 	if (props.video.thumbnail_count > 0) {
 		imageContent
-			= <img src={`http://local.lieuwe.xyz:6070/thumbnail/${props.video.id}/0.webp`} loading="lazy" alt="" />;
+			= <img src={`https://streams.lieuwe.xyz/thumbnail/${props.video.id}/0.webp`} loading="lazy" alt="" />;
 	}
 
 	return (
@@ -198,7 +198,7 @@ export default function Videos() {
 	const videos = streamsInfo[0];
 
 	let { data: processingData, error: processingError } = swr(
-		'http://local.lieuwe.xyz:6070/api/processing',
+		'https://streams.lieuwe.xyz/api/processing',
 		fetcher,
 		{
 			refreshInterval: 2 * 60 * 1000, // 2 minutes
