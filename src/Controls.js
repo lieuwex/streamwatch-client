@@ -70,18 +70,22 @@ export default function Controls(props) {
 
 	const { data } = swr(
 		props.clip == null
-			? `https://streams.lieuwe.xyz/api/stream/${props.video.id}/otherProgress?username=${username}&password=${password}`
+			? `https://streams.lieuwe.xyz/api/stream/${props.video.id}/otherProgress`
 			: null,
 		fetcher,
 		{
 			refreshInterval: 5 * 1000, // 5 seconds
 		},
 	);
-	const otherProgress = data || [];
-	const markers = Object.entries(otherProgress).map(([username, time]) => {
+	const otherProgress = data || {};
+	const markers = Object.entries(otherProgress).map(([uname, time]) => {
+		if (uname === username) {
+			return <></>;
+		}
+
 		const fract = time / props.video.duration;
 
-		return <Tooltip title={getName(username)} placement="top" arrow>
+		return <Tooltip title={getName(uname)} placement="top" arrow>
 			<div
 				className="progress-marker"
 				style={{ 'left': `${100 * fract}%` }}
