@@ -113,8 +113,8 @@
 	gap: 5px;
 	align-items: baseline;
 
-	/* margin-left: -5px; */
-	margin-left: -2px;
+	margin-left: -3px;
+	margin-right: 5px;
 }
 .chat-message > .message-icons:empty {
 	display: none;
@@ -123,10 +123,6 @@
 .message-icon {
 	height: 1.2rem;
 	width: auto;
-}
-.message-icon.prediction {
-	margin-left: -2px;
-	margin-right: -4px;
 }
 
 .message-icon > svg {
