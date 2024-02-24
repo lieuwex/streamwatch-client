@@ -85,6 +85,46 @@ export const Video = React.forwardRef((props, ref) => {
 	</div>;
 });
 
+function useCanvasThing() {
+	const video = document.querySelector('video');
+	const canvas = document.querySelector('canvas');
+
+	if (!video || !canvas) {
+		return;
+	}
+
+	if (window.blah) {
+		return;
+	}
+
+	let step;
+
+	const ctx = canvas.getContext("2d");
+
+	const draw = () => {
+		ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+	};
+
+	const drawLoop = () => {
+		draw();
+		step = window.requestAnimationFrame(drawLoop);
+	};
+
+	const drawPause = () => {
+		window.cancelAnimationFrame(step);
+		step = undefined;
+	};
+
+	// Initialize
+	video.addEventListener("loadeddata", draw, false);
+	video.addEventListener("seeked", draw, false);
+	video.addEventListener("play", drawLoop, false);
+	video.addEventListener("pause", drawPause, false);
+	video.addEventListener("ended", drawPause, false);
+
+	window.blah = true;
+}
+
 function PauseShade(props) {
 	const [title, hasNiceTitle] = getTitle(props.video, false, props.progress / props.video.duration);
 
@@ -376,6 +416,8 @@ function Player(props) {
 		setOpenDialog(null);
 	};
 
+	useCanvasThing(playing);
+
 	return (
 		<div className="player">
 			<div className={`player-wrapper ${!userActive && playing ? 'hide-cursor' : ''}`} onPointerMove={() => markActive()}>
@@ -404,6 +446,8 @@ function Player(props) {
 					onBufferEnd={() => setBuffering(false)}
 					onSingleClick={wrapMarkActive(() => setPlaying(!playing))}
 					onDoubleClick={wrapMarkActive(() => changeFullscreen(!fullscreen[0]))} />
+
+				<canvas/>
 
 				{
 					openDialog == null
@@ -483,6 +527,8 @@ export default function PlayerWrapper(props) {
 	const videos = streamsInfo[0];
 
 	const { id } = useParams();
+
+	window.blah = false;
 
 	if (isLoading) {
 		return <Loading />;
