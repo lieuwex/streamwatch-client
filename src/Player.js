@@ -14,6 +14,7 @@ import Controls from './Controls.js';
 import PlayerDialog from './Dialogs.js';
 import useStreams from './streamsHook.js';
 import { getName } from './users.js';
+import {createPortal} from 'react-dom';
 
 async function updateItems(type, streamId, items) {
 	const send = (type, body) => {
@@ -447,7 +448,7 @@ function Player(props) {
 					onSingleClick={wrapMarkActive(() => setPlaying(!playing))}
 					onDoubleClick={wrapMarkActive(() => changeFullscreen(!fullscreen[0]))} />
 
-				<canvas/>
+				{createPortal(<canvas/>, document.body)}
 
 				{
 					openDialog == null

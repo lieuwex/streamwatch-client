@@ -5,6 +5,8 @@
 	right: 0;
 	bottom: 0;
 
+	background: rgba(0, 0, 0, .8);
+
 	display: flex;
 	flex-direction: column;
 }
@@ -14,8 +16,6 @@
 	flex-grow: 1;
 
 	display: flex;
-
-	background: rgba(0, 0, 0, .7);
 }
 
 .player-wrapper {
