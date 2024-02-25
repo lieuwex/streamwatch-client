@@ -69,12 +69,14 @@
 	/* filter: blur(3px) brightness(0.15); */
 	filter: brightness(0.15);
 }
-.video-entry.clicked .video-entry-preview img {
-	/* display: none; */
+.video-entry.clicked .video-entry-preview img,
+.video-entry.clicked .video-entry-preview video {
 	object-fit: cover;
-}
-.video-entry.clicked video {
-	object-fit: cover;
+	filter: blur(4px);
+	width: calc(100% + 8px);
+	height: calc(100% + 8px);
+	top: -4px;
+	left: -4px;
 }
 
 .video-entry.clicked .video-entry-title {
