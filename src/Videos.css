@@ -95,20 +95,21 @@
 	min-width: 265px;
 	max-width: 265px;
 	z-index: 2;
+	overflow: hidden;
 }
 
 .video-entry-preview > video {
 	position: absolute;
 	height: 100%;
-	width: 100%;
 	z-index: 10;
+	object-fit: cover;
 }
 
 .video-entry-preview > img {
 	position: absolute;
 	height: 100%;
-	width: 100%;
 	z-index: 0;
+	object-fit: cover;
 
 	opacity: 1; /* start visible by default */
 }
