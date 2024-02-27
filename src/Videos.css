@@ -307,6 +307,7 @@
 	.video-entry-information {
 		grid-template-rows: none;
 		margin-top: -20px;
+		z-index: 0;
 	}
 
 	.video-entry-title {
@@ -326,5 +327,6 @@
 
 	.video-entry-preview > img {
 		height: auto;
+		width: 100%;
 	}
 }
