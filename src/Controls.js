@@ -85,7 +85,7 @@ export default function Controls(props) {
 
 		const fract = time / props.video.duration;
 
-		return <Tooltip title={getName(uname)} placement="top" arrow>
+		return <Tooltip key={uname} title={getName(uname)} placement="top" arrow>
 			<div
 				className="progress-marker"
 				style={{ 'left': `${100 * fract}%` }}
