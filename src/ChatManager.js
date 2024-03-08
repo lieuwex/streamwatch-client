@@ -69,6 +69,8 @@ export default class ChatManager {
 		}
 		newMessages = Array.from(newMessages.values());
 
+		newMessages.sort((a, b) => a.ts - b.ts);
+
 		// TODO: we need to trim the amount of messages stored maybe not on
 		// the actual count, but on the time ago the messages were fetched.
 		// So that we can update fetched_range[0] accordingly. Or we could work
