@@ -208,7 +208,11 @@ export default function Controls(props) {
 						updateTime={hypegraphUpdateTime} />
 					{markers}
 
-					<ScrubPreview ref={previewRef} controlsRowRef={controlsRowRef} video={props.video} />
+					{
+						props.clip != null
+						? <></>
+						: <ScrubPreview ref={previewRef} controlsRowRef={controlsRowRef} video={props.video} />
+					}
 
 					<Slider
 						value={props.progress}
