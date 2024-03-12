@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from 'react';
+import React, { useEffect, useMemo, useState, useRef, useImperativeHandle, forwardRef } from 'react';
 
 import swr from 'swr';
 import { Slider, IconButton, Tooltip, Popper } from '@mui/material';
@@ -10,6 +10,80 @@ import HypeGraph from './HypeGraph.js';
 
 import { clamp, getCurrentDatapoint, fetcher } from './util.js';
 import { getName } from './users.js';
+
+const ScrubPreview = forwardRef(function ScrubPreview(props, ref) {
+	const [popperOpen, setPopperOpen] = useState(false);
+	const positionRef = useRef({ x: 0, y: 0 });
+	const popperRef = useRef(null);
+	const [imageId, setImageId] = useState(0);
+
+	useImperativeHandle(ref, () => ({
+		update: (x, y) => {
+			positionRef.current = { x, y };
+			popperRef.current?.update();
+
+			const rect = props.controlsRowRef.current?.getBoundingClientRect();
+			if (!rect || !popperOpen) {
+				return;
+			}
+
+			const mouseX = positionRef.current.x;
+			const left = rect.left;
+			const right = rect.right;
+
+			const frac = (mouseX - left) / right;
+
+			// REVIEW: hier lijkt geen sikkepit van te kloppen
+			setImageId(Math.round((props.video.thumbnail_count - 1) * frac));
+
+			//console.log(mouseX, rect, frac, imageId);
+		},
+		setOpen: open => setPopperOpen(open),
+	}));
+
+	const thumbnails = useMemo(() => {
+		const res = [];
+
+		for (let i = 0; i < props.video.thumbnail_count; i++) {
+			const url = `https://streams.lieuwe.xyz/thumbnail/${props.video.id}/${i}.webp`;
+			const shown = i === imageId;
+
+			res.push(
+				<img key={i} src={url} decoding="async" style={{
+					width: '200px',
+					height: 'auto',
+					borderRadius: '10px',
+
+					display: shown ? 'block' : 'none',
+				}} />
+			);
+		}
+
+		return res;
+	}, [imageId, props.video.id]);
+
+	return (
+		<Popper open={popperOpen}
+				keepMounted={true}
+				popperRef={popperRef}
+				style={{ pointerEvents: 'none' }}
+				anchorEl={{
+					getBoundingClientRect: () => {
+						return new DOMRect(
+							positionRef.current.x,
+							props.controlsRowRef.current?.getBoundingClientRect().y,
+							0,
+							0,
+						);
+					},
+				}}>
+
+			<div style={{ boxShadow: '0px 0px 66px -21px rgba(0,0,0,0.87)' }}>
+				{thumbnails}
+			</div>
+		</Popper>
+	);
+});
 
 export function Button(props) {
 	const onClick = e => {
@@ -59,11 +133,8 @@ export default function Controls(props) {
 	const [hypegraphUpdateTime, setHypegraphUpdateTime] = useState(() => Date.now());
 	useEffect(() => setHypegraphUpdateTime(Date.now()), [props.fullscreen, props.sidebarOpen]);
 
-	const [popperOpen, setPopperOpen] = useState(false);
-	const positionRef = useRef({ x: 0, y: 0 });
 	const controlsRowRef = useRef(null);
-	const popperRef = useRef(null);
-	const [imageId, setImageId] = useState(0);
+	const previewRef = useRef(null);
 
 	const datapoint = getCurrentDatapoint(props.video, props.progress);
 	const viewcount = datapoint == null ? null : datapoint.viewcount;
@@ -100,27 +171,6 @@ export default function Controls(props) {
 		</Tooltip>;
 	});
 
-	const thumbnails = useMemo(() => {
-		const res = [];
-
-		for (let i = 0; i < props.video.thumbnail_count; i++) {
-			const url = `https://streams.lieuwe.xyz/thumbnail/${props.video.id}/${i}.webp`;
-			const shown = i === imageId;
-
-			res.push(
-				<img key={i} src={url} decoding="async" style={{
-					width: '200px',
-					height: 'auto',
-					borderRadius: '10px',
-
-					display: shown ? 'block' : 'none',
-				}} />
-			);
-		}
-
-		return res;
-	}, [imageId, props.video.id]);
-
 	return (
 		<div className={`video-controls ${props.visible ? 'visible' : ''}`}>
 			<div className="controls-row information">
@@ -146,28 +196,9 @@ export default function Controls(props) {
 
 				<div
 					className="slider-container"
-					onMouseMove={e => {
-						positionRef.current = { x: e.clientX, y: e.clientY };
-						popperRef.current?.update();
-
-						const rect = controlsRowRef.current?.getBoundingClientRect();
-						if (!rect || !popperOpen) {
-							return;
-						}
-
-						const mouseX = positionRef.current.x;
-						const left = rect.left;
-						const right = rect.right;
-
-						const frac = (mouseX - left) / right;
-
-						// REVIEW: hier lijkt geen sikkepit van te kloppen
-						setImageId(Math.round((props.video.thumbnail_count - 1) * frac));
-
-						//console.log(mouseX, rect, frac, imageId);
-					}}
-					onMouseEnter={() => setPopperOpen(true)}
-					onMouseLeave={() => setPopperOpen(false)}
+					onMouseMove={e => previewRef.current?.update(e.clientX, e.clientY)}
+					onMouseEnter={() => previewRef.current?.setOpen(true)}
+					onMouseLeave={() => previewRef.current?.setOpen(false)}
 					ref={controlsRowRef}
 				>
 					<HypeGraph
@@ -177,25 +208,7 @@ export default function Controls(props) {
 						updateTime={hypegraphUpdateTime} />
 					{markers}
 
-					<Popper open={popperOpen}
-							keepMounted={true}
-							popperRef={popperRef}
-							style={{ pointerEvents: 'none' }}
-							anchorEl={{
-								getBoundingClientRect: () => {
-									return new DOMRect(
-										positionRef.current.x,
-										controlsRowRef.current?.getBoundingClientRect().y,
-										0,
-										0,
-									);
-								},
-							}}>
-
-						<div style={{ boxShadow: '0px 0px 66px -21px rgba(0,0,0,0.87)' }}>
-							{thumbnails}
-						</div>
-					</Popper>
+					<ScrubPreview ref={previewRef} controlsRowRef={controlsRowRef} video={props.video} />
 
 					<Slider
 						value={props.progress}
