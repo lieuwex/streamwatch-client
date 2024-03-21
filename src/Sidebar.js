@@ -161,6 +161,7 @@ const ChatMessage = React.memo(props => {
 			}
 		},
 		'submysterygift': () => props.message.tags['system-msg'],
+		'raid': () => `raided with ${props.message.tags['msg-param-viewerCount']} viewers`,
 	})[props.message.type] || (() => {});
 	const action = actionFn();
 
