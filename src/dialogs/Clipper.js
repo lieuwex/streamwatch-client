@@ -11,7 +11,7 @@ import './Clipper.css';
 
 import { Video } from './../Player.js';
 import HypeGraph from './../HypeGraph.js';
-import { Button as ControlsButton } from './../Controls.js';
+import { IButton as ControlsButton } from './../Controls.js';
 import SelectedText from './../SelectedText.js';
 
 import { clamp } from './../util.js';

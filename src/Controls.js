@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState, useRef, useImperativeHandle, forwardRef } from 'react';
 
 import swr from 'swr';
-import { Slider, IconButton, Tooltip, Popper } from '@mui/material';
+import { Slider, Button, IconButton, Tooltip, Popper } from '@mui/material';
 import { Pause, MovieCreation, PlayArrow, VolumeUp, VolumeOff, FullscreenExit, Fullscreen, People, SportsEsports, ChevronLeft, ChevronRight, Info } from '@mui/icons-material';
 import formatDuration from 'format-duration';
 import useMousetrap from 'react-hook-mousetrap';
@@ -85,7 +85,7 @@ const ScrubPreview = forwardRef(function ScrubPreview(props, ref) {
 	);
 });
 
-export function Button(props) {
+export function IButton(props) {
 	const onClick = e => {
 		document.activeElement.blur();
 		return props.onClick(e);
@@ -171,8 +171,41 @@ export default function Controls(props) {
 		</Tooltip>;
 	});
 
+	const lekkerWachtens = props.video.games.filter(g => g.id === 7);
+	const introDuration = 43; // seconds
+	let skipTo = null;
+	for (let i = lekkerWachtens.length - 1; i >= 0; i--) {
+		const start = lekkerWachtens[i].start_time;
+		if (progressSecs > start && progressSecs < (start + introDuration)) {
+			skipTo = start + introDuration;
+			break;
+		}
+	}
+
+	console.log(progressSecs, lekkerWachtens, skipTo);
+
+	const skipIntro = () => {
+		if (skipTo == null) {
+			return;
+		}
+
+		props.onSeek(skipTo / props.video.duration);
+	};
+
 	return (
 		<div className={`video-controls ${props.visible ? 'visible' : ''}`}>
+			<div className="controls-row information" style={{'flex-direction': 'row-reverse'}}>
+				<Button
+					style={{
+						'color': 'white',
+						'border-color': 'white',
+						'float': 'right',
+						'margin': '10px',
+						'visibility': skipTo ? 'visible' : 'hidden',
+					}}
+					variant="outlined"
+					onClick={skipIntro}>Skip intro</Button>
+			</div>
 			<div className="controls-row information">
 				<div className="duration fixed-width-num">
 					{formatDuration(1000 * (progressSecs - start))} / {formatDuration(1000 * (end - start))}
@@ -190,9 +223,9 @@ export default function Controls(props) {
 				}
 			</div>
 			<div className="controls-row">
-				<Button onClick={() => props.onPlayChange(!props.playing)}>
+				<IButton onClick={() => props.onPlayChange(!props.playing)}>
 					{ props.playing ? <Pause /> : <PlayArrow /> }
-				</Button>
+				</IButton>
 
 				<div
 					className="slider-container"
@@ -227,9 +260,9 @@ export default function Controls(props) {
 				</div>
 
 				<div className="volume-controls">
-					<Button onClick={() => props.onMutedChange(!props.muted)}>
+					<IButton onClick={() => props.onMutedChange(!props.muted)}>
 						{ props.muted ? <VolumeOff /> : <VolumeUp /> }
-					</Button>
+					</IButton>
 					<Slider
 						value={props.muted ? 0 : props.volume*100}
 						valueLabelDisplay="auto"
@@ -244,42 +277,42 @@ export default function Controls(props) {
 				{
 					props.clip != null
 					? <></>
-					: <Button onClick={el => props.onTooltipClick('participants', el.currentTarget)}>
+					: <IButton onClick={el => props.onTooltipClick('participants', el.currentTarget)}>
 						<People />
-					</Button>
+					</IButton>
 				}
 				{
 					props.clip != null
 					? <></>
-					: <Button onClick={el => props.onTooltipClick('games', el.currentTarget)}>
+					: <IButton onClick={el => props.onTooltipClick('games', el.currentTarget)}>
 						<SportsEsports />
-					</Button>
+					</IButton>
 				}
 				{
 					username == null || !(props.clip == null || props.clip.author_username === username)
 					? <></>
-					: <Button onClick={el => props.onTooltipClick('clipper', el.currentTarget)}>
+					: <IButton onClick={el => props.onTooltipClick('clipper', el.currentTarget)}>
 						<MovieCreation />
-					</Button>
+					</IButton>
 				}
 				{
 					props.clip != null
 					? <></>
-					: <Button onClick={el => props.onTooltipClick('metadata', el.currentTarget)}>
+					: <IButton onClick={el => props.onTooltipClick('metadata', el.currentTarget)}>
 						<Info />
-					</Button>
+					</IButton>
 				}
 
-				<Button onClick={() => props.onFullscreenChange(!props.fullscreen)}>
+				<IButton onClick={() => props.onFullscreenChange(!props.fullscreen)}>
 					{ props.fullscreen ? <FullscreenExit /> : <Fullscreen /> }
-				</Button>
+				</IButton>
 
 				{
 					!props.video.has_chat
 						? <></>
-						: <Button onClick={() => props.onSidebarChange(!props.sidebarOpen)}>
+						: <IButton onClick={() => props.onSidebarChange(!props.sidebarOpen)}>
 							{ props.sidebarOpen ? <ChevronRight /> : <ChevronLeft /> }
-						</Button>
+						</IButton>
 				}
 			</div>
 		</div>
