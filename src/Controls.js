@@ -27,16 +27,15 @@ const ScrubPreview = forwardRef(function ScrubPreview(props, ref) {
 				return;
 			}
 
-			const mouseX = positionRef.current.x;
 			const left = rect.left;
 			const right = rect.right;
 
-			const frac = (mouseX - left) / right;
+			const frac = (x - left) / right;
 
 			// REVIEW: hier lijkt geen sikkepit van te kloppen
-			setImageId(Math.round((props.video.thumbnail_count - 1) * frac));
+			setImageId(Math.round((props.video.scrub_thumbnail_count - 1) * frac));
 
-			//console.log(mouseX, rect, frac, imageId);
+			//console.log(x, rect, frac, imageId);
 		},
 		setOpen: open => setPopperOpen(open),
 	}));
@@ -44,8 +43,8 @@ const ScrubPreview = forwardRef(function ScrubPreview(props, ref) {
 	const thumbnails = useMemo(() => {
 		const res = [];
 
-		for (let i = 0; i < props.video.thumbnail_count; i++) {
-			const url = `https://streams.lieuwe.xyz/thumbnail/${props.video.id}/${i}.webp`;
+		for (let i = 0; i < props.video.scrub_thumbnail_count; i++) {
+			const url = `https://streams.lieuwe.xyz/scrub_thumbnail/${props.video.id}/${i}.webp`;
 			const shown = i === imageId;
 
 			res.push(
