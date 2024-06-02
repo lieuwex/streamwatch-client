@@ -85,6 +85,57 @@ const ScrubPreview = forwardRef(function ScrubPreview(props, ref) {
 	);
 });
 
+function SkipIntroButton(props) {
+	const video = props.video;
+	const progressSecs = props.progressSecs;
+
+	const skipTo = useMemo(() => {
+		const introDuration = 43; // seconds
+		const lekkerWachtens = video.games.filter(g => g.id === 7);
+
+		for (let i = lekkerWachtens.length - 1; i >= 0; i--) {
+			const start = lekkerWachtens[i].start_time;
+			if (progressSecs > start && progressSecs < (start + introDuration)) {
+				return start + introDuration;
+			}
+		}
+
+		if (progressSecs < introDuration) {
+			return introDuration;
+		}
+
+		return null;
+	}, [progressSecs]);
+
+	const skipIntro = () => {
+		if (skipTo == null) {
+			console.warn('skipInto called while skipTo is null');
+			return;
+		}
+
+		props.onSeek(skipTo / video.duration);
+	};
+
+	if (skipTo == null) {
+		return null;
+	}
+
+	return (
+		<Button
+			style={{
+				'color': 'white',
+				'border-color': 'white',
+				'float': 'right',
+				'margin': '10px',
+			}}
+			variant="outlined"
+			onClick={skipIntro}
+		>
+			Skip intro
+		</Button>
+	);
+}
+
 export function IButton(props) {
 	const onClick = e => {
 		document.activeElement.blur();
@@ -171,46 +222,12 @@ export default function Controls(props) {
 		</Tooltip>;
 	});
 
-	const skipTo = useMemo(() => {
-		const introDuration = 43; // seconds
-		const lekkerWachtens = props.video.games.filter(g => g.id === 7);
-
-		for (let i = lekkerWachtens.length - 1; i >= 0; i--) {
-			const start = lekkerWachtens[i].start_time;
-			if (progressSecs > start && progressSecs < (start + introDuration)) {
-				return start + introDuration;
-			}
-		}
-
-		if (progressSecs < introDuration) {
-			return introDuration;
-		}
-
-		return null;
-	}, [progressSecs]);
-
-	const skipIntro = () => {
-		if (skipTo == null) {
-			return;
-		}
-
-		props.onSeek(skipTo / props.video.duration);
-	};
-
 	return (
 		<div className={`video-controls ${props.visible ? 'visible' : ''}`}>
 			<div className="controls-row information" style={{'flex-direction': 'row-reverse'}}>
-				<Button
-					style={{
-						'color': 'white',
-						'border-color': 'white',
-						'float': 'right',
-						'margin': '10px',
-						'visibility': skipTo ? 'visible' : 'hidden',
-					}}
-					variant="outlined"
-					onClick={skipIntro}>Skip intro</Button>
+				<SkipIntroButton video={props.video} progressSecs={progressSecs} onSeek={props.onSeek} />
 			</div>
+
 			<div className="controls-row information">
 				<div className="duration fixed-width-num">
 					{formatDuration(1000 * (progressSecs - start))} / {formatDuration(1000 * (end - start))}
@@ -227,6 +244,7 @@ export default function Controls(props) {
 					</div>
 				}
 			</div>
+
 			<div className="controls-row">
 				<IButton onClick={() => props.onPlayChange(!props.playing)}>
 					{ props.playing ? <Pause /> : <PlayArrow /> }
