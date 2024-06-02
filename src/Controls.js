@@ -171,18 +171,31 @@ export default function Controls(props) {
 		</Tooltip>;
 	});
 
-	const lekkerWachtens = props.video.games.filter(g => g.id === 7);
-	const introDuration = 43; // seconds
-	let skipTo = introDuration;
-	for (let i = lekkerWachtens.length - 1; i >= 0; i--) {
-		const start = lekkerWachtens[i].start_time;
-		if (progressSecs > start && progressSecs < (start + introDuration)) {
-			skipTo = start + introDuration;
-			break;
-		}
-	}
+	const skipTo = useMemo(() => {
+		const introDuration = 43; // seconds
+		const lekkerWachtens = props.video.games.filter(g => g.id === 7);
 
-	const skipIntro = () => props.onSeek(skipTo / props.video.duration);
+		for (let i = lekkerWachtens.length - 1; i >= 0; i--) {
+			const start = lekkerWachtens[i].start_time;
+			if (progressSecs > start && progressSecs < (start + introDuration)) {
+				return start + introDuration;
+			}
+		}
+
+		if (progressSecs < introDuration) {
+			return introDuration;
+		}
+
+		return null;
+	}, [progressSecs]);
+
+	const skipIntro = () => {
+		if (skipTo == null) {
+			return;
+		}
+
+		props.onSeek(skipTo / props.video.duration);
+	};
 
 	return (
 		<div className={`video-controls ${props.visible ? 'visible' : ''}`}>
