@@ -173,7 +173,7 @@ export default function Controls(props) {
 
 	const lekkerWachtens = props.video.games.filter(g => g.id === 7);
 	const introDuration = 43; // seconds
-	let skipTo = null;
+	let skipTo = introDuration;
 	for (let i = lekkerWachtens.length - 1; i >= 0; i--) {
 		const start = lekkerWachtens[i].start_time;
 		if (progressSecs > start && progressSecs < (start + introDuration)) {
@@ -182,15 +182,7 @@ export default function Controls(props) {
 		}
 	}
 
-	console.log(progressSecs, lekkerWachtens, skipTo);
-
-	const skipIntro = () => {
-		if (skipTo == null) {
-			return;
-		}
-
-		props.onSeek(skipTo / props.video.duration);
-	};
+	const skipIntro = () => props.onSeek(skipTo / props.video.duration);
 
 	return (
 		<div className={`video-controls ${props.visible ? 'visible' : ''}`}>
