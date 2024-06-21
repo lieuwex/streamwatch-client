@@ -351,6 +351,10 @@ function Player(props) {
 
 	// handle fullscreen changes (made by browser)
 	useEffect(() => {
+		if (screenfull.on == null) {
+			return;
+		}
+
 		const callback = () => {
 			changeFullscreen(screenfull.isFullscreen);
 		};
