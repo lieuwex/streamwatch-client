@@ -4,7 +4,7 @@ import formatDuration from 'format-duration';
 import { isMobile } from 'react-device-detect';
 import { Flipper, Flipped } from 'react-flip-toolkit';
 import Backdrop from '@mui/material/Backdrop';
-import { PlayArrow } from '@mui/icons-material';
+import { PlayArrow, Search } from '@mui/icons-material';
 import mousetrap from 'mousetrap';
 import filesize from 'filesize';
 import swr from 'swr';
@@ -177,14 +177,43 @@ function Video(props) {
 	);
 }
 
+function VideoListSearch(props) {
+	return <div className="search">
+		<Search className="icon" />
+		<input type="text" spellcheck="false" onChange={e => props.onChange?.(e.target.value)} />
+	</div>;
+}
+
 export function VideosList(props) {
+	const [query, setQuery] = useState('');
+
+	const matches = video => {
+		const q = query.toLowerCase().trim();
+		if (q == '') {
+			return true;
+		}
+
+		if (video == null) {
+			return false;
+		}
+
+		const t = s => s?.toLowerCase()?.includes(q);
+
+		return video.games.some(g => t(g.name) || t(q.twitch_name)) ||
+			t(video.title) ||
+			t(video.file_name);
+	};
+
+	const filtered = props.children.filter(e => matches(e.props.video));
+
 	return <>
-		<h1>
-			{props.header}
+		<h1 className={`${props.search ? 'with-search' : ''}`}>
+			{ props.search ? <VideoListSearch onChange={q => setQuery(q)} /> : <></> }
+			{props.header} {props.search ? `(${filtered.length})` : ''}
 			{props.button || <></>}
 		</h1>
 		<div className={`video-list ${props.horizontal ? 'horizontal' : ''}`}>
-			{props.children}
+			{filtered}
 		</div>
 	</>;
 }
@@ -253,7 +282,7 @@ export default function Videos() {
 				</VideosList>
 			}
 
-			<VideosList header="Alle streams" inProgress={false}>
+			<VideosList search={true} header="Alle streams" inProgress={false}>
 				{items}
 			</VideosList>
 		</div>
