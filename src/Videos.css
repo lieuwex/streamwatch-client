@@ -247,6 +247,9 @@
 .video-list-wrapper h1 {
 	text-align: center;
 	font-weight: 450;
+
+	display: flex;
+	justify-content: center;
 }
 
 .video-list.horizontal {
@@ -284,6 +287,15 @@
 }
 
 @media only screen and (max-width: 600px) {
+	.video-list-wrapper h1 {
+		text-align: left;
+		justify-content: space-around;
+	}
+	.video-list-wrapper button {
+		position: relative;
+		right: 0;
+	}
+
 	.video-entry {
 		height: auto;
 		flex-flow: column;
