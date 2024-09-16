@@ -49,7 +49,7 @@ const ScrubPreview = forwardRef(function ScrubPreview(props, ref) {
 			const shown = i === imageId;
 
 			res.push(
-				<img key={i} src={url} decoding="async" style={{
+				<img key={i} src={url} decoding="sync" style={{
 					width: '200px',
 					height: 'auto',
 					borderRadius: '10px',
@@ -61,6 +61,20 @@ const ScrubPreview = forwardRef(function ScrubPreview(props, ref) {
 
 		return res;
 	}, [imageId, props.video.id]);
+
+	useEffect(() => {
+		// preload all images
+		for (const img of thumbnails) {
+			const preloadLink = document.createElement("link");
+			preloadLink.href = img.props.src;
+			preloadLink.rel = "preload";
+			preloadLink.as = "image";
+			document.head.appendChild(preloadLink);
+		}
+
+		// delete all image preloads
+		return () => document.querySelectorAll('head link[rel="preload"][as="image"]').forEach(el => el.remove());
+	}, [props.video.id])
 
 	return (
 		<Popper open={popperOpen}
