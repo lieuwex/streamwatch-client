@@ -79,7 +79,14 @@ function convertUrls(str) {
 	const res = [];
 	let last = 0;
 
+	const tagMatches = Array.from(str.matchAll(/<[^>]+?>/gi));
+
 	for (const match of (matches || [])) {
+		const tagMatch = tagMatches.findLast(m => m.index <= match.index);
+		if (tagMatch != null && (match.index < (tagMatch.index + tagMatch[0].length))) {
+			continue;
+		}
+
 		if (last < match.index) {
 			res.push(str.slice(last, match.index));
 		}
@@ -131,8 +138,8 @@ function encode(str) {
 
 const ChatMessage = React.memo(props => {
 	let [body, map] = encode(props.message.message);
-	body = convertUrls(body);
 	body = convertEmotes(body, parseEmotes(props.message.tags.emotes || ''), map);
+	body = convertUrls(body);
 
 	let color;
 	let fontColor;
