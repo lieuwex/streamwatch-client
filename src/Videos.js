@@ -9,7 +9,7 @@ import mousetrap from 'mousetrap';
 import filesize from 'filesize';
 import swr from 'swr';
 
-import { formatGame, filterGames, formatDate, getTitle, isChromeLike, fetcher } from './util.js';
+import { formatGame, filterGames, formatDate, getTitle, isChromeLike, fetcher, useRequireLogin } from './util.js';
 import './Videos.css';
 import { ClipVideo } from './Clips.js';
 import useStreams from './streamsHook.js';
@@ -222,6 +222,7 @@ export default function Videos() {
 	useEffect(() => {
 		document.title = 'Streamwatch';
 	}, []);
+	useRequireLogin();
 
 	let { isLoading, streams: streamsInfo, clips: clipsInfo } = useStreams();
 	const videos = streamsInfo[0];

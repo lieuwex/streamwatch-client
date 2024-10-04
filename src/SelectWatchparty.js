@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import { makeStyles } from '@mui/styles';
 
-import { fetcher } from './util.js';
+import { fetcher, useRequireLogin } from './util.js';
 
 const useStyles = makeStyles({
 	list: {
@@ -65,6 +65,7 @@ export default function SelectWatchparty() {
 	useEffect(() => {
 		document.title = 'Streamwatch - watch party';
 	}, []);
+	useRequireLogin();
 
 	const [connectedTo, setConnectedTo] = useState(null);
 

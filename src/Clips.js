@@ -5,7 +5,7 @@ import { isMobile } from 'react-device-detect';
 import { DateTime } from 'luxon';
 
 import './Clips.css';
-import { formatDate, plural, isChromeLike } from './util.js';
+import { formatDate, plural, isChromeLike, useRequireLogin } from './util.js';
 import { VideosList } from './Videos.js';
 import useStreams from './streamsHook.js';
 import Loading from './Loading.js';
@@ -94,6 +94,7 @@ export default function Clips() {
 	useEffect(() => {
 		document.title = 'Streamwatch - Clips';
 	}, []);
+	useRequireLogin();
 
 	const { isLoading, streams: streamsInfo, clips: clipsInfo } = useStreams();
 	const videos = streamsInfo[0];

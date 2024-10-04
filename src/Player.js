@@ -7,7 +7,7 @@ import { isMobile } from 'react-device-detect';
 import { mutate } from 'swr';
 
 import './Player.css';
-import { updateStreamsProgress, addClipView, filterGames, getTitle, formatDate, getCurrentUrl } from './util.js';
+import { updateStreamsProgress, addClipView, filterGames, getTitle, formatDate, getCurrentUrl, useRequireLogin } from './util.js';
 import Loading from './Loading.js';
 import Sidebar from './Sidebar.js';
 import Controls from './Controls.js';
@@ -255,6 +255,7 @@ function Player(props) {
 		}
 	})
 	useEffect(() => { document.title = `${title} - Streamwatch`; }, [title]);
+	useRequireLogin(!playingAsClip);
 
 	// keep localStorage up-to-date
 	useEffect(() => {

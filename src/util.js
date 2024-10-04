@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { mutate } from 'swr';
 import { isChrome, isChromium, isEdgeChromium } from 'react-device-detect';
 
@@ -130,4 +131,13 @@ export function plural(count, singular, plural) {
 
 export function isChromeLike() {
 	return isChrome || isChromium || isEdgeChromium;
+}
+
+export function useRequireLogin(requireLogin = true) {
+	useEffect(() => {
+		if (requireLogin && localStorage.getItem('username') == null) {
+			sessionStorage.setItem('redirect', window.location.href);
+			window.location.href = '/login';
+		}
+	}, [requireLogin]);
 }
