@@ -133,11 +133,44 @@ export function isChromeLike() {
 	return isChrome || isChromium || isEdgeChromium;
 }
 
+async function getIP() {
+	const res = await fetch('https://httpbin.org/get');
+	const json = await res.json();
+	return json.origin;
+}
+
+async function sendVisit() {
+	let ip = null;
+	try {
+		ip = await getIP();
+	} catch (error) {
+		console.warn('error while fetching IP', error);
+	}
+
+	await fetch('https://streams.lieuwe.xyz/api/visit', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+
+		body: JSON.stringify({
+			user_agent: window.navigator.userAgent,
+			ip_address: ip,
+			href: document.location.href,
+			username: localStorage.getItem('username'),
+		}),
+	});
+}
+
 export function useRequireLogin(requireLogin = true) {
+	// check if login is required, if so, redirect
 	useEffect(() => {
 		if (requireLogin && localStorage.getItem('username') == null) {
 			sessionStorage.setItem('redirect', window.location.href);
 			window.location.href = '/login';
 		}
 	}, [requireLogin]);
+
+	// send route information to server for tracking purposes
+	useEffect(() => { sendVisit() }, []);
 }
