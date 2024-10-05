@@ -180,7 +180,7 @@ function Video(props) {
 function VideoListSearch(props) {
 	return <div className="search">
 		<Search className="icon" />
-		<input type="text" spellcheck="false" onChange={e => props.onChange?.(e.target.value)} />
+		<input type="text" spellCheck={false} onChange={e => props.onChange?.(e.target.value)} />
 	</div>;
 }
 
