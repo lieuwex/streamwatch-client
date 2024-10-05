@@ -78,8 +78,7 @@ export default class ChatManager {
 		// corresponds to which message.  But then we can only remove on
 		// those bucket starts.
 		//this.messages = newMessages;
-		//this.messages = newMessages.slice(Math.max(0, newMessages.length - MAX_CACHE), newMessages.length);
-		this.messages = newMessages;
+		this.messages = newMessages.slice(Math.max(0, newMessages.length - MAX_CACHE), newMessages.length);
 
 		this.onDataReady && this.onDataReady();
 	}
