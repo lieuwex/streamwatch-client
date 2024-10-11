@@ -250,7 +250,11 @@ export default function Controls(props) {
 	return (
 		<div className={`video-controls ${props.visible ? 'visible' : ''}`}>
 			<div className="controls-row information" style={{'flex-direction': 'row-reverse'}}>
-				<SkipIntroButton video={props.video} progressSecs={progressSecs} onSeek={props.onSeek} />
+				{
+					props.clip != null
+					? <></>
+					: <SkipIntroButton video={props.video} progressSecs={progressSecs} onSeek={props.onSeek} />
+				}
 			</div>
 
 			<div className="controls-row information">
