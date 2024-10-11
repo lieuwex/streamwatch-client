@@ -189,10 +189,6 @@
 	margin-top: 10px;
 }
 
-.clip-info-row {
-	display: flex;
-}
-
 .clip-info h1, .clip-info h2 {
 	margin-top: 0;
 	margin-bottom: 0;
@@ -208,13 +204,9 @@
 	font-weight: 300;
 }
 
-.clip-info .clip-header {
-	flex-grow: 1;
-}
-
 .clip-info .clip-stream-link {
-	flex-grow: 1;
-	flex-shrink: 1;
+	float: right;
+
 	max-width: 30%;
 	min-width: 100px;
 
@@ -231,6 +223,9 @@
 }
 
 @media only screen and (max-width: 600px) {
+	.clip-info {
+		margin: 10px;
+	}
 	.clip-info h1 {
 		font-size: 2em;
 	}
@@ -238,11 +233,14 @@
 		font-size: 1.2em;
 	}
 	.clip-info .clip-stream-link {
-		position: relative;
-		top: initial;
-		right: initial;
+		display: block;
+		float: none;
+		margin-bottom: 5px;
+		max-width: 100%;
+		padding: 0;
 
 		font-size: .8em;
+		text-align: left;
 	}
 }
 
