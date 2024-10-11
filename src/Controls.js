@@ -246,6 +246,9 @@ export default function Controls(props) {
 
 	const markers = useMarkers(props, username);
 
+	if (!props.visible) {
+		return <></>;
+	}
 
 	return (
 		<div className={`video-controls ${props.visible ? 'visible' : ''}`}>
