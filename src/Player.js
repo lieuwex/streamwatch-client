@@ -221,7 +221,7 @@ function useMediaSession(video, progress) {
 function Player(props) {
 	const video = props.video;
 	const clip = props.clip;
-	const useNativeControls = isMobile;
+	const useNativeControls = false;
 
 	const playingAsClip = clip != null;
 	const loop = playingAsClip;

@@ -6,6 +6,7 @@ import { Pause, MovieCreation, PlayArrow, VolumeUp, VolumeOff, FullscreenExit, F
 import formatDuration from 'format-duration';
 import useMousetrap from 'react-hook-mousetrap';
 import NumberEasing from 'react-number-easing';
+import { isMobile } from 'react-device-detect';
 import HypeGraph from './HypeGraph.js';
 
 import { clamp, getCurrentDatapoint, fetcher } from './util.js';
@@ -278,7 +279,7 @@ export default function Controls(props) {
 					{markers}
 
 					{
-						props.clip != null
+						isMobile || props.clip != null
 						? <></>
 						: <ScrubPreview ref={previewRef} controlsRowRef={controlsRowRef} video={props.video} />
 					}
@@ -295,56 +296,67 @@ export default function Controls(props) {
 					/>
 				</div>
 
-				<div className="volume-controls">
-					<IButton onClick={() => props.onMutedChange(!props.muted)}>
-						{ props.muted ? <VolumeOff /> : <VolumeUp /> }
-					</IButton>
-					<Slider
-						value={props.muted ? 0 : props.volume*100}
-						valueLabelDisplay="auto"
-						valueLabelFormat={x => Math.floor(x).toString()}
-						min={0}
-						max={100}
-						step={1}
-						disabled={props.muted}
-						onChange={(_, x) => props.onVolumeChange(x / 100)} />
-				</div>
+				{
+					isMobile
+					? <></>
+					: <div className="volume-controls">
+						<IButton onClick={() => props.onMutedChange(!props.muted)}>
+							{ props.muted ? <VolumeOff /> : <VolumeUp /> }
+						</IButton>
+						<Slider
+							value={props.muted ? 0 : props.volume*100}
+							valueLabelDisplay="auto"
+							valueLabelFormat={x => Math.floor(x).toString()}
+							min={0}
+							max={100}
+							step={1}
+							disabled={props.muted}
+							onChange={(_, x) => props.onVolumeChange(x / 100)} />
+					</div>
+				}
 
 				{
-					props.clip != null
+					isMobile || props.clip != null
 					? <></>
 					: <IButton onClick={el => props.onTooltipClick('participants', el.currentTarget)}>
 						<People />
 					</IButton>
 				}
 				{
-					props.clip != null
+					isMobile || props.clip != null
 					? <></>
 					: <IButton onClick={el => props.onTooltipClick('games', el.currentTarget)}>
 						<SportsEsports />
 					</IButton>
 				}
 				{
-					username == null || !(props.clip == null || props.clip.author_username === username)
+					isMobile || username == null || !(props.clip == null || props.clip.author_username === username)
 					? <></>
 					: <IButton onClick={el => props.onTooltipClick('clipper', el.currentTarget)}>
 						<MovieCreation />
 					</IButton>
 				}
 				{
-					props.clip != null
+					isMobile || props.clip != null
 					? <></>
 					: <IButton onClick={el => props.onTooltipClick('metadata', el.currentTarget)}>
 						<Info />
 					</IButton>
 				}
 
-				<IButton onClick={() => props.onFullscreenChange(!props.fullscreen)}>
-					{ props.fullscreen ? <FullscreenExit /> : <Fullscreen /> }
-				</IButton>
+				{
+					// TODO: make the fullscreen button work, we should rotate
+					// the screen in a way to landspace to make it somewhat
+					// useful.  Or we can just only fullscreen the video element
+					isMobile
+					? <></>
+					: <IButton onClick={() => props.onFullscreenChange(!props.fullscreen)}>
+						{ props.fullscreen ? <FullscreenExit /> : <Fullscreen /> }
+					</IButton>
+				}
 
 				{
-					!props.video.has_chat
+					isMobile || !props.video.has_chat
 						? <></>
 						: <IButton onClick={() => props.onSidebarChange(!props.sidebarOpen)}>
 							{ props.sidebarOpen ? <ChevronRight /> : <ChevronLeft /> }
