@@ -163,7 +163,7 @@ export function IButton(props) {
 	)
 }
 
-export default function Controls(props) {
+function useKeyBindings(props) {
 	const wrap = fn => {
 		return e => {
 			e.stopImmediatePropagation();
@@ -191,9 +191,43 @@ export default function Controls(props) {
 	};
 	useMousetrap('up', wrap(() => volumeDelta(0.1)));
 	useMousetrap('down', wrap(() => volumeDelta(-0.1)));
+}
+
+function useMarkers(props, username) {
+	const { data } = swr(
+		props.clip == null
+			? `https://streams.lieuwe.xyz/api/stream/${props.video.id}/otherProgress`
+			: null,
+		fetcher,
+		{
+			refreshInterval: 5 * 1000, // 5 seconds
+		},
+	);
+
+	return useMemo(() => {
+		const otherProgress = data || {};
+		return Object.entries(otherProgress).map(([uname, time]) => {
+			if (uname === username) {
+				return <></>;
+			}
+
+			const fract = time / props.video.duration;
+
+			return <Tooltip key={uname} title={getName(uname)} placement="top" arrow>
+				<div
+					className="progress-marker"
+					style={{ 'left': `${100 * fract}%` }}
+					onClick={() => props.onSeek(fract)}
+				/>
+			</Tooltip>;
+		});
+	}, [data]);
+}
+
+export default function Controls(props) {
+	useKeyBindings(props);
 
 	const username = useMemo(() => localStorage.getItem('username') || null, []);
-	const password = useMemo(() => localStorage.getItem('password') || null, []);
 
 	const [hypegraphUpdateTime, setHypegraphUpdateTime] = useState(() => Date.now());
 	useEffect(() => setHypegraphUpdateTime(Date.now()), [props.fullscreen, props.sidebarOpen]);
@@ -210,31 +244,8 @@ export default function Controls(props) {
 
 	const progressSecs = props.progress * props.video.duration;
 
-	const { data } = swr(
-		props.clip == null
-			? `https://streams.lieuwe.xyz/api/stream/${props.video.id}/otherProgress`
-			: null,
-		fetcher,
-		{
-			refreshInterval: 5 * 1000, // 5 seconds
-		},
-	);
-	const otherProgress = data || {};
-	const markers = Object.entries(otherProgress).map(([uname, time]) => {
-		if (uname === username) {
-			return <></>;
-		}
+	const markers = useMarkers(props, username);
 
-		const fract = time / props.video.duration;
-
-		return <Tooltip key={uname} title={getName(uname)} placement="top" arrow>
-			<div
-				className="progress-marker"
-				style={{ 'left': `${100 * fract}%` }}
-				onClick={() => props.onSeek(fract)}
-			/>
-		</Tooltip>;
-	});
 
 	return (
 		<div className={`video-controls ${props.visible ? 'visible' : ''}`}>
