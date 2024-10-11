@@ -343,7 +343,12 @@ function Player(props) {
 		}
 
 		if (fullscreen[0]) {
-			screenfull.request(window.document.body);
+			let el = window.document.body;
+			if (isMobile) {
+				el = document.getElementsByTagName('video')[0];
+			}
+
+			screenfull.request(el);
 		}
 
 		return () => screenfull.exit();

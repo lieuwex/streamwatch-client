@@ -359,16 +359,9 @@ export default function Controls(props) {
 					</IButton>
 				}
 
-				{
-					// TODO: make the fullscreen button work, we should rotate
-					// the screen in a way to landspace to make it somewhat
-					// useful.  Or we can just only fullscreen the video element
-					isMobile
-					? <></>
-					: <IButton onClick={() => props.onFullscreenChange(!props.fullscreen)}>
-						{ props.fullscreen ? <FullscreenExit /> : <Fullscreen /> }
-					</IButton>
-				}
+				<IButton onClick={() => props.onFullscreenChange(!props.fullscreen)}>
+					{ props.fullscreen ? <FullscreenExit /> : <Fullscreen /> }
+				</IButton>
 
 				{
 					isMobile || !props.video.has_chat
