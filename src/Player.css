@@ -92,6 +92,8 @@
 
 	transition: .5s opacity ease-in-out;
 	opacity: 0;
+
+	pointer-events: none;
 }
 .video-controls.visible {
 	transition: none;
