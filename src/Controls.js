@@ -137,10 +137,10 @@ function SkipIntroButton(props) {
 	return (
 		<Button
 			style={{
-				'color': 'white',
-				'border-color': 'white',
-				'float': 'right',
-				'margin': '10px',
+				color: 'white',
+				borderColor: 'white',
+				float: 'right',
+				margin: '10px',
 			}}
 			variant="outlined"
 			onClick={skipIntro}
@@ -249,7 +249,7 @@ export default function Controls(props) {
 
 	return (
 		<div className={`video-controls ${props.visible ? 'visible' : ''}`}>
-			<div className="controls-row information" style={{'flex-direction': 'row-reverse'}}>
+			<div className="controls-row information" style={{flexDirection: 'row-reverse'}}>
 				{
 					props.clip != null
 					? <></>
