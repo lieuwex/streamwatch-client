@@ -5,13 +5,15 @@ import {
 	Routes,
 	Route,
 } from 'react-router-dom';
-import React from 'react';
+import { lazy, Suspense } from 'react';
 
-import Videos from './Videos';
-import Clips from './Clips';
-import Player from './Player';
-import Login from './Login';
-import SelectWatchparty from './SelectWatchparty';
+import Loading from './Loading';
+
+const Videos = lazy(() => import('./Videos'));
+const Clips = lazy(() => import('./Clips'));
+const Player = lazy(() => import('./Player'));
+const Login = lazy(() => import('./Login'));
+const SelectWatchparty = lazy(() => import('./SelectWatchparty'));
 
 const router = createBrowserRouter([
 	{ path: '*', Component: Root },
@@ -23,7 +25,7 @@ export default function App() {
 
 function Root() {
 	return (
-		<>
+		<Suspense fallback={<Loading />}>
 			<ScrollRestoration />
 			<Routes>
 				<Route path="/video/:id" element={<Player isClip={false} />} />
@@ -33,6 +35,6 @@ function Root() {
 				<Route path="/login" element={<Login />} />
 				<Route path="/" element={<Videos />} />
 			</Routes>
-		</>
+		</Suspense>
 	);
 }
