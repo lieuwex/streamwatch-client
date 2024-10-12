@@ -98,6 +98,8 @@
 .video-controls.visible {
 	transition: none;
 	opacity: 1;
+
+	pointer-events: auto;
 }
 
 .video-controls .controls-row {
