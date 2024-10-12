@@ -205,6 +205,7 @@ export function VideosList(props) {
 	};
 
 	const filtered = props.children.filter(e => matches(e.props.video));
+	const limited = props.limit ? filtered.slice(0, props.limit) : filtered;
 
 	return <>
 		<h1 className={`${props.search ? 'with-search' : ''}`}>
@@ -213,7 +214,7 @@ export function VideosList(props) {
 			{props.button || <></>}
 		</h1>
 		<div className={`video-list ${props.horizontal ? 'horizontal' : ''}`}>
-			{filtered}
+			{limited}
 		</div>
 	</>;
 }
@@ -226,6 +227,8 @@ export default function Videos() {
 
 	let { isLoading, streams: streamsInfo, clips: clipsInfo } = useStreams();
 	const videos = streamsInfo[0];
+
+	const [showAll, setShowAll] = useState(false);
 
 	let { data: processingData, error: processingError } = swr(
 		'https://streams.lieuwe.xyz/api/processing',
@@ -276,16 +279,22 @@ export default function Videos() {
 				? <></>
 				: <VideosList header="Recente clips" horizontal={true} button={
 					<Link to="/clips">
-						<button>Alle clips &rarr;</button>
+						<button className='header-button'>Alle clips &rarr;</button>
 					</Link>
 				}>
 					{clips}
 				</VideosList>
 			}
 
-			<VideosList search={true} header="Alle streams" inProgress={false}>
+			<VideosList search={true} header="Alle streams" inProgress={false} limit={showAll ? null : 100}>
 				{items}
 			</VideosList>
+
+			{
+				showAll
+				? <></>
+				: <button onClick={() => setShowAll(true)} className='showall'>Laat alles zien</button>
+			}
 		</div>
 	);
 }
