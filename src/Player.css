@@ -126,6 +126,23 @@
 	align-items: center;
 }
 
+.skip-area {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	z-index: 10;
+}
+
+.skip-area.right {
+	left: 50%;
+	right: 0;
+}
+
+.skip-area.left {
+	left: 0;
+	right: 50%;
+}
+
 @media only screen and (max-width: 600px) {
 	.player {
 		flex-direction: column;
@@ -141,6 +158,10 @@
 	}
 	.player-wrapper > div, .player-wrapper > div > div {
 		height: auto !important;
+	}
+
+	.video-controls {
+		padding-top: 0px;
 	}
 
 	.pause-shade {

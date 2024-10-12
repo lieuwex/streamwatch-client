@@ -3,11 +3,12 @@ import ReactPlayer from 'react-player';
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import screenfull from 'screenfull';
 import useDoubleClick from 'use-double-click';
+import { useDoubleTap } from 'use-double-tap';
 import { isMobile } from 'react-device-detect';
 import { mutate } from 'swr';
 
 import './Player.css';
-import { updateStreamsProgress, addClipView, filterGames, getTitle, formatDate, getCurrentUrl, useRequireLogin } from './util.js';
+import { updateStreamsProgress, addClipView, filterGames, getTitle, formatDate, getCurrentUrl, useRequireLogin, clamp } from './util.js';
 import Loading from './Loading.js';
 import Sidebar from './Sidebar.js';
 import Controls from './Controls.js';
@@ -15,6 +16,8 @@ import PlayerDialog from './Dialogs.js';
 import useStreams from './streamsHook.js';
 import { getName } from './users.js';
 import {createPortal} from 'react-dom';
+
+const id = () => null;
 
 async function updateItems(type, streamId, items) {
 	const send = (type, body) => {
@@ -164,6 +167,16 @@ function PauseShade(props) {
 			<div className="games">{games}</div>
 		</div>
 	);
+}
+
+function SkipAreas(props) {
+	const left = useDoubleTap(() => props.onLeft());
+	const right = useDoubleTap(() => props.onRight());
+
+	return <>
+		<div className='skip-area left' {...left}></div>
+		<div className='skip-area right' {...right}></div>
+	</>;
 }
 
 function useUpdateProgress(video, playingAsClip, playing, progress) {
@@ -429,6 +442,11 @@ function Player(props) {
 
 	useCanvasThing(playing);
 
+	const seekDelta = delta => {
+		const newValue = progress + delta;
+		handleSeek(clamp(newValue / video.duration, 0, 1));
+	};
+
 	return (
 		<div className="player">
 			<div className={`player-wrapper ${!userActive && playing ? 'hide-cursor' : ''}`} onPointerMove={() => markActive()}>
@@ -443,6 +461,17 @@ function Player(props) {
 						progress={progress} />
 				}
 
+				{
+					!isMobile
+					? <></>
+					: <SkipAreas
+						video={video}
+						progress={progress / video.duration}
+						onLeft={wrapMarkActive(() => seekDelta(-10))}
+						onRight={wrapMarkActive(() => seekDelta(10))}
+					/>
+				}
+
 				<Video
 					video={video}
 					volume={muted ? 0 : volume}
@@ -455,8 +484,8 @@ function Player(props) {
 					onPlay={wrapMarkActive(() => setPlaying(true))}
 					onBuffer={() => setBuffering(true)}
 					onBufferEnd={() => setBuffering(false)}
-					onSingleClick={wrapMarkActive(() => setPlaying(!playing))}
-					onDoubleClick={wrapMarkActive(() => changeFullscreen(!fullscreen[0]))} />
+					onSingleClick={wrapMarkActive(isMobile ? id : () => setPlaying(!playing))}
+					onDoubleClick={wrapMarkActive(isMobile ? id : () => changeFullscreen(!fullscreen[0]))} />
 
 				{createPortal(<canvas/>, document.body)}
 
