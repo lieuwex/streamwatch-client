@@ -508,7 +508,7 @@ function Player(props) {
 							video={video}
 							clip={clip}
 							visible={!playing || userActive}
-							onSeek={handleSeek}
+							onSeek={wrapMarkActive(handleSeek)}
 							progress={progress / video.duration}
 							region={region}
 							volume={volume}
