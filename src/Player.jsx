@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import ReactPlayer from 'react-player';
+import ReactPlayer from 'react-player/file';
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import screenfull from 'screenfull';
 import useDoubleClick from 'use-double-click';
