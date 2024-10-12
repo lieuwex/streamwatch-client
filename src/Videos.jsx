@@ -244,7 +244,7 @@ export default function Videos() {
 	}
 
 	const mapVideo = v => <Video key={v.id} video={v} />;
-	const inProgress = [...videos]
+	const inProgress = videos
 		.filter(v => v.inProgress)
 		.sort((a, b) => {
 			return b.progress.real_time - a.progress.real_time;
