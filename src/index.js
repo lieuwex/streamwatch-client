@@ -6,6 +6,8 @@ import './index.css';
 import './styleOptions.css';
 import App from './App';
 
+import './polyfills.js';
+
 import migrate from './migrations.js';
 
 if (window.location.hostname === 'local.lieuwe.xyz') {

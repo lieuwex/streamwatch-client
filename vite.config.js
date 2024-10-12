@@ -7,10 +7,15 @@ export default defineConfig({
 	plugins: [
 		react(),
 		legacy({
-			targets: ['>1% in NL']
+			modernTargets: [
+				'last 3 edge versions',
+				'last 3 firefox versions',
+				'last 3 chrome versions',
+				'last 3 chromeAndroid versions',
+				'ios >= 18',
+			],
+			modernPolyfills: true,
+			renderLegacyChunks: false,
 		})
 	],
-	define: {
-		global: {},
-	},
 });
