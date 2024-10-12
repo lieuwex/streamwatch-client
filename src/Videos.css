@@ -333,7 +333,7 @@
 		text-align: left;
 		justify-content: space-around;
 	}
-	.video-list-wrapper button {
+	.video-list-wrapper .header-button {
 		position: relative;
 		right: 0;
 	}
