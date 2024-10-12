@@ -3,57 +3,20 @@ import ReactPlayer from 'react-player';
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import screenfull from 'screenfull';
 import useDoubleClick from 'use-double-click';
-import { useDoubleTap } from 'use-double-tap';
 import { isMobile } from 'react-device-detect';
 import { mutate } from 'swr';
 
 import './Player.css';
-import { updateStreamsProgress, addClipView, filterGames, getTitle, formatDate, getCurrentUrl, useRequireLogin, clamp } from './util.js';
+import { updateStreamsProgress, addClipView, filterGames, getTitle, formatDate, getCurrentUrl } from './util.js';
 import Loading from './Loading.js';
 import Sidebar from './Sidebar.js';
 import Controls from './Controls.js';
 import PlayerDialog from './Dialogs.js';
 import useStreams from './streamsHook.js';
 import { getName } from './users.js';
-import {createPortal} from 'react-dom';
-
-const id = () => null;
-
-async function updateItems(type, streamId, items) {
-	const send = (type, body) => {
-		return fetch(`https://streams.lieuwe.xyz/api/stream/${streamId}/${type}`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(body),
-		});
-	};
-
-	if (type === 'participants') {
-		await send('persons', items.map(p => p.id));
-	} else if (type === 'games') {
-		await send('games', items.map(g => ({ id: g.id, start_time: g.start_time })));
-	} else if (type === 'metadata') {
-		await send('title', items);
-	}
-
-	mutate('https://streams.lieuwe.xyz/api/streams');
-}
-
-function sendPartyMessage(msg) {
-	if (window.partyWs == null) {
-		return;
-	}
-
-	msg['sender'] = window.partySelfId;
-
-	console.info('sending to party', msg);
-	window.partyWs.send(JSON.stringify(msg));
-}
 
 export const Video = React.forwardRef((props, ref) => {
-	const url = `https://streams.lieuwe.xyz/stream/${props.video.file_name}`;
+	const part = props.part;
 
 	const wrapperRef = useRef(null);
 	useDoubleClick({
@@ -63,74 +26,59 @@ export const Video = React.forwardRef((props, ref) => {
 		latency: 250,
 	});
 
-	const onStart = () => {
-		if (ref.current != null) {
-			ref.current.seekTo(props.initialProgress, 'seconds');
-		}
-	};
+	let content;
+	if (part.type === 'clip') {
+		const url = `https://streams.lieuwe.xyz/stream/${p.video.file_name}`;
+
+		const onProgress = ({ playedSeconds }) => {
+			props.onProgress({
+				playedSeconds: part.at/1e3 + playedSeconds,
+			});
+		};
+
+		content = <ReactPlayer
+				url={url}
+				width="100%"
+				height="100%"
+				playing={props.playing}
+				controls={props.controls}
+				volume={props.volume}
+				ref={ref}
+				onStart={onStart}
+				onProgress={onProgress}
+				onPause={props.onPause}
+				onPlay={props.onPlay}
+				onBuffer={props.onBuffer}
+				onBufferEnd={props.onBufferEnd}
+				progressInterval={250}
+			/>;
+	} else if (part.type === 'intermezzo') {
+		const startedAt = performance.now();
+		let id;
+		id = setInterval(() => {
+			const diff = performance.now() - startedAt;
+			if (diff >= part.duration) {
+				clearInterval(id);
+				return;
+			}
+
+			props.onProgress({
+				playedSeconds: (part.at + diff) / 1e3,
+			});
+		}, 100);
+
+		content = <div className="intermezzo">
+			X seconds later...
+		</div>;
+	}
 
 	return <div style={{ 'width': '100%', 'height': '100%' }} ref={wrapperRef}>
-		<ReactPlayer
-			url={url}
-			width="100%"
-			height="100%"
-			playing={props.playing}
-			controls={props.controls}
-			volume={props.volume}
-			ref={ref}
-			onStart={onStart}
-			onProgress={props.onProgress}
-			onPause={props.onPause}
-			onPlay={props.onPlay}
-			onBuffer={props.onBuffer}
-			onBufferEnd={props.onBufferEnd}
-			progressInterval={250}
-		/>
+		{content}
 	</div>;
 });
 
-function useCanvasThing() {
-	const video = document.querySelector('video');
-	const canvas = document.querySelector('canvas');
-
-	if (!video || !canvas) {
-		return;
-	}
-
-	if (window.blah) {
-		return;
-	}
-
-	let step;
-
-	const ctx = canvas.getContext("2d");
-
-	const draw = () => {
-		ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-	};
-
-	const drawLoop = () => {
-		draw();
-		step = window.requestAnimationFrame(drawLoop);
-	};
-
-	const drawPause = () => {
-		window.cancelAnimationFrame(step);
-		step = undefined;
-	};
-
-	// Initialize
-	video.addEventListener("loadeddata", draw, false);
-	video.addEventListener("seeked", draw, false);
-	video.addEventListener("play", drawLoop, false);
-	video.addEventListener("pause", drawPause, false);
-	video.addEventListener("ended", drawPause, false);
-
-	window.blah = true;
-}
-
 function PauseShade(props) {
-	const [title, hasNiceTitle] = getTitle(props.video, false, props.progress / props.video.duration);
+	const [title, hasNiceTitle] = getTitle(props.video, false);
 
 	const games = useMemo(() => {
 		const games = filterGames(props.video.games);
@@ -169,53 +117,13 @@ function PauseShade(props) {
 	);
 }
 
-function SkipAreas(props) {
-	const left = useDoubleTap(() => props.onLeft());
-	const right = useDoubleTap(() => props.onRight());
-
-	return <>
-		<div className='skip-area left' {...left}></div>
-		<div className='skip-area right' {...right}></div>
-	</>;
-}
-
-function useUpdateProgress(video, playingAsClip, playing, progress) {
-	const previousUpdateAt = useRef(progress);
-	useEffect(() => {
-		if (playingAsClip) {
-			return;
-		} else if (!playing || Math.abs(progress - previousUpdateAt.current) < 5) {
-			return;
-		}
-
-		previousUpdateAt.current = progress;
-
-		if (progress < 1) {
-			// When watching on mobile and reopening the web browser after it
-			// has been backgrounded, sometimes streamwatch sends a progress
-			// update with a time of 0.0.
-			// To cirumvent this, don't send progress updates when the progress
-			// is less than 1 second (just to be safe).
-			return;
-		}
-
-		requestIdleCallback(() => {
-			updateStreamsProgress({
-				[video.id]: progress,
-			}).catch(e => console.error(e));
-		}, { timeout: 4000 });
-	}, [progress]);
-}
-
-function useMediaSession(video, progress) {
-	const [title, _] = useMemo(() => {
-		return getTitle(video, true, progress / video.duration);
-	}, [video.id, progress]);
-
-	useEffect(() => {
+function useMediaSession(video) {
+	useState(() => {
 		if (!('mediaSession' in navigator)) {
 			return;
 		}
+
+		const [title, _] = getTitle(video, true);
 
 		navigator.mediaSession.metadata = new window.MediaMetadata({
 			title: title,
@@ -228,13 +136,13 @@ function useMediaSession(video, progress) {
 		});
 
 		return () => navigator.mediaSession.metadata = null;
-	}, [video.id, title]);
+	}, [video.id]);
 }
 
 function Player(props) {
 	const video = props.video;
 	const clip = props.clip;
-	const useNativeControls = false;
+	const useNativeControls = isMobile;
 
 	const playingAsClip = clip != null;
 	const loop = playingAsClip;
@@ -259,16 +167,14 @@ function Player(props) {
 	const [openDialog, setOpenDialog] = useState(null);
 
 	// update document title
-	const title = useMemo(() => {
+	useEffect(() => {
 		if (clip != null) {
-			return clip.title;
+			document.title = `${clip.title} - Streamwatch`;
 		} else {
-			const [title, _] = getTitle(video, true, progress / video.duration);
-			return title;
+			const [title, _] = getTitle(video, true);
+			document.title = `${title} - Streamwatch`;
 		}
-	})
-	useEffect(() => { document.title = `${title} - Streamwatch`; }, [title]);
-	useRequireLogin(!playingAsClip);
+	}, []);
 
 	// keep localStorage up-to-date
 	useEffect(() => {
@@ -280,7 +186,7 @@ function Player(props) {
 	useUpdateProgress(video, playingAsClip, playing, progress);
 
 	// update mediaSession information
-	useMediaSession(video, progress);
+	useMediaSession(video);
 
 	// video listeners
 	const playerRef = useRef(null);
@@ -288,13 +194,6 @@ function Player(props) {
 		setProgress(fract * video.duration);
 		if (playerRef.current != null) {
 			playerRef.current.seekTo(fract, 'fraction');
-		}
-
-		if (broadcast) {
-			sendPartyMessage({
-				command: 'seek',
-				args: [fract],
-			});
 		}
 	};
 	const onProgress = ({ playedSeconds }) => {
@@ -356,12 +255,7 @@ function Player(props) {
 		}
 
 		if (fullscreen[0]) {
-			let el = window.document.body;
-			if (isMobile) {
-				el = document.getElementsByTagName('video')[0];
-			}
-
-			screenfull.request(el);
+			screenfull.request(window.document.body);
 		}
 
 		return () => screenfull.exit();
@@ -369,58 +263,12 @@ function Player(props) {
 
 	// handle fullscreen changes (made by browser)
 	useEffect(() => {
-		if (screenfull.on == null) {
-			return;
-		}
-
 		const callback = () => {
 			changeFullscreen(screenfull.isFullscreen);
 		};
 		screenfull.on('change', callback);
 		return () =>  screenfull.off('change', callback);
 	}, [changeFullscreen]);
-
-	// watch parties receiver
-	useEffect(() => {
-		if (window.partyWs == null) {
-			return;
-		}
-
-		window.partyWs.onmessage = e => {
-			const obj = JSON.parse(e.data);
-
-			if (obj['sender'] === window.partySelfId) {
-				console.info('ignoring party message of our own', obj);
-				return;
-			}
-
-			console.info('received partyWs command', obj);
-
-			const command = obj['command'];
-			const args = obj['args'];
-
-			switch (command) {
-			case 'playing':
-				setPlaying(args[0]);
-				break;
-			case 'seek':
-				handleSeek(args[0], false);
-				break;
-			default:
-				console.warn('received unknown partyWs command', obj);
-				break;
-			}
-		};
-
-		return () => window.partyWs.onmessage = null;
-	}, []);
-	// watch parties playing state sender
-	useEffect(() => {
-		sendPartyMessage({
-			command:'playing',
-			args: [playing],
-		});
-	}, [playing]);
 
 	const onDialogClose = (items, newProgress) => {
 		if (items != null) {
@@ -440,13 +288,6 @@ function Player(props) {
 		setOpenDialog(null);
 	};
 
-	useCanvasThing(playing);
-
-	const seekDelta = delta => {
-		const newValue = progress + delta;
-		handleSeek(clamp(newValue / video.duration, 0, 1));
-	};
-
 	return (
 		<div className="player">
 			<div className={`player-wrapper ${!userActive && playing ? 'hide-cursor' : ''}`} onPointerMove={() => markActive()}>
@@ -461,22 +302,10 @@ function Player(props) {
 						progress={progress} />
 				}
 
-				{
-					!isMobile
-					? <></>
-					: <SkipAreas
-						video={video}
-						progress={progress / video.duration}
-						onLeft={wrapMarkActive(() => seekDelta(-10))}
-						onRight={wrapMarkActive(() => seekDelta(10))}
-					/>
-				}
-
 				<Video
 					video={video}
 					volume={muted ? 0 : volume}
 					playing={playing}
-					initialProgress={props.initialProgress}
 					controls={useNativeControls}
 					ref={playerRef}
 					onProgress={onProgress}
@@ -484,10 +313,8 @@ function Player(props) {
 					onPlay={wrapMarkActive(() => setPlaying(true))}
 					onBuffer={() => setBuffering(true)}
 					onBufferEnd={() => setBuffering(false)}
-					onSingleClick={wrapMarkActive(isMobile ? id : () => setPlaying(!playing))}
-					onDoubleClick={wrapMarkActive(isMobile ? id : () => changeFullscreen(!fullscreen[0]))} />
-
-				{createPortal(<canvas/>, document.body)}
+					onSingleClick={wrapMarkActive(() => setPlaying(!playing))}
+					onDoubleClick={wrapMarkActive(() => changeFullscreen(!fullscreen[0]))} />
 
 				{
 					openDialog == null
@@ -508,7 +335,7 @@ function Player(props) {
 							video={video}
 							clip={clip}
 							visible={!playing || userActive}
-							onSeek={wrapMarkActive(handleSeek)}
+							onSeek={handleSeek}
 							progress={progress / video.duration}
 							region={region}
 							volume={volume}
@@ -551,16 +378,6 @@ function Player(props) {
 	);
 }
 
-function getUrlProgress() {
-	const url = getCurrentUrl();
-	const s = url.searchParams.get('s');
-	return (
-		s == null
-		? null
-		: Number.parseInt(s)
-	);
-};
-
 export default function PlayerWrapper(props) {
 	const { isLoading, clips: clipsInfo, streams: streamsInfo } = useStreams();
 	const clips = clipsInfo[0];
@@ -568,57 +385,22 @@ export default function PlayerWrapper(props) {
 
 	const { id } = useParams();
 
-	window.blah = false;
-
 	if (isLoading) {
 		return <Loading />;
 	}
 
-	let videoId, clip;
-	if (props.isClip) {
-		clip = clips.find(c => c.id === +id);
-		if (clip == null) {
-			return <div>clip not found</div>;
-		}
-
-		videoId = clip.stream_id;
-	} else {
-		videoId = id;
+	const clip = clips.find(c => c.id === +id);
+	if (clip == null) {
+		return <div>clip not found</div>;
 	}
 
-	const video = videos.find(v => v.id === +videoId);
-	if (video == null) {
-		return <div>video not found</div>;
-	}
-
-	let initialProgress = getUrlProgress() || video.progress?.time || 0;
-	if (initialProgress === 0) { // jump to end of LW
-		const game = video.games.find(g => g.id === 7);
-		if (game != null) {
-			initialProgress = game.start_time;
-		}
-	}
-
-	if (clip != null) {
-		initialProgress = clip.start_time;
-	}
-
-	let clipInfo = <></>;
-	if (clip != null) {
-		clipInfo = (
-			<div className="clip-info">
-				<Link to={`/video/${video.id}`} className="clip-stream-link">
-					Uit stream: {getTitle(video, true)}
-				</Link>
-
-				<h1 className="clip-header">{clip.title}</h1>
-				<h2 className="clip-subheader">door {getName(clip.author_username)}</h2>
-			</div>
-		);
-	}
+	const initialProgress = clip.start_time;
 
 	return <div className={`player-root ${clip == null ? 'stream' : 'clip'}`}>
-		{clipInfo}
-		<Player video={video} clip={clip} initialProgress={initialProgress} />
+		<div className="clip-info">
+			<h1 className="clip-header">{clip.title}</h1>
+			<h2 className="clip-subheader">door {getName(clip.author_username)}</h2>
+		</div>
+		<Player video={videos} clip={clip} initialProgress={initialProgress} />
 	</div>;
 }

@@ -3,7 +3,7 @@ import { makeStyles } from '@mui/styles';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
-import Loading from './Loading.js';
+import Loading from './Loading';
 import { users } from './users.js';
 
 const useStyles = makeStyles({

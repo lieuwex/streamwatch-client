@@ -7,7 +7,7 @@ import formatDuration from 'format-duration';
 import useMousetrap from 'react-hook-mousetrap';
 import NumberEasing from 'react-number-easing';
 import { isMobile } from 'react-device-detect';
-import HypeGraph from './HypeGraph.js';
+import HypeGraph from './HypeGraph';
 
 import { clamp, getCurrentDatapoint, fetcher } from './util.js';
 import { getName } from './users.js';

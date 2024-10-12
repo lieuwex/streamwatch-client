@@ -9,10 +9,10 @@ import useMousetrap from 'react-hook-mousetrap';
 
 import './Clipper.css';
 
-import { Video } from './../Player.js';
-import HypeGraph from './../HypeGraph.js';
-import { IButton as ControlsButton } from './../Controls.js';
-import SelectedText from './../SelectedText.js';
+import { Video } from './../Player';
+import HypeGraph from './../HypeGraph';
+import { IButton as ControlsButton } from './../Controls';
+import SelectedText from './../SelectedText';
 
 import { clamp } from './../util.js';
 

@@ -2,7 +2,7 @@ import {  Dialog, DialogTitle, DialogContent, Autocomplete, TextField } from '@m
 import { useRef } from 'react';
 import swrImmutable from 'swr/immutable';
 
-import Loading from '../Loading.js';
+import Loading from '../Loading';
 import { fetcher } from '../util.js';
 
 function sortFunc(a, b) {

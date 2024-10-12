@@ -7,11 +7,11 @@ import {
 } from 'react-router-dom';
 import React from 'react';
 
-import Videos from './Videos.js';
-import Clips from './Clips.js';
-import Player from './Player.js';
-import Login from './Login.js';
-import SelectWatchparty from './SelectWatchparty.js';
+import Videos from './Videos';
+import Clips from './Clips';
+import Player from './Player';
+import Login from './Login';
+import SelectWatchparty from './SelectWatchparty';
 
 const router = createBrowserRouter([
 	{ path: '*', Component: Root },

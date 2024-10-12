@@ -16,12 +16,6 @@ if (window.location.hostname === 'local.lieuwe.xyz') {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(App());
 
-if (window.requestIdleCallback == null) {
-	window.requestIdleCallback = fn => {
-		window.setTimeout(fn, 0);
-	};
-}
-
 window.requestIdleCallback(() => {
 	migrate().catch(e => console.error(e));
 });

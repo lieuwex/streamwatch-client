@@ -6,9 +6,9 @@ import { DateTime } from 'luxon';
 
 import './Clips.css';
 import { formatDate, plural, isChromeLike, useRequireLogin } from './util.js';
-import { VideosList } from './Videos.js';
+import { VideosList } from './Videos';
 import useStreams from './streamsHook.js';
-import Loading from './Loading.js';
+import Loading from './Loading';
 import { getName } from './users.js';
 
 function ClipPreview(props) {

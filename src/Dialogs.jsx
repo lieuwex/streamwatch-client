@@ -1,7 +1,7 @@
-import PersonsDialog from './dialogs/PersonsDialog.js';
-import GamesDialog from './dialogs/GamesDialog.js';
-import MetadataDialog from './dialogs/MetadataDialog.js';
-import Clipper from './dialogs/Clipper.js';
+import PersonsDialog from './dialogs/PersonsDialog';
+import GamesDialog from './dialogs/GamesDialog';
+import MetadataDialog from './dialogs/MetadataDialog';
+import Clipper from './dialogs/Clipper';
 
 export default function PlayerDialog(props) {
 	if (props.type === 'participants') {

@@ -6,7 +6,7 @@ import swr from 'swr';
 
 import { fetcher, getCurrentUrl } from '../util.js';
 
-import SelectedText from '../SelectedText.js';
+import SelectedText from '../SelectedText';
 
 const useStyles = makeStyles({
 	vote: {

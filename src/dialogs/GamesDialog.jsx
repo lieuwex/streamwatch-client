@@ -6,7 +6,7 @@ import swrImmutable from 'swr/immutable';
 import { mutate } from 'swr';
 import formatDuration from 'format-duration';
 
-import Loading from '../Loading.js';
+import Loading from '../Loading';
 import { fetcher, parseDuration, formatGame } from '../util.js';
 
 const useStyles = makeStyles({

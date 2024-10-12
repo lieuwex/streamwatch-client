@@ -11,10 +11,10 @@ import swr from 'swr';
 
 import { formatGame, filterGames, formatDate, getTitle, isChromeLike, fetcher, useRequireLogin } from './util.js';
 import './Videos.css';
-import { ClipVideo } from './Clips.js';
+import { ClipVideo } from './Clips';
 import useStreams from './streamsHook.js';
-import Loading from './Loading.js';
-import { ProcessingVideo } from './Processing.js';
+import Loading from './Loading';
+import { ProcessingVideo } from './Processing';
 
 function VideoPreview(props) {
 	let videoContent = <></>;
