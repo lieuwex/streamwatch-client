@@ -259,7 +259,7 @@ export default function Videos() {
 	}
 
 	const mapClip = (c, v) => <ClipVideo key={c.id} video={v} clip={c} />;
-	const clips = clipsInfo[0].map(clip => {
+	const clips = clipsInfo[0].slice(-10).map(clip => {
 		const video = videos.find(v => v.id === clip.stream_id);
 		return mapClip(clip, video);
 	}).reverse();
