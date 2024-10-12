@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react';
 
-import Loading from './Loading';
+import LoadingDialog from './dialogs/LoadingDialog';
 const PersonsDialog = lazy(() => import('./dialogs/PersonsDialog'));
 const GamesDialog = lazy(() => import('./dialogs/GamesDialog'));
 const MetadataDialog = lazy(() => import('./dialogs/MetadataDialog'));
@@ -18,7 +18,7 @@ export default function PlayerDialog(props) {
 		el = <Clipper {...props} />;
 	}
 
-	return <Suspense fallback={<Loading />}>
+	return <Suspense fallback={<LoadingDialog />}>
 		{el}
 	</Suspense>;
 };
