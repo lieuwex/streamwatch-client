@@ -1,3 +1,5 @@
+import 'core-js/actual';
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
@@ -12,11 +14,13 @@ if (window.location.hostname === 'local.lieuwe.xyz') {
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-	<React.StrictMode>
-		<App />
-	</React.StrictMode>,
-);
+root.render(App());
+
+if (window.requestIdleCallback == null) {
+	window.requestIdleCallback = fn => {
+		window.setTimeout(fn, 0);
+	};
+}
 
 window.requestIdleCallback(() => {
 	migrate().catch(e => console.error(e));
