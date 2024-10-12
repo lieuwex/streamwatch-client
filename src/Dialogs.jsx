@@ -1,24 +1,18 @@
-import { lazy, Suspense } from 'react';
-
-import LoadingDialog from './dialogs/LoadingDialog';
-const PersonsDialog = lazy(() => import('./dialogs/PersonsDialog'));
-const GamesDialog = lazy(() => import('./dialogs/GamesDialog'));
-const MetadataDialog = lazy(() => import('./dialogs/MetadataDialog'));
-const Clipper = lazy(() => import('./dialogs/Clipper'));
+import PersonsDialog from './dialogs/PersonsDialog';
+import GamesDialog from './dialogs/GamesDialog';
+import MetadataDialog from './dialogs/MetadataDialog';
+import Clipper from './dialogs/Clipper';
 
 export default function PlayerDialog(props) {
-	let el = <></>;
 	if (props.type === 'participants') {
-		el = <PersonsDialog {...props} />;
+		return <PersonsDialog handleClose={props.handleClose} video={props.video} />;
 	} else if (props.type === 'games') {
-		el = <GamesDialog {...props} />;
+		return <GamesDialog handleClose={props.handleClose} video={props.video} currentTime={props.currentTime} />;
 	} else if (props.type === 'metadata') {
-		el = <MetadataDialog {...props} />;
+		return <MetadataDialog handleClose={props.handleClose} video={props.video} currentTime={props.currentTime} />;
 	} else if (props.type === 'clipper') {
-		el = <Clipper {...props} />;
+		return <Clipper handleClose={props.handleClose} video={props.video} clip={props.clip} currentTime={props.currentTime} />;
 	}
 
-	return <Suspense fallback={<LoadingDialog />}>
-		{el}
-	</Suspense>;
+	return <></>;
 };
