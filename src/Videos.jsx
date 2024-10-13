@@ -185,7 +185,10 @@ function VideoListSearch(props) {
 }
 
 export function VideosList(props) {
+	const INITIAL_LIMIT = 100;
+
 	const [query, setQuery] = useState('');
+	const [limit, setLimit] = useState(props.limiting ? INITIAL_LIMIT : null);
 
 	const matches = video => {
 		const q = query.toLowerCase().trim();
@@ -205,17 +208,29 @@ export function VideosList(props) {
 	};
 
 	const filtered = props.children.filter(e => matches(e.props.video));
-	const limited = props.limit ? filtered.slice(0, props.limit) : filtered;
+	const limited = limit ? filtered.slice(0, limit) : filtered;
+
+	const moreToShow = filtered.length > limited.length;
+
+	const onChange = q => {
+		setQuery(q);
+		setLimit(INITIAL_LIMIT);
+	};
 
 	return <>
 		<h1 className={`${props.search ? 'with-search' : ''}`}>
-			{ props.search ? <VideoListSearch onChange={q => setQuery(q)} /> : <></> }
+			{ props.search ? <VideoListSearch onChange={onChange} /> : <></> }
 			{props.header} {props.search ? `(${filtered.length})` : ''}
 			{props.button || <></>}
 		</h1>
 		<div className={`video-list ${props.horizontal ? 'horizontal' : ''}`}>
 			{limited}
 		</div>
+		{
+			!moreToShow
+			? <></>
+			: <button onClick={() => setLimit(null)} className='showall'>Laat alles zien</button>
+		}
 	</>;
 }
 
@@ -227,8 +242,6 @@ export default function Videos() {
 
 	let { isLoading, streams: streamsInfo, clips: clipsInfo } = useStreams();
 	const videos = streamsInfo[0];
-
-	const [showAll, setShowAll] = useState(false);
 
 	let { data: processingData, error: processingError } = swr(
 		'https://streams.lieuwe.xyz/api/processing',
@@ -286,15 +299,9 @@ export default function Videos() {
 				</VideosList>
 			}
 
-			<VideosList search={true} header="Alle streams" inProgress={false} limit={showAll ? null : 100}>
+			<VideosList search={true} header="Alle streams" inProgress={false} limiting={true} >
 				{items}
 			</VideosList>
-
-			{
-				showAll
-				? <></>
-				: <button onClick={() => setShowAll(true)} className='showall'>Laat alles zien</button>
-			}
 		</div>
 	);
 }
