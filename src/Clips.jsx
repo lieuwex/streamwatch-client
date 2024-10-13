@@ -100,7 +100,7 @@ export default function Clips() {
 	const videos = streamsInfo[0];
 
 	if (isLoading) {
-		return <Loading heavyLoad={true} />;
+		return <Loading />;
 	}
 
 	const mapClip = (c, v) => <ClipVideo key={c.id} video={v} clip={c} />;

@@ -286,7 +286,7 @@ export default function Videos() {
 	isLoading = isLoading || (processingData == null && processingError == null);
 
 	if (isLoading) {
-		return <Loading heavyLoad={true} />;
+		return <Loading />;
 	}
 
 	const mapVideo = v => <Video key={v.id} video={v} />;
