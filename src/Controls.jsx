@@ -12,7 +12,7 @@ import HypeGraph from './HypeGraph';
 import { clamp, getCurrentDatapoint, fetcher } from './util.js';
 import { getName } from './users.js';
 
-const ScrubPreview = forwardRef(function ScrubPreview(props, ref) {
+const ScrubPreview = React.memo(forwardRef(function ScrubPreview(props, ref) {
 	const [popperOpen, setPopperOpen] = useState(false);
 	const positionRef = useRef({ x: 0, y: 0 });
 	const popperRef = useRef(null);
@@ -97,7 +97,7 @@ const ScrubPreview = forwardRef(function ScrubPreview(props, ref) {
 			</div>
 		</Popper>
 	);
-});
+}), (prev, next) => prev.video.id === next.video.id);
 
 function SkipIntroButton(props) {
 	const video = props.video;
