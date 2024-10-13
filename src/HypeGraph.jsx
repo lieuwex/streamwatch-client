@@ -1,9 +1,44 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
-import ChartistGraph from 'react-chartist';
+import { LineChart } from 'chartist';
 import swrImmutable from 'swr/immutable';
 
 import { fetcher } from './util.js';
+
+function Chartist({ series }) {
+	const ref = useRef(null);
+
+	useEffect(() => {
+		const c = new LineChart(ref.current, {
+			series: [ series ],
+		}, {
+			showArea: true,
+			showPoint: false,
+			showLine: false,
+			width: '100%',
+			height: '100%',
+			fullWidth: true,
+			chartPadding: {
+				'top': 0,
+				'left': 0,
+				'right': 0,
+				'bottom': 0,
+			},
+			axisX: {
+				showLabel: false,
+				showGrid: false,
+			},
+			axisY: {
+				showLabel: false,
+				showGrid: false,
+			},
+		});
+
+		return () => c.detach();
+	});
+
+	return <div ref={ref} className="ct-chart"></div>;
+}
 
 function smooth(data) {
 	const res = [];
@@ -40,34 +75,7 @@ const HypeGraph = React.memo(function HypeGraph(props) {
 		series = smooth(series);
 	}
 
-	const chartData = {
-		series: [ series ],
-	};
-
-	const options = {
-		showArea: true,
-		showPoint: false,
-		showLine: false,
-		width: '100%',
-		height: '100%',
-		fullWidth: true,
-		chartPadding: {
-			'top': 0,
-			'left': 0,
-			'right': 0,
-			'bottom': 0,
-		},
-		axisX: {
-			showLabel: false,
-			showGrid: false,
-		},
-		axisY: {
-			showLabel: false,
-			showGrid: false,
-		},
-	};
-
-	return <ChartistGraph data={chartData} options={options} type='Line' />;
+	return <Chartist series={series} />;
 }, (prevProps, nextProps) => {
 	return prevProps.updateTime === nextProps.updateTime
 		&& prevProps.video.id === nextProps.video.id
