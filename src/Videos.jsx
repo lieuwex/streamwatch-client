@@ -190,7 +190,10 @@ export function VideosList(props) {
 	const [query, setQuery] = useState('');
 	const [limit, setLimit] = useState(props.limiting ? INITIAL_LIMIT : null);
 
-	const matches = video => {
+	const matches = props => {
+		const video = props.video;
+		const clip = props.clip;
+
 		const q = query.toLowerCase().trim();
 		if (q == '') {
 			return true;
@@ -202,12 +205,20 @@ export function VideosList(props) {
 
 		const t = s => s?.toLowerCase()?.includes(q);
 
-		return video.games.some(g => t(g.name) || t(q.twitch_name)) ||
+		const videoMatch = video.games.some(g => t(g.name) ||
+			t(q.twitch_name)) ||
 			t(video.title) ||
 			t(video.file_name);
+
+		let clipMatch = false;
+		if (clip != null) {
+			clipMatch = t(clip.author_username) || t(clip.title);
+		}
+
+		return videoMatch || clipMatch
 	};
 
-	const filtered = props.children.filter(e => matches(e.props.video));
+	const filtered = props.children.filter(e => matches(e.props));
 	const limited = limit ? filtered.slice(0, limit) : filtered;
 
 	const moreToShow = filtered.length > limited.length;
@@ -299,7 +310,7 @@ export default function Videos() {
 				</VideosList>
 			}
 
-			<VideosList search={true} header="Alle streams" inProgress={false} limiting={true} >
+			<VideosList search={true} header="Alle streams" limiting={true} >
 				{items}
 			</VideosList>
 		</div>

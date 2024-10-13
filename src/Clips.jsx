@@ -114,7 +114,7 @@ export default function Clips() {
 			{
 				clips.length === 0
 				? <></>
-				: <VideosList header="Clips">
+				: <VideosList header="Clips" search={true} limiting={true} >
 					{clips}
 				</VideosList>
 			}
