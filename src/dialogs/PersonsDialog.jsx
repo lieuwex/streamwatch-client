@@ -40,7 +40,7 @@ export default function PersonsDialog(props) {
 			options={data}
 			getOptionLabel={({ name }) => name}
 			defaultValue={props.video.persons}
-			getOptionSelected={(a, b) => a.id === b.id}
+			getOptionKey={x => x.id}
 			filterSelectedOptions
 			renderInput={(params) => (
 				<TextField

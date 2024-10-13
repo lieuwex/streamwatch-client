@@ -6,7 +6,7 @@ import { Flipper, Flipped } from 'react-flip-toolkit';
 import Backdrop from '@mui/material/Backdrop';
 import { PlayArrow, Search } from '@mui/icons-material';
 import mousetrap from 'mousetrap';
-import filesize from 'filesize';
+import { filesize } from 'filesize';
 import swr from 'swr';
 
 import { formatGame, filterGames, formatDate, getTitle, isChromeLike, fetcher, useRequireLogin } from './util.js';

@@ -142,7 +142,7 @@ const AddGameRow = props => {
 					</li>
 				)}
 				renderInput={params => <TextField {...params} label="Game" autoFocus={true} />}
-				getOptionSelected={(a, b) => a.id === b.id}
+				getOptionKey={x => x.id}
 				onChange={(_, game) => selectedInfo.current.game = game}
 			/>
 			<TextField
