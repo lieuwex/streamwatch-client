@@ -184,11 +184,31 @@ function VideoListSearch(props) {
 	</div>;
 }
 
-export function VideosList(props) {
+function useLimit(name, limiting) {
 	const INITIAL_LIMIT = 100;
 
+	const key = `lastLimit_'${name}'`;
+
+	const [limit, setLimit] = useState(() => {
+		if (!limiting) {
+			return null;
+		}
+
+		const val = sessionStorage.getItem(key);
+		return val == null ? INITIAL_LIMIT : JSON.parse(val);
+	});
+
+	useEffect(() => {
+		console.log('setting sessionStorage', key, JSON.stringify(limit));
+		sessionStorage.setItem(key, JSON.stringify(limit));
+	}, [limit]);
+
+	return [limit, setLimit];
+}
+
+export function VideosList(props) {
 	const [query, setQuery] = useState('');
-	const [limit, setLimit] = useState(props.limiting ? INITIAL_LIMIT : null);
+	const [limit, setLimit] = useLimit(props.header, props.limiting);
 
 	const matches = props => {
 		const video = props.video;
