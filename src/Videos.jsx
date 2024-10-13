@@ -1,5 +1,5 @@
 import { Navigate, Link } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, startTransition } from 'react';
 import formatDuration from 'format-duration';
 import { isMobile } from 'react-device-detect';
 import { Flipper, Flipped } from 'react-flip-toolkit';
@@ -244,8 +244,10 @@ export function VideosList(props) {
 	const moreToShow = filtered.length > limited.length;
 
 	const onChange = q => {
-		setQuery(q);
-		setLimit(INITIAL_LIMIT);
+		startTransition(() => {
+			setQuery(q);
+			setLimit(INITIAL_LIMIT);
+		});
 	};
 
 	return <>
