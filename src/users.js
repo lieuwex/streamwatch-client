@@ -11,3 +11,12 @@ export const users = {
 export function getName(username) {
 	return users[username] ?? username;
 }
+
+const twitchMappings = {
+	'lieuwe': 'lieuwex',
+	'bart': 'genotsknots',
+};
+
+export function getTwitchName(username) {
+	return twitchMappings[username] ?? username;
+}

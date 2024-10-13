@@ -10,6 +10,7 @@ import makeLinkify from 'linkify-it';
 import './Sidebar.css';
 import { formatTime, isChromeLike, plural } from './util.js';
 import ChatManager from './ChatManager.js';
+import {getTwitchName} from './users';
 
 const linkify = makeLinkify();
 linkify.tlds(tlds);
@@ -172,12 +173,18 @@ const ChatMessage = React.memo(props => {
 	})[props.message.type] || (() => {});
 	const action = actionFn();
 
-	const isVip = [
+	let isVip = [
 		"lieuwex",
 		"genotsknots",
 		"lekkerspelen",
 		"egbertlive",
 	].includes(props.message.tags['display-name'].toLowerCase());
+
+	const username = localStorage.getItem('username');
+	if (username != null) {
+		const twitchName = getTwitchName(username);
+		isVip ||= props.message.message.includes(`@${twitchName}`);
+	}
 
 	const isMod = props.message.tags.badges.moderator === '1';
 
