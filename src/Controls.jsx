@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef, useImperativeHandle, forwardRef, startTransition } from 'react';
+import { createPortal } from 'react-dom';
 
 import swr from 'swr';
 import { Slider, Button, IconButton, Tooltip, Popper } from '@mui/material';
@@ -43,14 +44,15 @@ const ScrubPreview = React.memo(forwardRef(function ScrubPreview(props, ref) {
 		setOpen: open => setPopperOpen(open),
 	}));
 
-	const thumbnails = useMemo(() => {
-		const res = [];
+	const [thumbnails, preloads] = useMemo(() => {
+		const thumbnails = [];
+		const preloads = [];
 
 		for (let i = 0; i < props.video.scrub_thumbnail_count; i++) {
 			const url = `https://streams.lieuwe.xyz/scrub_thumbnail/${props.video.id}/${i}.webp`;
 			const shown = i === imageId;
 
-			res.push(
+			thumbnails.push(
 				<img key={i} src={url} decoding="sync" style={{
 					width: '200px',
 					height: 'auto',
@@ -59,26 +61,14 @@ const ScrubPreview = React.memo(forwardRef(function ScrubPreview(props, ref) {
 					display: shown ? 'block' : 'none',
 				}} />
 			);
+
+			preloads.push(<link key={i} href={url} rel="preload" as="image" />);
 		}
 
-		return res;
+		return [thumbnails, preloads];
 	}, [imageId, props.video.id]);
 
-	useEffect(() => {
-		// preload all images
-		for (const img of thumbnails) {
-			const preloadLink = document.createElement("link");
-			preloadLink.href = img.props.src;
-			preloadLink.rel = "preload";
-			preloadLink.as = "image";
-			document.head.appendChild(preloadLink);
-		}
-
-		// delete all image preloads
-		return () => document.querySelectorAll('head link[rel="preload"][as="image"]').forEach(el => el.remove());
-	}, [props.video.id])
-
-	return (
+	return <>
 		<Popper open={popperOpen}
 				keepMounted={true}
 				popperRef={popperRef}
@@ -98,7 +88,9 @@ const ScrubPreview = React.memo(forwardRef(function ScrubPreview(props, ref) {
 				{thumbnails}
 			</div>
 		</Popper>
-	);
+
+		{createPortal(preloads, document.head)}
+	</>;
 }), (prev, next) => prev.video.id === next.video.id);
 
 function SkipIntroButton(props) {
