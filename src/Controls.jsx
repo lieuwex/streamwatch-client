@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef, useImperativeHandle, forwardRef } from 'react';
+import React, { useEffect, useMemo, useState, useRef, useImperativeHandle, forwardRef, startTransition } from 'react';
 
 import swr from 'swr';
 import { Slider, Button, IconButton, Tooltip, Popper } from '@mui/material';
@@ -33,8 +33,10 @@ const ScrubPreview = React.memo(forwardRef(function ScrubPreview(props, ref) {
 
 			const frac = (x - left) / right;
 
-			// REVIEW: hier lijkt geen sikkepit van te kloppen
-			setImageId(Math.round((props.video.scrub_thumbnail_count - 1) * frac));
+			startTransition(() => {
+				// REVIEW: hier lijkt geen sikkepit van te kloppen
+				setImageId(Math.round((props.video.scrub_thumbnail_count - 1) * frac));
+			});
 
 			//console.log(x, rect, frac, imageId);
 		},
