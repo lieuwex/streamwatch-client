@@ -32,14 +32,11 @@ const ScrubPreview = React.memo(forwardRef(function ScrubPreview(props, ref) {
 			const left = rect.left;
 			const right = rect.right;
 
-			const frac = (x - left) / right;
+			const frac = clamp((x - left) / (right - left), 0, 1);
 
 			startTransition(() => {
-				// REVIEW: hier lijkt geen sikkepit van te kloppen
 				setImageId(Math.round((props.video.scrub_thumbnail_count - 1) * frac));
 			});
-
-			//console.log(x, rect, frac, imageId);
 		},
 		setOpen: open => setPopperOpen(open),
 	}));
