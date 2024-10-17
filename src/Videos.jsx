@@ -30,7 +30,7 @@ function VideoPreview(props) {
 	let imageContent = <></>;
 	if (props.video.thumbnail_count > 0) {
 		imageContent
-			= <img src={`https://streams.lieuwe.xyz/thumbnail/${props.video.id}/0.webp`} loading="lazy" alt="" />;
+			= <img src={`https://streams.lieuwe.xyz/thumbnail/${props.video.id}/0.webp`} loading="lazy" decoding="async" alt="" />;
 	}
 
 	return (

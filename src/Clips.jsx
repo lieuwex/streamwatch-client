@@ -24,7 +24,7 @@ function ClipPreview(props) {
 	}
 
 	let imageContent
-		= <img src={`https://streams.lieuwe.xyz/thumbnail/clips/${props.clip.id}.webp`} loading="lazy" alt="" />;
+		= <img src={`https://streams.lieuwe.xyz/thumbnail/clips/${props.clip.id}.webp`} loading="lazy" decoding="async" alt="" />;
 
 	return (
 		<div className="video-entry-preview">
