@@ -203,12 +203,14 @@ function useLimit(name, limiting) {
 		sessionStorage.setItem(key, JSON.stringify(limit));
 	}, [limit]);
 
-	return [limit, setLimit];
+	const resetLimit = () => setLimit(INITIAL_LIMIT);
+
+	return [limit, setLimit, resetLimit];
 }
 
 export function VideosList(props) {
 	const [query, setQuery] = useState('');
-	const [limit, setLimit] = useLimit(props.header, props.limiting);
+	const [limit, setLimit, resetLimit] = useLimit(props.header, props.limiting);
 
 	const matches = props => {
 		const video = props.video;
@@ -246,7 +248,7 @@ export function VideosList(props) {
 	const onChange = q => {
 		startTransition(() => {
 			setQuery(q);
-			setLimit(INITIAL_LIMIT);
+			resetLimit();
 		});
 	};
 
