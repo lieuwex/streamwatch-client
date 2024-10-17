@@ -16,6 +16,7 @@ import PlayerDialog from './Dialogs';
 import useStreams from './streamsHook';
 import { getName } from './users.js';
 import {createPortal} from 'react-dom';
+import {clipTitleRename} from './emoticons';
 
 const id = () => null;
 
@@ -611,7 +612,7 @@ export default function PlayerWrapper(props) {
 					Uit stream: {getTitle(video, true)}
 				</Link>
 
-				<h1 className="clip-header">{clip.title}</h1>
+				<h1 className="clip-header" dangerouslySetInnerHTML={{__html: clipTitleRename(clip.title)}} />
 				<h2 className="clip-subheader">door {getName(clip.author_username)}</h2>
 			</div>
 		);

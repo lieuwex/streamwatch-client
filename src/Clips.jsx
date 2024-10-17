@@ -10,6 +10,7 @@ import { VideosList } from './Videos';
 import useStreams from './streamsHook.js';
 import Loading from './Loading';
 import { getName } from './users.js';
+import {clipTitleRename} from './emoticons';
 
 function ClipPreview(props) {
 	let videoContent = <></>;
@@ -44,9 +45,11 @@ function ClipInformation(props) {
 
 	return (
 		<div className="video-entry-information">
-			<div className={`video-entry-title ${isLong ? 'long' : ''} ${isChromeLike() ? 'clip' : ''}`} style={{ fontSize: `${pixels}px` }}>
-				{title}
-			</div>
+			<div
+				className={`video-entry-title ${isLong ? 'long' : ''} ${isChromeLike() ? 'clip' : ''}`}
+				style={{ fontSize: `${pixels}px` }}
+				dangerouslySetInnerHTML={{__html: clipTitleRename(title)}}
+			/>
 
 			<div className="video-entry-date">
 				{formatDate(DateTime.fromSeconds(props.clip.created_at))}

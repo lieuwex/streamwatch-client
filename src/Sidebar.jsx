@@ -11,17 +11,11 @@ import './Sidebar.css';
 import { formatTime, isChromeLike, plural } from './util.js';
 import ChatManager from './ChatManager.js';
 import {getTwitchName} from './users';
+import { convertEmotes } from './emoticons';
 
 const linkify = makeLinkify();
 linkify.tlds(tlds);
 
-function getTwitchEmoticon(id, theme='dark') {
-	return {
-		url: `https://static-cdn.jtvnw.net/emoticons/v2/${id}/default/${theme}/4.0`,
-		width: 112,
-		height: 112,
-	};
-}
 function parseEmotes(emoteString) {
 	const emotes = [];
 	for (const emote of emoteString.split('/')) {
@@ -48,31 +42,6 @@ function parseEmotes(emoteString) {
 	emotes.sort((a, b) => a.start - b.start);
 
 	return emotes;
-}
-function convertEmotes(str, emotes, map) {
-	const res = [];
-	let last = 0;
-
-	for (const emote of emotes) {
-		const start = map[emote.start];
-		const end = map[emote.end];
-
-		if (last < start) {
-			res.push(str.slice(last, start));
-		}
-
-		const content = str.slice(start, end);
-		const { url, width, height } = getTwitchEmoticon(emote.id);
-		res.push(`<img alt="${content}" title="${content}" src="${url}" width="${width}" height="${height}" decoding="sync"/>`);
-
-		last = end;
-	}
-
-	if (last < str.length) {
-		res.push(str.slice(last));
-	}
-
-	return res.join('');
 }
 
 function convertUrls(str) {

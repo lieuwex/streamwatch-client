@@ -183,6 +183,10 @@
 .video-entry.clicked .video-entry-title {
 	white-space: normal;
 }
+.video-entry-title > img {
+	height: 1em;
+	width: auto;
+}
 /*
 .video-entry-title.long {
 	animation: floatText 15s infinite linear;

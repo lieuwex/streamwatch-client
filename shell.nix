@@ -3,5 +3,8 @@ with (import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/release-24.
 pkgs.mkShell {
 	buildInputs = [
 		nodejs_22
+
+		curl
+		pup
 	];
 }

@@ -224,6 +224,10 @@
 	font-size: 3em;
 	white-space: break-spaces;
 }
+.clip-info h1 > img {
+	height: 1em;
+	width: auto;
+}
 
 .clip-info h2 {
 	font-weight: 300;
