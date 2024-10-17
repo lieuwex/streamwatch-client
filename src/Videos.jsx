@@ -227,10 +227,10 @@ export function VideosList(props) {
 
 		const t = s => s?.toLowerCase()?.includes(q);
 
-		const videoMatch = video.games.some(g => t(g.name) ||
-			t(q.twitch_name)) ||
-			t(video.title) ||
-			t(video.file_name);
+		const videoMatch
+			 = filterGames(video.games).some(g => t(g.name) || t(q.twitch_name))
+			|| t(video.title)
+			|| t(video.file_name);
 
 		let clipMatch = false;
 		if (clip != null) {
