@@ -1,21 +1,16 @@
 import emoticons from './emoticons.json';
 
-const map = new Map();
-
 let regexpStr = '\\b(';
 let n = 0;
-for (const emoticon of emoticons) {
+for (const regex of Object.keys(emoticons)) {
 	// TODO: escape regex
 
 	if (n > 0) regexpStr += '|';
 	n++;
 
-	regexpStr += emoticon['data-regex'];
-
-	map.set(emoticon['data-regex'], emoticon['data-image-id']);
+	regexpStr += regex;
 }
 regexpStr += ')\\b';
-
 
 const re = new RegExp(regexpStr, 'ig');
 
@@ -26,7 +21,7 @@ export function matchEmoticons(str) {
 			name,
 			start: m.index,
 			end: m.index + name.length,
-			id: map.get(name),
+			id: emoticons[name],
 		};
 	});
 }

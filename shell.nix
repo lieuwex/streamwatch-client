@@ -6,5 +6,6 @@ pkgs.mkShell {
 
 		curl
 		pup
+		jq
 	];
 }
