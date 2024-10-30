@@ -232,6 +232,39 @@ function useMediaSession(video, progress) {
 	}, [video.id, title]);
 }
 
+function useAutoplay(progress, region, video, playingAsClip) {
+	const navigate = useNavigate();
+
+	const { isLoading, streams: streamsInfo } = useStreams();
+	const streams = streamsInfo[0];
+
+	useEffect(() => {
+		if (playingAsClip || isLoading || progress < region[1] - 1.0) {
+			return;
+		}
+
+		let stream = streams
+			.filter(v => v.inProgress)
+			.sort((a, b) => b.progress.real_time - a.progress.real_time)[0];
+
+		if (stream == null) {
+			stream = streams
+				.filter(v => !v.finished && v.timestamp > video.timestamp)
+				.sort((a, b) => a.timestamp - b.timestamp)[0];
+		}
+
+		if (stream == null) {
+			stream = streams
+				.filter(v => !v.finished && v.id !== video.id)
+				.sort((a, b) => b.timestamp - a.timestamp)[0];
+		}
+
+		if (stream != null) {
+			document.location.href = `/video/${stream.id}`;
+		}
+	}, [progress, region[1], video, playingAsClip, isLoading, streams]);
+}
+
 function Player(props) {
 	const video = props.video;
 	const clip = props.clip;
@@ -442,6 +475,8 @@ function Player(props) {
 	};
 
 	useCanvasThing(playing);
+
+	useAutoplay(progress, region, video, playingAsClip);
 
 	const seekDelta = delta => {
 		const newValue = progress + delta;

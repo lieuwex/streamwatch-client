@@ -60,6 +60,7 @@ export default function useStreams() {
 
 	for (let stream of streamsData) {
 		stream.progress = progressData[stream.id];
+		stream.finished = stream.progress != null && stream.duration - stream.progress.time < 30;
 		stream.inProgress = videoInProgress(stream);
 	}
 
