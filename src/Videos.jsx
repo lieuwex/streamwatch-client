@@ -180,7 +180,7 @@ function Video(props) {
 function VideoListSearch(props) {
 	return <div className="search">
 		<Search className="icon" />
-		<input type="text" spellCheck={false} onChange={e => props.onChange?.(e.target.value)} />
+		<input type="text" spellCheck={false} value={props.value} onChange={e => props.onChange?.(e.target.value)} />
 	</div>;
 }
 
@@ -209,8 +209,14 @@ function useLimit(name, limiting) {
 }
 
 export function VideosList(props) {
-	const [query, setQuery] = useState('');
 	const [limit, setLimit, resetLimit] = useLimit(props.header, props.limiting);
+
+	const key = `query_'${props.header}'`;
+	const [query, setQuery] = useState(() => sessionStorage.getItem(key) ?? '');
+	useEffect(() => {
+		console.log('setting sessionStorage', key, query);
+		sessionStorage.setItem(key, query);
+	}, [query]);
 
 	const matches = props => {
 		const video = props.video;
@@ -254,7 +260,7 @@ export function VideosList(props) {
 
 	return <>
 		<h1 className={`${props.search ? 'with-search' : ''}`}>
-			{ props.search ? <VideoListSearch onChange={onChange} /> : <></> }
+			{ props.search ? <VideoListSearch value={query} onChange={onChange} /> : <></> }
 			{props.header} {props.search ? `(${filtered.length})` : ''}
 			{props.button || <></>}
 		</h1>
