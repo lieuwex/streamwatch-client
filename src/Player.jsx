@@ -18,6 +18,9 @@ import { getName } from './users.js';
 import {createPortal} from 'react-dom';
 import {clipTitleRename} from './emoticons';
 
+const CLIP_VIEW_FRACT = 0.7;
+const CLIP_VIEW_MARGIN_SEC = 3;
+
 const id = () => null;
 
 async function updateItems(type, streamId, items) {
@@ -317,6 +320,7 @@ function Player(props) {
 	useMediaSession(video, progress);
 
 	// video listeners
+	const clipViewMarked = useRef(false);
 	const playerRef = useRef(null);
 	const handleSeek = (fract, broadcast = true) => {
 		setProgress(fract * video.duration);
@@ -336,17 +340,31 @@ function Player(props) {
 		const behind = playedSeconds > region[1];
 		const outbounds = before || behind;
 
+		const fract = (playedSeconds-region[0]) / (region[1]-region[0]);
+		const markClipView = (
+			playingAsClip &&
+			!clipViewMarked.current &&
+			((fract >= CLIP_VIEW_FRACT) || ((region[1]-playedSeconds) <= CLIP_VIEW_MARGIN_SEC))
+		);
+		if (markClipView) {
+			console.log(
+				'playing as clip',
+				fract, '>=', CLIP_VIEW_FRACT, `(${fract >= CLIP_VIEW_FRACT})`,
+				'or',
+				region[1]-playedSeconds, '<=', CLIP_VIEW_MARGIN_SEC, `(${(region[1]-playedSeconds) <= CLIP_VIEW_MARGIN_SEC})`,
+				'and !clipViewMarked',
+				'therefore submitting clip view'
+			);
+			addClipView(clip.id).catch(e => console.error(e));
+			clipViewMarked.current = true;
+		}
+
 		if (loop && outbounds) {
 			playerRef.current?.seekTo(region[0], 'seconds');
 			setProgress(region[0]);
+			clipViewMarked.current = false;
 		} else {
 			setProgress(playedSeconds);
-		}
-
-		if (playingAsClip && behind) {
-			requestIdleCallback(() => {
-				addClipView(clip.id).catch(e => console.error(e));
-			}, { timeout: 500 });
 		}
 	};
 
