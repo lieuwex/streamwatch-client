@@ -332,16 +332,21 @@ function Player(props) {
 		}
 	};
 	const onProgress = ({ playedSeconds }) => {
-		const outbounds = playedSeconds < region[0] || playedSeconds >= region[1];
+		const before = playedSeconds < region[0];
+		const behind = playedSeconds > region[1];
+		const outbounds = before || behind;
+
 		if (loop && outbounds) {
 			playerRef.current?.seekTo(region[0], 'seconds');
 			setProgress(region[0]);
+		} else {
+			setProgress(playedSeconds);
+		}
 
+		if (playingAsClip && behind) {
 			requestIdleCallback(() => {
 				addClipView(clip.id).catch(e => console.error(e));
 			}, { timeout: 500 });
-		} else {
-			setProgress(playedSeconds);
 		}
 	};
 
