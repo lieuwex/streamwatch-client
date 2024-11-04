@@ -246,16 +246,20 @@ function useAutoplay(progress, region, video, playingAsClip) {
 			return;
 		}
 
+		// get the last watched stream that is still in progress and which has
+		// more than 5 minutes left to watch
 		let stream = streams
-			.filter(v => v.inProgress)
+			.filter(v => v.inProgress && v.duration - v.progress.time >= (60 * 5))
 			.sort((a, b) => b.progress.real_time - a.progress.real_time)[0];
 
+		// otherwise, get the next unfinished stream in chronological order
 		if (stream == null) {
 			stream = streams
 				.filter(v => !v.finished && v.timestamp > video.timestamp)
 				.sort((a, b) => a.timestamp - b.timestamp)[0];
 		}
 
+		// otherwise, get the previous unfinished stream in chronological order
 		if (stream == null) {
 			stream = streams
 				.filter(v => !v.finished && v.id !== video.id)
