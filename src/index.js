@@ -4,6 +4,7 @@ import './styleOptions.css';
 import App from './App';
 
 import './polyfills.js';
+import './birthdays.js';
 
 import migrate from './migrations.js';
 
