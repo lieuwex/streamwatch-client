@@ -1,5 +1,6 @@
 function getIntroDuration(videoId) {
 	return {
+		1339: 10,
 	}[videoId] ?? 43;
 }
 
