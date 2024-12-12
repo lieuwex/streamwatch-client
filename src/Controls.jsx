@@ -9,6 +9,7 @@ import useMousetrap from 'react-hook-mousetrap';
 import NumberEasing from 'react-number-easing';
 import { isMobile } from 'react-device-detect';
 import HypeGraph from './HypeGraph';
+import { getSkipTo } from './introDurations';
 
 import { clamp, getCurrentDatapoint, fetcher } from './util.js';
 import { getName } from './users.js';
@@ -94,23 +95,10 @@ function SkipIntroButton(props) {
 	const video = props.video;
 	const progressSecs = props.progressSecs;
 
-	const skipTo = useMemo(() => {
-		const introDuration = 43; // seconds
-		const lekkerWachtens = video.games.filter(g => g.id === 7);
-
-		for (let i = lekkerWachtens.length - 1; i >= 0; i--) {
-			const start = lekkerWachtens[i].start_time;
-			if (progressSecs > start && progressSecs < (start + introDuration)) {
-				return start + introDuration;
-			}
-		}
-
-		if (progressSecs < introDuration) {
-			return introDuration;
-		}
-
-		return null;
-	}, [progressSecs]);
+	const skipTo = useMemo(
+		() => getSkipTo(video, progressSecs),
+		[progressSecs],
+	);
 
 	const skipIntro = () => {
 		if (skipTo == null) {
