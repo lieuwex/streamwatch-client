@@ -84,7 +84,11 @@ const ScrubPreview = React.memo(forwardRef(function ScrubPreview(props, ref) {
 					},
 				}}>
 
-			<div className='fixed-width-num' style={{ marginBottom: '5px', textAlign: 'center' }}>{timestamp}</div>
+			<div className='fixed-width-num' style={{
+				marginBottom: '5px',
+				textAlign: 'center',
+				textShadow: '0px 0px 2px black',
+			}}>{timestamp}</div>
 			<div style={{ boxShadow: '0px 0px 66px -21px rgba(0,0,0,0.87)' }}>
 				{thumbnails}
 			</div>
