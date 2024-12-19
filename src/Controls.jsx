@@ -16,6 +16,7 @@ import { getName } from './users.js';
 
 const ScrubPreview = React.memo(forwardRef(function ScrubPreview(props, ref) {
 	const [popperOpen, setPopperOpen] = useState(false);
+	const [timestamp, setTimestamp] = useState('');
 	const positionRef = useRef({ x: 0, y: 0 });
 	const popperRef = useRef(null);
 	const [imageId, setImageId] = useState(0);
@@ -37,6 +38,7 @@ const ScrubPreview = React.memo(forwardRef(function ScrubPreview(props, ref) {
 
 			startTransition(() => {
 				setImageId(Math.round((props.video.scrub_thumbnail_count - 1) * frac));
+				setTimestamp(formatDuration(1e3 * frac * props.video.duration));
 			});
 		},
 		setOpen: open => setPopperOpen(open),
@@ -82,6 +84,7 @@ const ScrubPreview = React.memo(forwardRef(function ScrubPreview(props, ref) {
 					},
 				}}>
 
+			<div className='fixed-width-num' style={{ marginBottom: '5px', textAlign: 'center' }}>{timestamp}</div>
 			<div style={{ boxShadow: '0px 0px 66px -21px rgba(0,0,0,0.87)' }}>
 				{thumbnails}
 			</div>
