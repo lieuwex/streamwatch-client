@@ -19,6 +19,8 @@
 	overscroll-behavior-y: contain;
 	scroll-snap-type: none;
 	overflow-x: hidden;
+
+	scrollbar-width: thin;
 }
 .sidebar-chat.sticky {
 	scroll-snap-type: y mandatory;
