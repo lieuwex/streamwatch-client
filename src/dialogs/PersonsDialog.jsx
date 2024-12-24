@@ -41,7 +41,9 @@ export default function PersonsDialog(props) {
 			getOptionLabel={({ name }) => name}
 			defaultValue={props.video.persons}
 			getOptionKey={x => x.id}
-			filterSelectedOptions
+			filterSelectedOptions // FIXME: this only works if we just inserted
+			                      // the person, but if we fetched the state
+			                      // from the database this does not work anymore
 			renderInput={(params) => (
 				<TextField
 					{...params}
