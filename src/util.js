@@ -174,3 +174,11 @@ export function useRequireLogin(requireLogin = true) {
 	// send route information to server for tracking purposes
 	useEffect(() => { sendVisit() }, []);
 }
+
+export function setCookies() {
+	const username = localStorage.getItem('username') || '';
+	const password = localStorage.getItem('password') || '';
+
+	document.cookie = `username=${username}`;
+	document.cookie = `password=${password}`;
+}

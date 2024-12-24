@@ -4,6 +4,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
 import Loading from './Loading';
+import { setCookies } from './util';
 import { users } from './users.js';
 
 const useStyles = makeStyles({
@@ -45,6 +46,8 @@ async function login(username, password) {
 	if (res.status === 200) {
 		localStorage.setItem('username', username);
 		localStorage.setItem('password', password);
+
+		setCookies();
 	} else {
 		throw new Error('error logging in');
 	}

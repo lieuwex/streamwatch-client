@@ -1,4 +1,4 @@
-import { fetcher, updateStreamsProgress } from './util.js';
+import { fetcher, updateStreamsProgress, setCookies } from './util.js';
 
 const migrations = [
 	async function() {
@@ -12,6 +12,9 @@ const migrations = [
 		}
 
 		await updateStreamsProgress(dict);
+	},
+	async function() {
+		setCookies();
 	},
 ];
 
