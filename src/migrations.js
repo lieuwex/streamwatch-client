@@ -19,7 +19,7 @@ const migrations = [
 ];
 
 export default async function migrate() {
-	const curr = localStorage.getItem('data_version') || 0;
+	const curr = +localStorage.getItem('data_version') || 0;
 
 	for (let i = curr; i < migrations.length; i++) {
 		console.info('running migration', i, 'to', i+1);
