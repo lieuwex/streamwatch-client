@@ -5,7 +5,7 @@ import {
 	Routes,
 	Route,
 } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { lazy, StrictMode, Suspense } from 'react';
 
 import Loading from './Loading';
 
@@ -25,16 +25,18 @@ export default function App() {
 
 function Root() {
 	return (
-		<Suspense fallback={<Loading />}>
-			<ScrollRestoration />
-			<Routes>
-				<Route path="/video/:id" element={<Player isClip={false} />} />
-				<Route path="/clip/:id" element={<Player isClip={true} />} />
-				<Route path="/watchparty" element={<SelectWatchparty />} />
-				<Route path="/clips" element={<Clips />} />
-				<Route path="/login" element={<Login />} />
-				<Route path="/" element={<Videos />} />
-			</Routes>
-		</Suspense>
+		<StrictMode>
+			<Suspense fallback={<Loading />}>
+				<ScrollRestoration />
+				<Routes>
+					<Route path="/video/:id" element={<Player isClip={false} />} />
+					<Route path="/clip/:id" element={<Player isClip={true} />} />
+					<Route path="/watchparty" element={<SelectWatchparty />} />
+					<Route path="/clips" element={<Clips />} />
+					<Route path="/login" element={<Login />} />
+					<Route path="/" element={<Videos />} />
+				</Routes>
+			</Suspense>
+		</StrictMode>
 	);
 }
