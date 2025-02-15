@@ -48,7 +48,7 @@ export function convertEmotes(str, emotes, map) {
 
 		const content = str.slice(start, end);
 		const { url, width, height } = getTwitchEmoticon(emote.id);
-		res.push(`<img alt="${content}" title="${content}" src="${url}" width="${width}" height="${height}" decoding="sync"/>`);
+		res.push(`<img alt="${content}" title="${content}" src="${url}" width="${width}" height="${height}" decoding="sync" fetchpriority="high" />`);
 
 		last = end;
 	}

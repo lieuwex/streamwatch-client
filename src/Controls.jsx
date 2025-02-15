@@ -11,7 +11,7 @@ import { isMobile } from 'react-device-detect';
 import HypeGraph from './HypeGraph';
 import { getSkipTo } from './introDurations';
 
-import { clamp, getCurrentDatapoint, fetcher } from './util.js';
+import { clamp, getCurrentDatapoint, fetcher, arrayFrom } from './util.js';
 import { getName } from './users.js';
 
 const ScrubPreview = React.memo(forwardRef(function ScrubPreview(props, ref) {
@@ -44,29 +44,25 @@ const ScrubPreview = React.memo(forwardRef(function ScrubPreview(props, ref) {
 		setOpen: open => setPopperOpen(open),
 	}));
 
-	const [thumbnails, preloads] = useMemo(() => {
-		const thumbnails = [];
-		const preloads = [];
+	const thumbnail_urls = arrayFrom(props.video.scrub_thumbnail_count, i => {
+		return `https://streams.lieuwe.xyz/scrub_thumbnail/${props.video.id}/${i}.webp`;
+	});
 
-		for (let i = 0; i < props.video.scrub_thumbnail_count; i++) {
-			const url = `https://streams.lieuwe.xyz/scrub_thumbnail/${props.video.id}/${i}.webp`;
-			const shown = i === imageId;
+	const preloads = thumbnail_urls.map((url, i) => {
+		return <link key={i} href={url} rel="preload" as="image" fetchpriority="low" />;
+	});
 
-			thumbnails.push(
-				<img key={i} src={url} decoding="sync" style={{
-					width: '200px',
-					height: 'auto',
-					borderRadius: '10px',
+	const thumbnails = thumbnail_urls.map((url, i) => {
+		const shown = i === imageId;
 
-					display: shown ? 'block' : 'none',
-				}} />
-			);
+		return <img key={i} src={url} decoding="sync" style={{
+			width: '200px',
+			height: 'auto',
+			borderRadius: '10px',
 
-			preloads.push(<link key={i} href={url} rel="preload" as="image" />);
-		}
-
-		return [thumbnails, preloads];
-	}, [imageId, props.video.id]);
+			display: shown ? 'block' : 'none',
+		}} />;
+	});
 
 	return <>
 		<Popper open={popperOpen}

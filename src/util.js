@@ -182,3 +182,7 @@ export function setCookies() {
 	document.cookie = `username=${username}`;
 	document.cookie = `password=${password}`;
 }
+
+export function arrayFrom(n, fn) {
+	return Array(n).fill().map((_, i) => fn(i));
+}
