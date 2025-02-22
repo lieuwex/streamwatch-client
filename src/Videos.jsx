@@ -15,6 +15,7 @@ import { ClipVideo } from './Clips';
 import useStreams from './streamsHook.js';
 import Loading from './Loading';
 import { ProcessingVideo } from './Processing';
+import Donate from './Donate';
 
 function VideoPreview(props) {
 	let videoContent = <></>;
@@ -318,7 +319,9 @@ export default function Videos() {
 		return mapClip(clip, video);
 	}).reverse();
 
-	return (
+	return <>
+		<Donate />
+
 		<div className="video-list-wrapper">
 			{
 				inProgress.length === 0
@@ -344,5 +347,5 @@ export default function Videos() {
 				{items}
 			</VideosList>
 		</div>
-	);
+	</>;
 }
