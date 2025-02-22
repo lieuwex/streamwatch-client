@@ -20,7 +20,7 @@ export default function Donate() {
 		<DialogTitle sx={{fontSize: '2.5em', fontWeight: 'bold'}}>Alsjeblieft, doneer</DialogTitle>
 		<DialogContent sx={{fontSize: '1.2em'}}>
 			Nationaal erfgoed bewaren kost geld, help een collega zakenman! <br />
-			<a href="https://paypal.me/lieuwe/2.50EUR">Zo'n spreekwoordelijke PayPal linkie</a>.
+			<a href="https://paypal.me/lieuwe/2.50EUR" target="_blank">Zo'n spreekwoordelijke PayPal linkie</a>.
 		</DialogContent>
 
 		<DialogActions>
