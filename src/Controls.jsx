@@ -44,25 +44,7 @@ const ScrubPreview = React.memo(forwardRef(function ScrubPreview(props, ref) {
 		setOpen: open => setPopperOpen(open),
 	}));
 
-	const thumbnail_urls = arrayFrom(props.video.scrub_thumbnail_count, i => {
-		return `https://streams.lieuwe.xyz/scrub_thumbnail/${props.video.id}/${i}.webp`;
-	});
-
-	const preloads = thumbnail_urls.map((url, i) => {
-		return <link key={i} href={url} rel="preload" as="image" fetchpriority="low" />;
-	});
-
-	const thumbnails = thumbnail_urls.map((url, i) => {
-		const shown = i === imageId;
-
-		return <img key={i} src={url} decoding="sync" style={{
-			width: '200px',
-			height: 'auto',
-			borderRadius: '10px',
-
-			display: shown ? 'block' : 'none',
-		}} />;
-	});
+	const currentImage = `https://streams.lieuwe.xyz/scrub_thumbnail/${props.video.id}/${imageId}.webp`
 
 	return <>
 		<Popper open={popperOpen}
@@ -85,12 +67,21 @@ const ScrubPreview = React.memo(forwardRef(function ScrubPreview(props, ref) {
 				textAlign: 'center',
 				textShadow: '0px 0px 2px black',
 			}}>{timestamp}</div>
-			<div style={{ boxShadow: '0px 0px 66px -21px rgba(0,0,0,0.87)' }}>
-				{thumbnails}
+			<div style={{
+				boxShadow: '0px 0px 66px -21px rgba(0,0,0,0.87)',
+				width: '200px',
+				height: 'auto',
+				aspectRatio: '1920 / 1080',
+				backgroundColor: '#333333',
+				borderRadius: '10px',
+				overflow: 'hidden',
+			}}>
+				<img src={currentImage} decoding="sync" loading="eager" fetchPriority="high" style={{
+					width: '100%',
+					height: '100%',
+				}} />
 			</div>
 		</Popper>
-
-		{createPortal(preloads, document.head)}
 	</>;
 }), (prev, next) => prev.video.id === next.video.id);
 
