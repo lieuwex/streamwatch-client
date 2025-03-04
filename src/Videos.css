@@ -14,9 +14,6 @@
 	/* max-width: 600px; */
 	/* max-width: calc(100% - 50px); */
 	max-width: 725px;
-
-	content-visibility: auto;
-	contain-intrinsic-height: auto 150px;
 }
 .video-list div.video-flipper > a {
 	color: #fff;
